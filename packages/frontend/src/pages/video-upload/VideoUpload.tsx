@@ -1,10 +1,15 @@
 import React, { useMemo } from "react";
-import { useAddVideoMutation, useGetVideosQuery } from "../../services/video";
+import {
+  useAddVideoMutation,
+  useDeleteVideoMutation,
+  useGetVideosQuery,
+} from "../../services/video";
 import { Link } from "react-router-dom";
 
 function VideoUpload() {
   const { data, isLoading } = useGetVideosQuery("");
   const [addVideo, { isLoading: addLoading }] = useAddVideoMutation();
+  const [deleteVideo, { isLoading: deleteLoading }] = useDeleteVideoMutation();
 
   const parsedVideos = useMemo(
     () =>
@@ -17,7 +22,11 @@ function VideoUpload() {
     [data]
   );
 
-  const submitVideo = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleDelete = (id: string) => {
+    deleteVideo(id);
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const target = e?.target as HTMLFormElement;
@@ -40,7 +49,7 @@ function VideoUpload() {
     }
   };
 
-  const loading = isLoading || addLoading;
+  const loading = isLoading || addLoading || deleteLoading;
 
   return (
     <div className="p-4">
@@ -49,7 +58,7 @@ function VideoUpload() {
       ) : (
         <>
           <h1 className="pb-4 text-lg">Upload Video</h1>
-          <form onSubmit={(e) => submitVideo(e)}>
+          <form onSubmit={(e) => handleSubmit(e)}>
             <div className="flex gap-4 justify-between items-center pb-4 ">
               <div className="h-8 flex gap-2 justify-start content-center">
                 <input
@@ -74,9 +83,15 @@ function VideoUpload() {
               return (
                 <div className="bg-slate-800 p-4 rounded-md flex items-center gap-4 justify-between mb-4">
                   <div>{v.originalname}</div>
-                  <Link className="text-3xl" to={`/video-play/${v.id}`}>
-                    ▶️
-                  </Link>
+                  <div className="text-2xl flex gap-4">
+                    <div
+                      className="cursor-pointer"
+                      onClick={() => handleDelete(v.id)}
+                    >
+                      🗑️
+                    </div>
+                    <Link to={`/video-play/${v.id}`}>▶️</Link>
+                  </div>
                 </div>
               );
             })}

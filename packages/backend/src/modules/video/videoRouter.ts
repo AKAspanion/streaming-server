@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   addVideo,
+  deleteVideo,
   getAllVideo,
   getVideo,
   streamVideo,
@@ -11,6 +12,7 @@ const router = Router();
 
 router.get("/", getAllVideo);
 router.get("/:id", getVideo);
+router.delete("/:id", deleteVideo);
 router.get("/stream/:id", streamVideo);
 router.post("/", upload.single("video_file"), addVideo);
 

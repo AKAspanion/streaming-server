@@ -22,10 +22,21 @@ export const videoApi = createApi({
       }),
       invalidatesTags: ["Video"],
     }),
+    deleteVideo: builder.mutation<VideoType, string>({
+      query: (id) => ({
+        url: `video/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Video"],
+    }),
   }),
 });
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const { useGetVideoByIdQuery, useGetVideosQuery, useAddVideoMutation } =
-  videoApi;
+export const {
+  useGetVideoByIdQuery,
+  useGetVideosQuery,
+  useAddVideoMutation,
+  useDeleteVideoMutation,
+} = videoApi;

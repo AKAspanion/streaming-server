@@ -4,6 +4,7 @@ import { AppError, HttpCode } from "@utils/exceptions";
 import { randomUUID } from "crypto";
 import { RequestHandler } from "express";
 import fs from "fs";
+import path from "path";
 
 export const addVideo: RequestHandler = async (req, res) => {
   const id = randomUUID();
@@ -13,6 +14,27 @@ export const addVideo: RequestHandler = async (req, res) => {
   const data = { id, ...body };
 
   return res.status(HttpCode.OK).send({ data });
+};
+
+export const deleteVideo: RequestHandler = async (req, res) => {
+  const id = req.params.id || "";
+  try {
+    const data: VideoType = await vidoesDB.getData(`/${id}`);
+
+    const fullPath = path.resolve(__dirname + "../../../../" + data.path);
+
+    fs.unlink(fullPath, async (err) => {
+      if (err) throw err; //handle your error the way you want to;
+    });
+
+    await vidoesDB.delete(`/${id}`);
+
+    return res
+      .status(HttpCode.OK)
+      .send({ message: "Video deleted successfully" });
+  } catch (error) {
+    handleJSONDBDataError(error, id);
+  }
 };
 
 export const streamVideo: RequestHandler = async (req, res) => {
