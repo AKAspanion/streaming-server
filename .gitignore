@@ -1,1 +1,5 @@
 node_modules/
+_db
+_videos
+dist
+build
