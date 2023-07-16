@@ -6,6 +6,7 @@
   "scripts": {
     "build": "ttsc",
     "start": "node dist/index.js",
+    "prestart": "yarn build",
     "dev": "nodemon -r tsconfig-paths/register index.ts"
   },
   "keywords": [],

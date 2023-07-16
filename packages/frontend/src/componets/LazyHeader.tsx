@@ -1,23 +1,27 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { buttonVariant } from "./button";
 
-let lazyTimeout: number;
+let lazyTimeout: NodeJS.Timeout;
 export default function LazyHeader(props: { name?: string }) {
   const { name } = props;
   const [visible, setVisible] = useState(true);
+
+  const lazyHide = () => {
+    clearTimeout(lazyTimeout);
+    lazyTimeout = setTimeout(() => {
+      setVisible(false);
+    }, 5000);
+  };
 
   useEffect(() => {
     document.addEventListener("mousemove", (e) => {
       if (e.clientY < 100) {
         setVisible(true);
+        lazyHide();
       } else {
         setVisible(false);
       }
-
-      clearTimeout(lazyTimeout);
-      lazyTimeout = setTimeout(() => {
-        setVisible(false);
-      }, 5000);
     });
   }, []);
 
@@ -33,7 +37,7 @@ export default function LazyHeader(props: { name?: string }) {
           </Link>
           <div className="text-md">{name}</div>
         </div>
-        <Link to="/video-upload" className="rounded-md bg-slate-600 px-4 py-2">
+        <Link to="/video-upload" {...buttonVariant()}>
           Upload
         </Link>
       </div>

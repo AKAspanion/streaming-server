@@ -5,6 +5,7 @@ import {
   useGetVideosQuery,
 } from "../../services/video";
 import { Link } from "react-router-dom";
+import { buttonVariant } from "../../componets/button";
 
 function VideoUpload() {
   const { data, isLoading } = useGetVideosQuery("");
@@ -70,27 +71,34 @@ function VideoUpload() {
               </div>
 
               <div>
-                <input
-                  className="rounded-md bg-slate-600 px-4 py-2"
-                  type="submit"
-                  value="Upload File"
-                />
+                <input type="submit" value="Upload File" {...buttonVariant()} />
               </div>
             </div>
           </form>
           <div>
+            {parsedVideos.length === 0 && (
+              <div className="flex flex-col items-center p-10">
+                <div className="text-3xl pb-1 text-yellow-400">⚠️</div>
+                <div>No Data Available</div>
+              </div>
+            )}
             {parsedVideos.map((v) => {
               return (
-                <div className="bg-slate-800 p-4 rounded-md flex items-center gap-4 justify-between mb-4">
+                <div
+                  key={v.id}
+                  className="bg-slate-800 p-2 px-4 rounded-md flex items-center gap-4 justify-between mb-4"
+                >
                   <div>{v.originalname}</div>
-                  <div className="text-2xl flex gap-4">
+                  <div className="text-2xl flex">
                     <div
-                      className="cursor-pointer"
+                      {...buttonVariant()}
                       onClick={() => handleDelete(v.id)}
                     >
                       🗑️
                     </div>
-                    <Link to={`/video-play/${v.id}`}>▶️</Link>
+                    <Link {...buttonVariant()} to={`/video-play/${v.id}`}>
+                      ▶️
+                    </Link>
                   </div>
                 </div>
               );

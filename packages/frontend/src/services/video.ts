@@ -10,9 +10,11 @@ export const videoApi = createApi({
   endpoints: (builder) => ({
     getVideoById: builder.query<{ data: VideoType }, string>({
       query: (id) => `video/${id}`,
+      providesTags: ["Video"],
     }),
     getVideos: builder.query<{ data: Record<string, VideoType> }, string>({
       query: () => `video`,
+      providesTags: ["Video"],
     }),
     addVideo: builder.mutation<VideoType, FormData>({
       query: (body) => ({
