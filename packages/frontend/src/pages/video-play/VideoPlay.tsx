@@ -35,6 +35,13 @@ function VIdeoPlay() {
       setTimeout(() => {
         ref.current?.play();
       }, 1000);
+
+      window.addEventListener("blur", function () {
+        ref.current?.pause();
+      });
+      window.addEventListener("focus", function () {
+        ref.current?.play();
+      });
     }
     return () => {
       ref.current && ref.current.pause();
@@ -43,15 +50,14 @@ function VIdeoPlay() {
 
   return (
     <div>
-      <LazyHeader />
+      <LazyHeader name={data?.data?.originalname} />
       {isLoading ? (
         <div>Loading</div>
       ) : error ? (
         <div className="p-4">{JSON.stringify(error)}</div>
       ) : (
         <div>
-          <h1 className="text-3xl font-bold underline">{data?.filename}</h1>
-          <video autoPlay controls muted ref={ref} id="myVideo">
+          <video autoPlay controls ref={ref} id="myVideo">
             <source src={srUrl} type="video/mp4" />
           </video>
 

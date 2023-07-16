@@ -21,7 +21,6 @@ export const streamVideo: RequestHandler = async (req, res) => {
     // Ensure there is a range given for the video
     const range = req.headers.range;
     const result: VideoType = await vidoesDB.getData(`/${id}`);
-    console.log({ range }, req.params, result);
 
     if (!range) {
       throw new AppError({

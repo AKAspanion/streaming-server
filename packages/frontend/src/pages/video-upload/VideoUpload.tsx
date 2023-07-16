@@ -3,7 +3,7 @@ import { useAddVideoMutation, useGetVideosQuery } from "../../services/video";
 import { Link } from "react-router-dom";
 
 function VideoUpload() {
-  const { data, error, isLoading } = useGetVideosQuery("");
+  const { data, isLoading } = useGetVideosQuery("");
   const [addVideo, { isLoading: addLoading }] = useAddVideoMutation();
 
   const parsedVideos = useMemo(
@@ -16,8 +16,6 @@ function VideoUpload() {
         : [],
     [data]
   );
-
-  console.log(parsedVideos);
 
   const submitVideo = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -74,9 +72,9 @@ function VideoUpload() {
           <div>
             {parsedVideos.map((v) => {
               return (
-                <div className="bg-slate-800 p-4 rounded-md flex gap-4 justify-between mb-4">
+                <div className="bg-slate-800 p-4 rounded-md flex items-center gap-4 justify-between mb-4">
                   <div>{v.originalname}</div>
-                  <Link className="text-xl" to={`/video-play/${v.id}`}>
+                  <Link className="text-3xl" to={`/video-play/${v.id}`}>
                     ▶️
                   </Link>
                 </div>

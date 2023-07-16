@@ -32,3 +32,10 @@
   background: #ddd;
   color: black;
 }
+video {
+  outline: none;
+}
+
+video:active {
+  outline: none;
+}
