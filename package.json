@@ -2,11 +2,14 @@
   "name": "streaming-server",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "private": true,
   "scripts": {
     "dev": "lerna run dev --parallel",
     "start": "lerna run start --parallel"
   },
+  "workspaces": [
+    "packages/*"
+  ],
   "keywords": [],
   "author": "",
   "license": "ISC",

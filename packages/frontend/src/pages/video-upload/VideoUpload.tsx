@@ -4,12 +4,14 @@ import {
   useDeleteVideoMutation,
   useGetVideosQuery,
 } from "../../services/video";
-import { Link } from "react-router-dom";
 import { buttonVariant } from "../../componets/button";
+import VideoListItem from "./VideoListItem";
+import { useAddSubtitleMutation } from "../../services/subtitle";
 
 function VideoUpload() {
   const { data, isLoading } = useGetVideosQuery("");
   const [addVideo, { isLoading: addLoading }] = useAddVideoMutation();
+  const [addSubtitle, { isLoading: subLoading }] = useAddSubtitleMutation();
   const [deleteVideo, { isLoading: deleteLoading }] = useDeleteVideoMutation();
 
   const parsedVideos = useMemo(
@@ -23,8 +25,20 @@ function VideoUpload() {
     [data]
   );
 
-  const handleDelete = (id: string) => {
-    deleteVideo(id);
+  const handleDelete = (v: VideoType) => {
+    deleteVideo(v.id);
+  };
+
+  const handleSubtitle = (v: VideoType, file?: File) => {
+    if (file) {
+      const body = new FormData();
+      body.append("sub_file", file);
+
+      addSubtitle({ id: v.id, body });
+    } else {
+      alert("File is required");
+      return;
+    }
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -84,23 +98,13 @@ function VideoUpload() {
             )}
             {parsedVideos.map((v) => {
               return (
-                <div
+                <VideoListItem
                   key={v.id}
-                  className="bg-slate-800 p-2 px-4 rounded-md flex items-center gap-4 justify-between mb-4"
-                >
-                  <div>{v.originalname}</div>
-                  <div className="text-2xl flex">
-                    <div
-                      {...buttonVariant()}
-                      onClick={() => handleDelete(v.id)}
-                    >
-                      🗑️
-                    </div>
-                    <Link {...buttonVariant()} to={`/video-play/${v.id}`}>
-                      ▶️
-                    </Link>
-                  </div>
-                </div>
+                  video={v}
+                  loading={subLoading}
+                  onDelete={handleDelete}
+                  onSubtitle={handleSubtitle}
+                />
               );
             })}
           </div>

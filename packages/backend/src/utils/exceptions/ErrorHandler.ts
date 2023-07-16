@@ -28,7 +28,7 @@ class ErrorHandler {
 
     console.error({ error });
 
-    logger.error("Application encountered a critical error. Exiting");
+    logger.error("Application encountered a critical error.");
   }
 
   public handleError(error: Error | AppError, response?: Response): void {

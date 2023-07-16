@@ -1,10 +1,38 @@
-import { vidoesDB } from "@database/json";
+import { subsDB, vidoesDB } from "@database/json";
 import { handleJSONDBDataError } from "@utils/error";
 import { AppError, HttpCode } from "@utils/exceptions";
 import { randomUUID } from "crypto";
 import { RequestHandler } from "express";
 import fs from "fs";
 import path from "path";
+
+export const getSubtitle: RequestHandler = async (req, res) => {
+  const id = req.params.id || "";
+  try {
+    const data = await subsDB.getData(`/${id}`);
+    const filePath = path.resolve(__dirname + "../../../../" + data.path);
+    const fileName = `/${id}.wtt`;
+
+    res.download(filePath, fileName);
+  } catch (error) {
+    handleJSONDBDataError(error, id);
+  }
+};
+
+export const addSubtitle: RequestHandler = async (req, res) => {
+  const id = req.params.id || "";
+  try {
+    await vidoesDB.getData(`/${id}`);
+
+    const body = { ...req.file };
+    await subsDB.push(`/${id}`, body);
+    const data = { id, ...body };
+
+    return res.status(HttpCode.OK).send({ data });
+  } catch (error) {
+    handleJSONDBDataError(error, id);
+  }
+};
 
 export const addVideo: RequestHandler = async (req, res) => {
   const id = randomUUID();
