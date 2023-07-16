@@ -67,14 +67,14 @@ function VideoUpload() {
   const loading = isLoading || addLoading || deleteLoading;
 
   return (
-    <div className="p-4">
+    <>
       {loading ? (
-        <div>Loading...</div>
+        <div className="p-8">Loading... Please wait</div>
       ) : (
         <>
-          <h1 className="pb-4 text-lg">Upload Video</h1>
-          <form onSubmit={(e) => handleSubmit(e)}>
-            <div className="flex gap-4 justify-between items-center pb-4 ">
+          <h1 className="p-4 text-lg font-bold bg-slate-900">Upload Video</h1>
+          <form className="p-4" onSubmit={(e) => handleSubmit(e)}>
+            <div className="flex gap-4 justify-between items-center ">
               <div className="h-8 flex gap-2 justify-start content-center">
                 <input
                   className="h-8"
@@ -85,11 +85,11 @@ function VideoUpload() {
               </div>
 
               <div>
-                <input type="submit" value="Upload File" {...buttonVariant()} />
+                <input type="submit" value="Upload" {...buttonVariant()} />
               </div>
             </div>
           </form>
-          <div>
+          <div className="p-4">
             {parsedVideos.length === 0 && (
               <div className="flex flex-col items-center p-10">
                 <div className="text-3xl pb-1 text-yellow-400">⚠️</div>
@@ -110,7 +110,7 @@ function VideoUpload() {
           </div>
         </>
       )}
-    </div>
+    </>
   );
 }
 

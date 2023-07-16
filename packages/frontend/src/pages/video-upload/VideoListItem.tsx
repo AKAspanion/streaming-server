@@ -33,7 +33,7 @@ const VideoListItem: FC<VideoListItemProps> = ({
   };
 
   return loading ? (
-    <div>Loading...</div>
+    <div>Loading... Please wait</div>
   ) : (
     <div
       key={video.id}
@@ -55,7 +55,7 @@ const VideoListItem: FC<VideoListItemProps> = ({
           type="file"
           id="subInput"
           accept=".srt"
-          className="invisible absolute"
+          className="invisible fixed pointer-events-none left-0"
           onChange={handleSubtitleLoad}
         />
       </div>

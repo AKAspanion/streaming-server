@@ -67,7 +67,7 @@ function VIdeoPlay() {
     <div>
       <LazyHeader name={data?.data?.originalname} />
       {loading ? (
-        <div>Loading</div>
+        <div>Loading... Please wait</div>
       ) : error ? (
         <div className="p-4">{JSON.stringify(error)}</div>
       ) : (
