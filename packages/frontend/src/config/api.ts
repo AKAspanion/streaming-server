@@ -1,1 +1,1 @@
-export const baseUrl = "http://localhost:5708";
+export const baseUrl = import.meta.env.VITE_BE_BASE_URL;
