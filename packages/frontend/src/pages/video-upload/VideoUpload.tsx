@@ -10,8 +10,17 @@ import { useAddSubtitleMutation } from "../../services/subtitle";
 import { toast } from "react-hot-toast/headless";
 import useToastStatus from "../../hooks/useToastStatus";
 import Spinner from "../../componets/spinner/Spinner";
+import { useAppDispatch, useAppSelector } from "../../store/hook";
+import Progress from "../../componets/progress/Progress";
+import { setVideoUploadProgress } from "../../store/globalSlice";
 
 function VideoUpload() {
+  const videoLoadProgress = useAppSelector(
+    (s) => s?.globalData?.videoUploadProgress
+  );
+
+  const dispatch = useAppDispatch();
+
   const { data, isLoading } = useGetVideosQuery("");
   const [addVideo, { status: addStatus, isLoading: addLoading }] =
     useAddVideoMutation();
@@ -20,16 +29,7 @@ function VideoUpload() {
   const [deleteVideo, { isLoading: deleteLoading, status: deleteStatus }] =
     useDeleteVideoMutation();
 
-  const parsedVideos = useMemo(
-    () =>
-      data?.data
-        ? Object.keys(data?.data || {}).map((id) => ({
-            ...(data.data[id] || {}),
-            id,
-          }))
-        : [],
-    [data]
-  );
+  const parsedVideos = useMemo(() => (data?.data ? data?.data : []), [data]);
 
   const handleDelete = (v: VideoType) => {
     deleteVideo(v.id);
@@ -49,6 +49,7 @@ function VideoUpload() {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    dispatch(setVideoUploadProgress(0));
 
     const target = e?.target as HTMLFormElement;
     const targetFile = target.file as HTMLInputElement;
@@ -85,12 +86,18 @@ function VideoUpload() {
     errorMessage: "Failed to delete Video",
   });
 
-  const loading = isLoading || addLoading || subLoading || deleteLoading;
+  const loading = isLoading || subLoading || deleteLoading;
 
   return (
     <>
-      {loading ? (
-        <Spinner full />
+      {addLoading && videoLoadProgress ? (
+        <div className="fixed w-screen">
+          <Progress value={videoLoadProgress} />
+        </div>
+      ) : loading ? (
+        <div className="fixed">
+          <Spinner full />
+        </div>
       ) : (
         <>
           <h1 className="p-4 text-lg font-bold bg-slate-900">Upload Video</h1>

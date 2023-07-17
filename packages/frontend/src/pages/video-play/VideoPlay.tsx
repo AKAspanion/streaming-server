@@ -68,7 +68,7 @@ function VIdeoPlay() {
     <div>
       <LazyHeader name={data?.data?.originalname} />
       {loading ? (
-        <Spinner />
+        <Spinner full />
       ) : error ? (
         <div className="p-4">{JSON.stringify(error)}</div>
       ) : (

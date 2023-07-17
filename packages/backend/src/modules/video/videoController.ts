@@ -107,8 +107,15 @@ export const streamVideo: RequestHandler = async (req, res) => {
   }
 };
 
-export const getAllVideo: RequestHandler = async (req, res) => {
-  const data = await vidoesDB.getData("/");
+export const getAllVideo: RequestHandler = async (_, res) => {
+  const result: Record<string, VideoType> = await vidoesDB.getData(`/`);
+
+  const data: VideoType[] = result
+    ? Object.keys(result || {}).map((id) => ({
+        ...(result[id] || {}),
+        id,
+      }))
+    : [];
 
   return res.status(HttpCode.OK).send({ data });
 };
