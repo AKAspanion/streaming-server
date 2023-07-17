@@ -15,7 +15,7 @@ export const getSubtitle: RequestHandler = async (req, res) => {
 
     res.download(filePath, fileName);
   } catch (error) {
-    handleJSONDBDataError(error, id);
+    handleJSONDBDataError(error, id, "subtitle");
   }
 };
 
@@ -30,7 +30,7 @@ export const addSubtitle: RequestHandler = async (req, res) => {
 
     return res.status(HttpCode.OK).send({ data });
   } catch (error) {
-    handleJSONDBDataError(error, id);
+    handleJSONDBDataError(error, id, "subtitle");
   }
 };
 

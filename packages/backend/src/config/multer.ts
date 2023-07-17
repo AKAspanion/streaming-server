@@ -7,7 +7,6 @@ const multerVideoStorage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     const ext = file.mimetype.split("/")[1];
-    console.log(file);
     cb(null, `video-${file.fieldname}-${Date.now()}.${ext}`);
   },
 });
@@ -18,7 +17,6 @@ const multerSubsStorage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     const ext = file.mimetype.split("/")[1];
-    console.log(file);
     cb(null, `sub-${file.fieldname}-${Date.now()}.${ext}`);
   },
 });
@@ -44,7 +42,6 @@ export const uploadSubtitle = multer({
   storage: multerSubsStorage,
   fileFilter: (req, file, cb) => {
     const allowed = ["octet-stream"];
-    console.log(file, file.mimetype);
     if (allowed.includes(file.mimetype.split("/")[1])) {
       cb(null, true);
     } else {

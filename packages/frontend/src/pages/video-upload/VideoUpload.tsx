@@ -7,12 +7,18 @@ import {
 import { buttonVariant } from "../../componets/button";
 import VideoListItem from "./VideoListItem";
 import { useAddSubtitleMutation } from "../../services/subtitle";
+import { toast } from "react-hot-toast/headless";
+import useToastStatus from "../../hooks/useToastStatus";
+import Spinner from "../../componets/spinner/Spinner";
 
 function VideoUpload() {
   const { data, isLoading } = useGetVideosQuery("");
-  const [addVideo, { isLoading: addLoading }] = useAddVideoMutation();
-  const [addSubtitle, { isLoading: subLoading }] = useAddSubtitleMutation();
-  const [deleteVideo, { isLoading: deleteLoading }] = useDeleteVideoMutation();
+  const [addVideo, { status: addStatus, isLoading: addLoading }] =
+    useAddVideoMutation();
+  const [addSubtitle, { isLoading: subLoading, status: subStatus }] =
+    useAddSubtitleMutation();
+  const [deleteVideo, { isLoading: deleteLoading, status: deleteStatus }] =
+    useDeleteVideoMutation();
 
   const parsedVideos = useMemo(
     () =>
@@ -36,7 +42,7 @@ function VideoUpload() {
 
       addSubtitle({ id: v.id, body });
     } else {
-      alert("File is required");
+      toast.error("File is required");
       return;
     }
   };
@@ -52,7 +58,7 @@ function VideoUpload() {
       const file = targetFile.files[0];
 
       if (!file) {
-        alert("File is required");
+        toast.error("File is required");
         return;
       }
 
@@ -64,18 +70,33 @@ function VideoUpload() {
     }
   };
 
-  const loading = isLoading || addLoading || deleteLoading;
+  useToastStatus(addStatus, {
+    successMessage: "Successfully added Video!",
+    errorMessage: "Failed to add Video",
+  });
+
+  useToastStatus(subStatus, {
+    successMessage: "Successfully added Subtitle!",
+    errorMessage: "Failed to add Subtitle",
+  });
+
+  useToastStatus(deleteStatus, {
+    successMessage: "Successfully deleted Video!",
+    errorMessage: "Failed to delete Video",
+  });
+
+  const loading = isLoading || addLoading || subLoading || deleteLoading;
 
   return (
     <>
       {loading ? (
-        <div className="p-8">Loading... Please wait</div>
+        <Spinner full />
       ) : (
         <>
           <h1 className="p-4 text-lg font-bold bg-slate-900">Upload Video</h1>
-          <form className="p-4" onSubmit={(e) => handleSubmit(e)}>
+          <form className="m-4" onSubmit={(e) => handleSubmit(e)}>
             <div className="flex gap-4 justify-between items-center ">
-              <div className="h-8 flex gap-2 justify-start content-center">
+              <div className="h-6 flex gap-2 justify-start content-center">
                 <input
                   className="h-8"
                   type="file"
@@ -89,7 +110,7 @@ function VideoUpload() {
               </div>
             </div>
           </form>
-          <div className="p-4">
+          <div className="m-4">
             {parsedVideos.length === 0 && (
               <div className="flex flex-col items-center p-10">
                 <div className="text-3xl pb-1 text-yellow-400">⚠️</div>
@@ -101,7 +122,7 @@ function VideoUpload() {
                 <VideoListItem
                   key={v.id}
                   video={v}
-                  loading={subLoading}
+                  loading={false}
                   onDelete={handleDelete}
                   onSubtitle={handleSubtitle}
                 />

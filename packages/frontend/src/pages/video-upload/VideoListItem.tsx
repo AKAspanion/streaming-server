@@ -1,6 +1,10 @@
-import { FC } from "react";
+import { FC, useMemo, useRef, useState } from "react";
 import { buttonVariant } from "../../componets/button";
 import { Link } from "react-router-dom";
+import { TrashIcon } from "@heroicons/react/24/solid";
+import { PlayIcon } from "@heroicons/react/24/solid";
+import React from "react";
+import Spinner from "../../componets/spinner/Spinner";
 
 interface VideoListItemProps {
   video: VideoType;
@@ -15,6 +19,8 @@ const VideoListItem: FC<VideoListItemProps> = ({
   onDelete,
   onSubtitle,
 }) => {
+  const ref = useRef<HTMLInputElement>(null);
+  const [open, setOpen] = useState(false);
   const handleSubtitleLoad = async (e: any) => {
     try {
       if (e.target.files) {
@@ -26,39 +32,90 @@ const VideoListItem: FC<VideoListItemProps> = ({
   };
 
   const openFile = () => {
-    const subInputDom = document.getElementById("subInput");
+    const subInputDom = ref.current;
     if (subInputDom) {
       subInputDom.click();
     }
   };
 
-  return loading ? (
-    <div>Loading... Please wait</div>
-  ) : (
-    <div
-      key={video.id}
-      className="bg-slate-800 p-2 px-4 rounded-md flex items-center gap-4 justify-between mb-4"
-    >
-      <div>{video.originalname}</div>
-      <div className="text-lg flex">
-        <div {...buttonVariant()} onClick={() => onDelete(video)}>
-          🗑️
-        </div>
-        <div {...buttonVariant()} onClick={() => openFile()}>
-          <p className="font-bold">CC</p>
-        </div>
-        <Link {...buttonVariant()} to={`/video-play/${video.id}`}>
-          ▶️
-        </Link>
+  const handleDetails = () => {
+    setOpen((o) => !o);
+  };
 
-        <input
-          type="file"
-          id="subInput"
-          accept=".srt"
-          className="invisible fixed pointer-events-none left-0"
-          onChange={handleSubtitleLoad}
-        />
-      </div>
+  const details = useMemo(() => {
+    return [
+      { name: "Original Name", value: video.originalname },
+      { name: "ID", value: video.id },
+      { name: "File Size", value: video.size },
+      { name: "Encoding", value: video.encoding },
+      { name: "Mime Type", value: video.mimetype },
+      { name: "Field Name", value: video.fieldname },
+    ];
+  }, []);
+
+  return (
+    <div className="bg-slate-800 p-2 px-4 rounded-md  mb-4">
+      {loading ? (
+        <div className="flex justify-center">
+          <Spinner />
+        </div>
+      ) : (
+        <>
+          <div
+            style={
+              {
+                "--max-list-item": "calc(100vw - 240px)",
+              } as React.CSSProperties
+            }
+            className="flex items-center gap-4 justify-between"
+          >
+            <div
+              className="cursor-pointer select-none w-[var(--max-list-item)] overflow-hidden overflow-ellipsis whitespace-nowrap"
+              title={video.originalname}
+              onClick={handleDetails}
+            >
+              {video.originalname}
+            </div>
+            <div className="text-lg flex">
+              <div {...buttonVariant()} onClick={() => openFile()}>
+                <p className="font-bold">CC</p>
+              </div>
+              <div {...buttonVariant()} onClick={() => onDelete(video)}>
+                <div className="w-5">
+                  <TrashIcon />
+                </div>
+              </div>
+              <Link {...buttonVariant()} to={`/video-play/${video.id}`}>
+                <div className="w-5">
+                  <PlayIcon />
+                </div>
+              </Link>
+
+              <input
+                type="file"
+                ref={ref}
+                accept=".srt"
+                className="invisible fixed pointer-events-none left-0"
+                onChange={handleSubtitleLoad}
+              />
+            </div>
+          </div>
+          <div
+            style={{ gridTemplateColumns: "auto 1fr" }}
+            className={
+              "bg-slate-900 rounded-md px-3 text-sm grid transition-all" +
+              (!open ? " h-0 overflow-hidden" : " h-auto py-2 my-2")
+            }
+          >
+            {details.map(({ name, value }) => (
+              <React.Fragment key={name}>
+                <div className="whitespace-nowrap pr-4 pb-1">{name}</div>
+                <div className="break-all pb-1">{value}</div>
+              </React.Fragment>
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 };

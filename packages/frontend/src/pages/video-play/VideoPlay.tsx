@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import { useEffect, useLayoutEffect, useRef } from "react";
 import LazyHeader from "../../componets/LazyHeader";
 import { useGetSubtitleByIdQuery } from "../../services/subtitle";
+import Spinner from "../../componets/spinner/Spinner";
 
 import "./VideoPlay.css";
 
@@ -67,7 +68,7 @@ function VIdeoPlay() {
     <div>
       <LazyHeader name={data?.data?.originalname} />
       {loading ? (
-        <div>Loading... Please wait</div>
+        <Spinner />
       ) : error ? (
         <div className="p-4">{JSON.stringify(error)}</div>
       ) : (
