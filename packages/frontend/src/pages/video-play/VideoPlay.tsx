@@ -1,10 +1,10 @@
-import { useGetVideoByIdQuery } from "../../services/video";
-import { baseUrl } from "../../config/api";
+import { useGetVideoByIdQuery } from "@services/video";
+import { baseUrl } from "@config/api";
 import { useParams } from "react-router-dom";
 import { useEffect, useLayoutEffect, useRef } from "react";
-import LazyHeader from "../../componets/LazyHeader";
-import { useGetSubtitleByIdQuery } from "../../services/subtitle";
-import Spinner from "../../componets/spinner/Spinner";
+import LazyHeader from "@components/LazyHeader";
+import { useGetSubtitleByIdQuery } from "@services/subtitle";
+import Spinner from "@components/spinner/Spinner";
 
 import "./VideoPlay.css";
 

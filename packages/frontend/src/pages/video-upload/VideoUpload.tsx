@@ -3,16 +3,16 @@ import {
   useAddVideoMutation,
   useDeleteVideoMutation,
   useGetVideosQuery,
-} from "../../services/video";
-import { buttonVariant } from "../../componets/button";
+} from "@services/video";
+import { buttonVariant } from "@components/button";
 import VideoListItem from "./VideoListItem";
-import { useAddSubtitleMutation } from "../../services/subtitle";
+import { useAddSubtitleMutation } from "@services/subtitle";
 import { toast } from "react-hot-toast/headless";
-import useToastStatus from "../../hooks/useToastStatus";
-import Spinner from "../../componets/spinner/Spinner";
-import { useAppDispatch, useAppSelector } from "../../store/hook";
-import Progress from "../../componets/progress/Progress";
-import { setVideoUploadProgress } from "../../store/globalSlice";
+import useToastStatus from "@hooks/useToastStatus";
+import Spinner from "@components/spinner/Spinner";
+import { useAppDispatch, useAppSelector } from "@store/hook";
+import Progress from "@components/progress/Progress";
+import { setVideoUploadProgress } from "@store/globalSlice";
 
 function VideoUpload() {
   const videoLoadProgress = useAppSelector(

@@ -1,10 +1,9 @@
-import { FC, useMemo, useRef, useState } from "react";
-import { buttonVariant } from "../../componets/button";
+import React, { FC, useMemo, useRef, useState } from "react";
+import { buttonVariant } from "@components/button";
 import { Link } from "react-router-dom";
 import { TrashIcon } from "@heroicons/react/24/solid";
 import { PlayIcon } from "@heroicons/react/24/solid";
-import React from "react";
-import Spinner from "../../componets/spinner/Spinner";
+import Spinner from "@components/spinner/Spinner";
 
 interface VideoListItemProps {
   video: VideoType;

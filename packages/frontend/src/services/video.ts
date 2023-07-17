@@ -1,10 +1,8 @@
-// Need to use the React-specific entry point to import createApi
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { baseUrl } from "../config/api";
 import axios from "axios";
-import { setVideoUploadProgress } from "../store/globalSlice";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { baseUrl } from "@config/api";
+import { setVideoUploadProgress } from "@store/globalSlice";
 
-// Define a service using a base URL and expected endpoints
 export const videoApi = createApi({
   reducerPath: "videoApi",
   baseQuery: fetchBaseQuery({ baseUrl }),
@@ -42,11 +40,6 @@ export const videoApi = createApi({
           };
         }
       },
-      // query: (body) => ({
-      //   url: `video`,
-      //   method: "POST",
-      //   body: body,
-      // }),
       invalidatesTags: ["Video"],
     }),
     deleteVideo: builder.mutation<VideoType, string>({
@@ -59,8 +52,6 @@ export const videoApi = createApi({
   }),
 });
 
-// Export hooks for usage in functional components, which are
-// auto-generated based on the defined endpoints
 export const {
   useGetVideoByIdQuery,
   useGetVideosQuery,

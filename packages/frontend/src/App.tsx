@@ -1,8 +1,8 @@
 import { RouterProvider } from "react-router-dom";
-import { router } from "./router/router";
+import { router } from "@router/router";
 import { Provider } from "react-redux";
-import { store } from "./store/store";
-import Notifications from "./componets/Notifications";
+import { store } from "@store/store";
+import Notifications from "@components/Notifications";
 
 function App() {
   return (
