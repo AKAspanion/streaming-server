@@ -34,6 +34,7 @@
     },
     "plugins": [{ "transform": "typescript-transform-paths" }]
   },
+  "include": ["src", "index.ts"],
   "plugins": [{ "transform": "typescript-transform-paths" }],
   "exclude": [
     "node_modules",

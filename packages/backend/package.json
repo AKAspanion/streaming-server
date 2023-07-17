@@ -7,7 +7,11 @@
     "build": "ttsc",
     "start": "node dist/index.js",
     "prestart": "yarn build",
-    "dev": "nodemon -r tsconfig-paths/register index.ts"
+    "dev": "nodemon -r tsconfig-paths/register index.ts",
+    "preview": "yarn start",
+    "clean": "rm -rf dist",
+    "prebuild": "yarn clean",
+    "postbuild": "cd dist && mkdir _db && mkdir _subs && mkdir _videos"
   },
   "keywords": [],
   "author": "",
@@ -29,7 +33,7 @@
     "nodemon": "^3.0.1",
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.2.0",
-    "ttypescript": "^1.5.15",
+    "ttsc": "^0.3.1",
     "typescript-transform-paths": "^3.4.6"
   }
 }

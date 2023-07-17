@@ -5437,10 +5437,10 @@ tsutils@^3.21.0:
   dependencies:
     tslib "^1.8.1"
 
-ttypescript@^1.5.15:
-  version "1.5.15"
-  resolved "https://registry.yarnpkg.com/ttypescript/-/ttypescript-1.5.15.tgz#e45550ad69289d06d3bc3fd4a3c87e7c1ef3eba7"
-  integrity sha512-48ykDNHzFnPMnv4hYX1P8Q84TvCZyL1QlFxeuxsuZ48X2+ameBgPenvmCkHJtoOSxpoWTWi8NcgNrRnVDOmfSg==
+ttsc@^0.3.1:
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/ttsc/-/ttsc-0.3.1.tgz#bc1feae07d6df68c36aa98da28d753f22c57f6e9"
+  integrity sha512-3l5bxt8xRc/0Yty9QiF8iPG9lk/FLwiHNU/CkFQUZ82WoxCBKk1HgBQ9GSuiQfn0up+ou5f8tHMlh9kGFOO1Vg==
   dependencies:
     resolve ">=1.9.0"
 

@@ -1,9 +1,10 @@
 import { AppError, HttpCode } from "@utils/exceptions";
 import multer from "multer";
+import path from "path";
 
 const multerVideoStorage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "_videos");
+    cb(null, path.resolve(__dirname, "../../_videos"));
   },
   filename: (req, file, cb) => {
     const ext = file.mimetype.split("/")[1];
@@ -13,7 +14,7 @@ const multerVideoStorage = multer.diskStorage({
 
 const multerSubsStorage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "_subs");
+    cb(null, path.resolve(__dirname, "../../_subs"));
   },
   filename: (req, file, cb) => {
     const ext = file.mimetype.split("/")[1];
