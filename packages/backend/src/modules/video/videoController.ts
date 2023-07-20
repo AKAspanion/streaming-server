@@ -10,10 +10,9 @@ export const getSubtitle: RequestHandler = async (req, res) => {
   const id = req.params.id || "";
   try {
     const data = await subsDB.getData(`/${id}`);
-    const filePath = path.resolve(__dirname + "../../../../" + data.path);
     const fileName = `/${id}.wtt`;
 
-    res.download(filePath, fileName);
+    res.download(data.path, fileName);
   } catch (error) {
     handleJSONDBDataError(error, id, "subtitle");
   }
