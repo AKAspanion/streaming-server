@@ -1,36 +1,31 @@
-import { useGetVideoByIdQuery } from "@services/video";
-import { baseUrl } from "@config/api";
-import { useParams } from "react-router-dom";
-import { useEffect, useLayoutEffect, useRef } from "react";
-import LazyHeader from "@components/LazyHeader";
-import { useGetSubtitleByIdQuery } from "@services/subtitle";
-import Spinner from "@components/spinner/Spinner";
+import { useGetVideoByIdQuery } from '@services/video';
+import { baseUrl } from '@config/api';
+import { useParams } from 'react-router-dom';
+import { useEffect, useLayoutEffect, useRef } from 'react';
+import LazyHeader from '@components/LazyHeader';
+import { useGetSubtitleByIdQuery } from '@services/subtitle';
+import Spinner from '@components/spinner/Spinner';
 
-import "./VideoPlay.css";
+import './VideoPlay.css';
 
 function VIdeoPlay() {
   const ref = useRef<HTMLVideoElement>(null);
-  const { videoId } = useParams();
-
-  if (!videoId) {
-    return <div>Video ID is required to play content</div>;
-  }
+  const { videoId = '' } = useParams();
 
   const { data, error, isLoading } = useGetVideoByIdQuery(videoId);
-  const { data: subData, isLoading: subLoading } =
-    useGetSubtitleByIdQuery(videoId);
+  const { data: subData, isLoading: subLoading } = useGetSubtitleByIdQuery(videoId);
 
   const srcUrl = `${baseUrl}/video/stream/${videoId}`;
 
-  const handleSubtitleLoad = async (textTrackUrl: string) => {
+  const handleSubtitleLoad = (textTrackUrl: string) => {
     try {
       if (ref.current) {
         const track = ref.current.children[1] as HTMLTrackElement; // Track element (which is child of a video element)
-        const video = ref.current as HTMLVideoElement; // Main video element
+        const video = ref.current; // Main video element
 
         if (track && video) {
           track.src = textTrackUrl; // Set the converted URL to track's source
-          video.textTracks[0].mode = "showing"; // Start showing subtitle to your track
+          video.textTracks[0].mode = 'showing'; // Start showing subtitle to your track
         }
       }
     } catch (e) {
@@ -45,20 +40,21 @@ function VIdeoPlay() {
   }, [subData]);
 
   useLayoutEffect(() => {
-    if (ref.current) {
-      setTimeout(() => {
-        ref.current?.play();
+    const videoRef = ref.current;
+    if (videoRef) {
+      setTimeout(async () => {
+        await videoRef?.play();
       }, 1000);
 
-      window.addEventListener("blur", function () {
-        ref.current?.pause();
+      window.addEventListener('blur', function () {
+        videoRef?.pause();
       });
-      window.addEventListener("focus", function () {
-        ref.current?.play();
+      window.addEventListener('focus', async () => {
+        await videoRef?.play();
       });
     }
     return () => {
-      ref.current && ref.current.pause();
+      videoRef && videoRef.pause();
     };
   }, []);
 

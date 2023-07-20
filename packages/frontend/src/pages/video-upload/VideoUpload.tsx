@@ -1,53 +1,45 @@
-import React, { useMemo } from "react";
-import {
-  useAddVideoMutation,
-  useDeleteVideoMutation,
-  useGetVideosQuery,
-} from "@services/video";
-import { buttonVariant } from "@components/button";
-import VideoListItem from "./VideoListItem";
-import { useAddSubtitleMutation } from "@services/subtitle";
-import { toast } from "react-hot-toast/headless";
-import useToastStatus from "@hooks/useToastStatus";
-import Spinner from "@components/spinner/Spinner";
-import { useAppDispatch, useAppSelector } from "@store/hook";
-import Progress from "@components/progress/Progress";
-import { setVideoUploadProgress } from "@store/globalSlice";
+import React, { useMemo } from 'react';
+import { useAddVideoMutation, useDeleteVideoMutation, useGetVideosQuery } from '@services/video';
+import { buttonVariant } from '@components/button';
+import VideoListItem from './VideoListItem';
+import { useAddSubtitleMutation } from '@services/subtitle';
+import { toast } from 'react-hot-toast/headless';
+import useToastStatus from '@hooks/useToastStatus';
+import Spinner from '@components/spinner/Spinner';
+import { useAppDispatch, useAppSelector } from '@store/hook';
+import Progress from '@components/progress/Progress';
+import { setVideoUploadProgress } from '@store/globalSlice';
 
 function VideoUpload() {
-  const videoLoadProgress = useAppSelector(
-    (s) => s?.globalData?.videoUploadProgress
-  );
+  const videoLoadProgress = useAppSelector((s) => s?.globalData?.videoUploadProgress);
 
   const dispatch = useAppDispatch();
 
-  const { data, isLoading } = useGetVideosQuery("");
-  const [addVideo, { status: addStatus, isLoading: addLoading }] =
-    useAddVideoMutation();
-  const [addSubtitle, { isLoading: subLoading, status: subStatus }] =
-    useAddSubtitleMutation();
+  const { data, isLoading } = useGetVideosQuery('');
+  const [addVideo, { status: addStatus, isLoading: addLoading }] = useAddVideoMutation();
+  const [addSubtitle, { isLoading: subLoading, status: subStatus }] = useAddSubtitleMutation();
   const [deleteVideo, { isLoading: deleteLoading, status: deleteStatus }] =
     useDeleteVideoMutation();
 
   const parsedVideos = useMemo(() => (data?.data ? data?.data : []), [data]);
 
-  const handleDelete = (v: VideoType) => {
-    deleteVideo(v.id);
+  const handleDelete = async (v: VideoType) => {
+    await deleteVideo(v.id);
   };
 
-  const handleSubtitle = (v: VideoType, file?: File) => {
+  const handleSubtitle = async (v: VideoType, file?: File) => {
     if (file) {
       const body = new FormData();
-      body.append("sub_file", file);
+      body.append('sub_file', file);
 
-      addSubtitle({ id: v.id, body });
+      await addSubtitle({ id: v.id, body });
     } else {
-      toast.error("File is required");
+      toast.error('File is required');
       return;
     }
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     dispatch(setVideoUploadProgress(0));
 
@@ -59,31 +51,31 @@ function VideoUpload() {
       const file = targetFile.files[0];
 
       if (!file) {
-        toast.error("File is required");
+        toast.error('File is required');
         return;
       }
 
-      formdata.append("video_file", file);
+      formdata.append('video_file', file);
 
-      addVideo(formdata);
+      await addVideo(formdata);
 
       target.reset();
     }
   };
 
   useToastStatus(addStatus, {
-    successMessage: "Successfully added Video!",
-    errorMessage: "Failed to add Video",
+    successMessage: 'Successfully added Video!',
+    errorMessage: 'Failed to add Video',
   });
 
   useToastStatus(subStatus, {
-    successMessage: "Successfully added Subtitle!",
-    errorMessage: "Failed to add Subtitle",
+    successMessage: 'Successfully added Subtitle!',
+    errorMessage: 'Failed to add Subtitle',
   });
 
   useToastStatus(deleteStatus, {
-    successMessage: "Successfully deleted Video!",
-    errorMessage: "Failed to delete Video",
+    successMessage: 'Successfully deleted Video!',
+    errorMessage: 'Failed to delete Video',
   });
 
   const loading = isLoading || subLoading || deleteLoading;
@@ -104,12 +96,7 @@ function VideoUpload() {
           <form className="m-4" onSubmit={(e) => handleSubmit(e)}>
             <div className="flex gap-4 justify-between items-center ">
               <div className="h-6 flex gap-2 justify-start content-center">
-                <input
-                  className="h-8"
-                  type="file"
-                  id="file"
-                  accept="video/mp4"
-                />
+                <input className="h-8" type="file" id="file" accept="video/mp4" />
               </div>
 
               <div>

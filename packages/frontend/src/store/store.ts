@@ -1,8 +1,8 @@
-import { configureStore } from "@reduxjs/toolkit";
-import { videoApi } from "../services/video";
-import { setupListeners } from "@reduxjs/toolkit/query";
-import { subtitleApi } from "../services/subtitle";
-import globalReducer from "./globalSlice";
+import { configureStore } from '@reduxjs/toolkit';
+import { videoApi } from '../services/video';
+import { setupListeners } from '@reduxjs/toolkit/query';
+import { subtitleApi } from '../services/subtitle';
+import globalReducer from './globalSlice';
 
 export const store = configureStore({
   reducer: {
@@ -11,9 +11,7 @@ export const store = configureStore({
     [subtitleApi.reducerPath]: subtitleApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware()
-      .concat(videoApi.middleware)
-      .concat(subtitleApi.middleware),
+    getDefaultMiddleware().concat(videoApi.middleware).concat(subtitleApi.middleware),
 });
 
 setupListeners(store.dispatch);

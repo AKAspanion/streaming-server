@@ -1,20 +1,20 @@
-import axios from "axios";
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { baseUrl } from "@config/api";
-import { setVideoUploadProgress } from "@store/globalSlice";
+import axios from 'axios';
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { baseUrl } from '@config/api';
+import { setVideoUploadProgress } from '@store/globalSlice';
 
 export const videoApi = createApi({
-  reducerPath: "videoApi",
+  reducerPath: 'videoApi',
   baseQuery: fetchBaseQuery({ baseUrl }),
-  tagTypes: ["Video"],
+  tagTypes: ['Video'],
   endpoints: (builder) => ({
     getVideoById: builder.query<{ data: VideoType }, string>({
       query: (id) => `video/${id}`,
-      providesTags: ["Video"],
+      providesTags: ['Video'],
     }),
     getVideos: builder.query<{ data: VideoType[] }, string>({
       query: () => `video`,
-      providesTags: ["Video"],
+      providesTags: ['Video'],
     }),
     addVideo: builder.mutation<VideoType, FormData>({
       queryFn: async (body, api) => {
@@ -22,32 +22,31 @@ export const videoApi = createApi({
           const result = await axios.post(`${baseUrl}/video`, body, {
             onUploadProgress: (upload) => {
               if (upload.total) {
-                const uploadloadProgress = Math.round(
-                  (100 * upload.loaded) / upload.total
-                );
+                const uploadloadProgress = Math.round((100 * upload.loaded) / upload.total);
                 api.dispatch(setVideoUploadProgress(uploadloadProgress));
               }
             },
           });
           return { data: result.data };
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (axiosError: any) {
-          let err = axiosError;
+          const err = axiosError;
           return {
             error: {
-              status: err.response?.status,
-              data: err.response?.data || err.message,
+              status: err?.response?.status,
+              data: err?.response?.data || err.message,
             },
           };
         }
       },
-      invalidatesTags: ["Video"],
+      invalidatesTags: ['Video'],
     }),
     deleteVideo: builder.mutation<VideoType, string>({
       query: (id) => ({
         url: `video/${id}`,
-        method: "DELETE",
+        method: 'DELETE',
       }),
-      invalidatesTags: ["Video"],
+      invalidatesTags: ['Video'],
     }),
   }),
 });

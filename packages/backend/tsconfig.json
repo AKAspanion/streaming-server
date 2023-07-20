@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "outDir": "./dist",
+    "outDir": "./dist/src",
     "strictPropertyInitialization": false,
     "skipLibCheck": true,
     "types": ["../../global.d.ts"],
@@ -34,7 +34,7 @@
     },
     "plugins": [{ "transform": "typescript-transform-paths" }]
   },
-  "include": ["src", "index.ts"],
+  "include": ["src", "src/index.ts"],
   "plugins": [{ "transform": "typescript-transform-paths" }],
   "exclude": [
     "node_modules",

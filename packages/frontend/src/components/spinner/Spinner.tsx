@@ -5,12 +5,7 @@ type SpinnerProps = {
 function Spinner(props: SpinnerProps) {
   const { full } = props;
   return (
-    <div
-      role="status"
-      className={
-        full ? "w-screen h-screen flex items-center justify-center" : ""
-      }
-    >
+    <div role="status" className={full ? 'w-screen h-screen flex items-center justify-center' : ''}>
       <svg
         aria-hidden="true"
         className="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-slate-600"

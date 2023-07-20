@@ -1,25 +1,25 @@
-import { subsDB, vidoesDB } from "@database/json";
-import { handleJSONDBDataError } from "@utils/error";
-import { AppError, HttpCode } from "@utils/exceptions";
-import { randomUUID } from "crypto";
-import { RequestHandler } from "express";
-import fs from "fs";
-import path from "path";
+import { subsDB, vidoesDB } from '@database/json';
+import { handleJSONDBDataError } from '@utils/error';
+import { AppError, HttpCode } from '@utils/exceptions';
+import { randomUUID } from 'crypto';
+import { RequestHandler } from 'express';
+import fs from 'fs';
+import path from 'path';
 
 export const getSubtitle: RequestHandler = async (req, res) => {
-  const id = req.params.id || "";
+  const id = req.params.id || '';
   try {
     const data = await subsDB.getData(`/${id}`);
     const fileName = `/${id}.wtt`;
 
     res.download(data.path, fileName);
   } catch (error) {
-    handleJSONDBDataError(error, id, "subtitle");
+    handleJSONDBDataError(error, id, 'subtitle');
   }
 };
 
 export const addSubtitle: RequestHandler = async (req, res) => {
-  const id = req.params.id || "";
+  const id = req.params.id || '';
   try {
     await vidoesDB.getData(`/${id}`);
 
@@ -29,7 +29,7 @@ export const addSubtitle: RequestHandler = async (req, res) => {
 
     return res.status(HttpCode.OK).send({ data });
   } catch (error) {
-    handleJSONDBDataError(error, id, "subtitle");
+    handleJSONDBDataError(error, id, 'subtitle');
   }
 };
 
@@ -44,11 +44,11 @@ export const addVideo: RequestHandler = async (req, res) => {
 };
 
 export const deleteVideo: RequestHandler = async (req, res) => {
-  const id = req.params.id || "";
+  const id = req.params.id || '';
   try {
     const data: VideoType = await vidoesDB.getData(`/${id}`);
 
-    const fullPath = path.resolve(__dirname + "../../../../" + data.path);
+    const fullPath = path.resolve(__dirname + '../../../../' + data.path);
 
     fs.unlink(fullPath, async (err) => {
       if (err) throw err; //handle your error the way you want to;
@@ -56,16 +56,14 @@ export const deleteVideo: RequestHandler = async (req, res) => {
 
     await vidoesDB.delete(`/${id}`);
 
-    return res
-      .status(HttpCode.OK)
-      .send({ message: "Video deleted successfully" });
+    return res.status(HttpCode.OK).send({ message: 'Video deleted successfully' });
   } catch (error) {
     handleJSONDBDataError(error, id);
   }
 };
 
 export const streamVideo: RequestHandler = async (req, res) => {
-  const id = req.params.id || "";
+  const id = req.params.id || '';
   try {
     // Ensure there is a range given for the video
     const range = req.headers.range;
@@ -74,23 +72,23 @@ export const streamVideo: RequestHandler = async (req, res) => {
     if (!range) {
       throw new AppError({
         httpCode: HttpCode.BAD_REQUEST,
-        description: "Requires Range header",
+        description: 'Requires Range header',
       });
     }
 
     const videoSize = fs.statSync(result.path).size;
 
     const CHUNK_SIZE = 10 ** 6; // 1MB
-    const start = Number(range.replace(/\D/g, ""));
+    const start = Number(range.replace(/\D/g, ''));
     const end = Math.min(start + CHUNK_SIZE, videoSize - 1);
 
     // Create headers
     const contentLength = end - start + 1;
     const headers = {
-      "Content-Range": `bytes ${start}-${end}/${videoSize}`,
-      "Accept-Ranges": "bytes",
-      "Content-Length": contentLength,
-      "Content-Type": "video/mp4",
+      'Content-Range': `bytes ${start}-${end}/${videoSize}`,
+      'Accept-Ranges': 'bytes',
+      'Content-Length': contentLength,
+      'Content-Type': 'video/mp4',
     };
 
     // HTTP Status 206 for Partial Content
@@ -120,7 +118,7 @@ export const getAllVideo: RequestHandler = async (_, res) => {
 };
 
 export const getVideo: RequestHandler = async (req, res) => {
-  const id = req.params.id || "";
+  const id = req.params.id || '';
   try {
     const data = await vidoesDB.getData(`/${id}`);
 

@@ -1,29 +1,24 @@
-import React, { FC, useMemo, useRef, useState } from "react";
-import { buttonVariant } from "@components/button";
-import { Link } from "react-router-dom";
-import { TrashIcon } from "@heroicons/react/24/solid";
-import { PlayIcon } from "@heroicons/react/24/solid";
-import Spinner from "@components/spinner/Spinner";
+import React, { FC, useMemo, useRef, useState } from 'react';
+import { buttonVariant } from '@components/button';
+import { Link } from 'react-router-dom';
+import { TrashIcon } from '@heroicons/react/24/solid';
+import { PlayIcon } from '@heroicons/react/24/solid';
+import Spinner from '@components/spinner/Spinner';
 
 interface VideoListItemProps {
   video: VideoType;
   loading: boolean;
-  onDelete: (v: VideoType) => void;
-  onSubtitle: (v: VideoType, srt?: File) => void;
+  onDelete: (v: VideoType) => Promise<void>;
+  onSubtitle: (v: VideoType, srt?: File) => Promise<void>;
 }
 
-const VideoListItem: FC<VideoListItemProps> = ({
-  video,
-  loading,
-  onDelete,
-  onSubtitle,
-}) => {
+const VideoListItem: FC<VideoListItemProps> = ({ video, loading, onDelete, onSubtitle }) => {
   const ref = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState(false);
-  const handleSubtitleLoad = async (e: any) => {
+  const handleSubtitleLoad = async (e: React.ChangeEvent<HTMLInputElement>) => {
     try {
       if (e.target.files) {
-        onSubtitle(video, e.target.files[0]);
+        await onSubtitle(video, e.target.files[0]);
       }
     } catch (e) {
       console.error(e);
@@ -43,14 +38,14 @@ const VideoListItem: FC<VideoListItemProps> = ({
 
   const details = useMemo(() => {
     return [
-      { name: "Original Name", value: video.originalname },
-      { name: "ID", value: video.id },
-      { name: "File Size", value: video.size },
-      { name: "Encoding", value: video.encoding },
-      { name: "Mime Type", value: video.mimetype },
-      { name: "Field Name", value: video.fieldname },
+      { name: 'Original Name', value: video.originalname },
+      { name: 'ID', value: video.id },
+      { name: 'File Size', value: video.size },
+      { name: 'Encoding', value: video.encoding },
+      { name: 'Mime Type', value: video.mimetype },
+      { name: 'Field Name', value: video.fieldname },
     ];
-  }, []);
+  }, [video.encoding, video.fieldname, video.id, video.mimetype, video.originalname, video.size]);
 
   return (
     <div className="bg-slate-800 p-2 px-4 rounded-md  mb-4">
@@ -63,7 +58,7 @@ const VideoListItem: FC<VideoListItemProps> = ({
           <div
             style={
               {
-                "--max-list-item": "calc(100vw - 240px)",
+                '--max-list-item': 'calc(100vw - 240px)',
               } as React.CSSProperties
             }
             className="flex items-center gap-4 justify-between"
@@ -100,10 +95,10 @@ const VideoListItem: FC<VideoListItemProps> = ({
             </div>
           </div>
           <div
-            style={{ gridTemplateColumns: "auto 1fr" }}
+            style={{ gridTemplateColumns: 'auto 1fr' }}
             className={
-              "bg-slate-900 rounded-md px-3 text-sm grid transition-all" +
-              (!open ? " h-0 overflow-hidden" : " h-auto py-2 my-2")
+              'bg-slate-900 rounded-md px-3 text-sm grid transition-all' +
+              (!open ? ' h-0 overflow-hidden' : ' h-auto py-2 my-2')
             }
           >
             {details.map(({ name, value }) => (
