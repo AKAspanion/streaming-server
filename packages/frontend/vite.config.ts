@@ -45,12 +45,14 @@ export default defineConfig(({ mode }) => {
 
 export const getIPv4Address = () => {
   const interfaces = os.networkInterfaces();
-  for (let interfaceKey in interfaces) {
+  for (const interfaceKey in interfaces) {
     const addressList = interfaces[interfaceKey];
-    for (let i = 0; i < addressList.length; i++) {
-      const address = addressList[i];
-      if (address.family === 'IPv4' && !address.internal) {
-        return address.address;
+    if (addressList) {
+      for (let i = 0; i < addressList.length; i++) {
+        const address = addressList[i];
+        if (address.family === 'IPv4' && !address.internal) {
+          return address.address;
+        }
       }
     }
   }
@@ -58,11 +60,11 @@ export const getIPv4Address = () => {
   return 'localhost';
 };
 
-const getEnvPath = (mode) => path.resolve(__dirname, `.env.${mode}`);
+const getEnvPath = (mode: string) => path.resolve(__dirname, `.env.${mode}`);
 
-const readEnvVars = (p) => fs.readFileSync(p, 'utf-8').split(os.EOL);
+const readEnvVars = (p: string) => fs.readFileSync(p, 'utf-8').split(os.EOL);
 
-const setEnvValue = (key, value, mode) => {
+const setEnvValue = (key: string, value: string, mode: string) => {
   const envFilePath = getEnvPath(mode);
   try {
     const envVars = readEnvVars(envFilePath);
@@ -74,7 +76,8 @@ const setEnvValue = (key, value, mode) => {
       envVars.push(`${key}=${value}`);
     }
     fs.writeFileSync(envFilePath, envVars.join(os.EOL));
-  } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
     if (error.code === 'ENOENT') {
       console.error(`ERROR: Env update failed. Please create this file \n${envFilePath}`);
     }

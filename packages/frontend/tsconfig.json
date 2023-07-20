@@ -40,6 +40,6 @@
       "@components": ["src/components"]
     }
   },
-  "include": ["src", ".eslintrc.cjs"],
+  "include": ["src", "vite.config.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

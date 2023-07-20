@@ -30,8 +30,9 @@ yarn-debug.log*
 yarn-error.log*
 package-lock.json
 
-# Backend binaries
-backend
+vite.config.ts
+.eslintrc.cjs
+tailwind.config.js
 
 # IDE config dirs
 .idea
