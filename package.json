@@ -8,7 +8,8 @@
     "start": "lerna run start --parallel",
     "preview": "lerna run preview --parallel",
     "format": "lerna run format --parallel",
-    "lint": "lerna run lint --parallel"
+    "lint": "lerna run lint --parallel",
+    "prepare": "husky install"
   },
   "workspaces": [
     "packages/*"
@@ -19,7 +20,10 @@
   "devDependencies": {
     "@types/express": "^4.17.17",
     "@types/node": "^20.4.2",
+    "eslint": "^8.45.0",
+    "husky": "^8.0.3",
     "lerna": "^7.1.4",
+    "lint-staged": "^13.2.3",
     "typescript": "^5.1.6"
   },
   "dependencies": {
