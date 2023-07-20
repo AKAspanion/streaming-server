@@ -4,3 +4,6 @@ _subs
 _videos
 dist
 build
+.env
+.env.production
+.env.development

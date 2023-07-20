@@ -7,11 +7,12 @@ import "@utils/process";
 import { requestLogger, appErrorHandler, notFoundHandler } from "@middleware";
 import { routes } from "@modules/index";
 import { getIPv4Address } from "@utils/ip";
+import dotenvConfig from "@config/dotenv";
 
-dotenv.config();
+dotenv.config(dotenvConfig);
 
 const app: Express = express();
-const port = process.env.PORT;
+const port = process.env.PORT || 5708;
 
 app.use(cors());
 app.use(requestLogger);
