@@ -8,14 +8,13 @@ import os from "os";
 export default defineConfig(({ mode }) => {
   const localIp = getIPv4Address();
   const env = loadEnv(mode, process.cwd(), "VITE_");
-  if (mode !== "production" && localIp && !env.VITE_BE_HOST) {
-    if (!env.VITE_BE_HOST) {
-      console.log("VITE_BE_HOST not found in env, adding local ip");
-      const host = `http://${localIp}`;
-      env.VITE_BE_HOST = host;
-      setEnvValue("VITE_BE_HOST", host);
-    }
+  if (env.VITE_REPLACE_NETWORK_IP === "true") {
+    console.log(`Replacing VITE_BE_HOST with Network IP in .env.${mode}`);
+    const host = `http://${localIp}`;
+    env.VITE_BE_HOST = host;
+    setEnvValue("VITE_BE_HOST", host, mode);
   }
+
   Object.assign(process.env, env);
 
   return {
@@ -59,13 +58,14 @@ export const getIPv4Address = () => {
   return "localhost";
 };
 
-const envFilePath = path.resolve(__dirname, ".env.development");
+const getEnvPath = (mode) => path.resolve(__dirname, `.env.${mode}`);
 
-const readEnvVars = () => fs.readFileSync(envFilePath, "utf-8").split(os.EOL);
+const readEnvVars = (p) => fs.readFileSync(p, "utf-8").split(os.EOL);
 
-const setEnvValue = (key, value) => {
+const setEnvValue = (key, value, mode) => {
+  const envFilePath = getEnvPath(mode);
   try {
-    const envVars = readEnvVars();
+    const envVars = readEnvVars(envFilePath);
     const targetLine = envVars.find((line) => line.split("=")[0] === key);
     if (targetLine !== undefined) {
       const targetLineIndex = envVars.indexOf(targetLine);
