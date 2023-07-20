@@ -6,6 +6,7 @@ import cors from "cors";
 import "@utils/process";
 import { requestLogger, appErrorHandler, notFoundHandler } from "@middleware";
 import { routes } from "@modules/index";
+import { getIPv4Address } from "@utils/ip";
 
 dotenv.config();
 
@@ -25,5 +26,8 @@ app.use(notFoundHandler);
 app.use(appErrorHandler);
 
 app.listen(port, () => {
-  console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
+  console.log(`   ⚡️ BE Server is ready`);
+  getIPv4Address().forEach((address) => {
+    console.log(`   ➜  ${address.type}: http://${address.address}:${port}/`);
+  });
 });
