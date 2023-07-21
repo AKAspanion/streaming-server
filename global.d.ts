@@ -22,3 +22,7 @@ declare type SubsType = {
   size: number;
   videoId: string;
 };
+
+declare type VideoTypeJSONDB = VideoType & {
+  sub?: SubsType;
+};
