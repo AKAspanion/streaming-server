@@ -68,7 +68,7 @@ function VIdeoPlay() {
       ) : error ? (
         <div className="p-4">{JSON.stringify(error)}</div>
       ) : (
-        <div id="">
+        <div className="bg-black h-screen">
           <video autoPlay controls ref={ref} id="myVideo">
             <source src={srcUrl} type="video/mp4" />
             <track label="English" kind="subtitles" srcLang="en" default />

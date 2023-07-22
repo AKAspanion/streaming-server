@@ -20,7 +20,10 @@ function createWindow() {
     show: false,
     frame: true,
     title: 'Streaming Server',
-    backgroundColor: '#ffffff',
+    backgroundColor: '#020202',
+    titleBarStyle: 'hiddenInset',
+    autoHideMenuBar: true,
+    icon: path.resolve('../packages/frontend/public/favicon.ico'),
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,

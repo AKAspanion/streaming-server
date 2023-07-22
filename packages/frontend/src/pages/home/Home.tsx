@@ -13,7 +13,7 @@ function Home() {
   }, [location.pathname]);
 
   return (
-    <div>
+    <div className="min-h-screen">
       <Outlet />
     </div>
   );

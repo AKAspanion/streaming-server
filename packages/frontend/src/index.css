@@ -25,3 +25,11 @@ body {
   margin: 0;
   padding: 0;
 }
+
+.light {
+  @apply bg-slate-100 text-slate-950;
+}
+
+.dark {
+  @apply bg-slate-900 text-slate-100;
+}

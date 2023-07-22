@@ -9,6 +9,7 @@ import Spinner from '@components/spinner/Spinner';
 import { useAppDispatch, useAppSelector } from '@store/hook';
 import Progress from '@components/progress/Progress';
 import { setVideoUploadProgress } from '@store/globalSlice';
+import Header from '@components/Header';
 
 function VideoUpload() {
   const videoLoadProgress = useAppSelector((s) => s?.globalData?.videoUploadProgress);
@@ -84,7 +85,7 @@ function VideoUpload() {
     <>
       {addLoading && videoLoadProgress ? (
         <div className="fixed w-screen">
-          <Progress value={videoLoadProgress} />
+          <Progress full value={videoLoadProgress} />
         </div>
       ) : loading ? (
         <div className="fixed">
@@ -92,7 +93,7 @@ function VideoUpload() {
         </div>
       ) : (
         <>
-          <h1 className="p-4 text-lg font-bold bg-slate-900">Upload Video</h1>
+          <Header title="Upload Video" />
           <form className="m-4" onSubmit={(e) => handleSubmit(e)}>
             <div className="flex gap-4 justify-between items-center ">
               <div className="h-6 flex gap-2 justify-start content-center">

@@ -28,16 +28,16 @@ export default function LazyHeader(props: { name?: string }) {
 
   return (
     <div
-      className="fixed bg-gradient-to-b from-black to-transparent  z-40 transition-all"
+      className="fixed bg-gradient-to-b from-black to-transparent  z-40 transition-all duration-500"
       style={{ opacity: `${visible ? 1 : 0}` }}
     >
       <div
         className="w-screen p-4 flex gap-4 justify-between"
         style={{ '--max-wasd': 'calc(100vw - 160px)' } as React.CSSProperties}
       >
-        <div className="test-white flex items-center gap-2 w-[var(--max-wasd)]">
+        <div className="text-white flex items-center gap-2 w-[var(--max-wasd)]">
           <Link to="/" className="w-5">
-            <ArrowLeftIcon className="test-white w-5" />
+            <ArrowLeftIcon className="text-white w-5" />
           </Link>
           <div className="text-md overflow-hidden overflow-ellipsis whitespace-nowrap">{name}</div>
         </div>
@@ -45,6 +45,7 @@ export default function LazyHeader(props: { name?: string }) {
           Upload
         </Link>
       </div>
+      <div className="h-5" />
     </div>
   );
 }

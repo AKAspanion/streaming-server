@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { TrashIcon } from '@heroicons/react/24/solid';
 import { PlayIcon } from '@heroicons/react/24/solid';
 import Spinner from '@components/spinner/Spinner';
+import Button from '@components/button/Button';
 
 interface VideoListItemProps {
   video: VideoType;
@@ -48,7 +49,7 @@ const VideoListItem: FC<VideoListItemProps> = ({ video, loading, onDelete, onSub
   }, [video.encoding, video.fieldname, video.id, video.mimetype, video.originalname, video.size]);
 
   return (
-    <div className="bg-slate-800 p-2 px-4 rounded-md  mb-4">
+    <div className="bg-slate-300 dark:bg-slate-800 p-2 px-4 rounded-md  mb-4">
       {loading ? (
         <div className="flex justify-center">
           <Spinner />
@@ -71,14 +72,14 @@ const VideoListItem: FC<VideoListItemProps> = ({ video, loading, onDelete, onSub
               {video.originalname}
             </div>
             <div className="text-lg flex">
-              <div {...buttonVariant()} onClick={() => openFile()}>
+              <Button onClick={() => openFile()}>
                 <p className="font-bold">CC</p>
-              </div>
-              <div {...buttonVariant()} onClick={() => onDelete(video)}>
+              </Button>
+              <Button onClick={() => onDelete(video)}>
                 <div className="w-5">
                   <TrashIcon />
                 </div>
-              </div>
+              </Button>
               <Link {...buttonVariant()} to={`/video-play/${video.id}`}>
                 <div className="w-5">
                   <PlayIcon />
@@ -97,7 +98,7 @@ const VideoListItem: FC<VideoListItemProps> = ({ video, loading, onDelete, onSub
           <div
             style={{ gridTemplateColumns: 'auto 1fr' }}
             className={
-              'bg-slate-900 rounded-md px-3 text-sm grid transition-all' +
+              'dark:bg-slate-900 bg-slate-200 rounded-md px-3 text-sm grid transition-all' +
               (!open ? ' h-0 overflow-hidden' : ' h-auto py-2 my-2')
             }
           >
