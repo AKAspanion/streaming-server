@@ -12,9 +12,10 @@ module.exports = {
       env: {
         node: true,
       },
-      files: ['.eslintrc.{js,cjs}'],
+      files: ['.eslintrc.{js,cjs}', 'electron.js'],
       parserOptions: {
         sourceType: 'script',
+        sourceType: 'module',
       },
     },
     {

@@ -18,6 +18,7 @@ export default defineConfig(({ mode }) => {
   Object.assign(process.env, env);
 
   return {
+    base: './',
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),

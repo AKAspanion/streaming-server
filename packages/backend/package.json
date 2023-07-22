@@ -10,14 +10,15 @@
     "lint": "eslint . --fix",
     "dev": "cross-env NODE_ENV=development nodemon -r tsconfig-paths/register src/index.ts",
     "preview": "yarn start",
-    "clean": "rm -rf dist",
+    "clean": "rm -rf dist && rm -rf build",
     "format": "prettier . --write",
     "make:dbdir": "cd dist && mkdir _db && mkdir _subs && mkdir _videos",
+    "copy:env": "copyfiles .env.production dist/",
     "prebuild": "yarn clean",
-    "postbuild": "yarn make:dbdir"
+    "postbuild": "yarn make:dbdir && yarn copy:env"
   },
   "keywords": [],
-  "author": "",
+  "author": "Ankit Kumar Pandit",
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",

@@ -1,13 +1,20 @@
 {
   "name": "streaming-server",
   "version": "1.0.0",
-  "description": "",
+  "description": "Streaming server application",
   "private": true,
+  "main": "electron/electron.js",
   "scripts": {
+    "dev:electron": "electron .",
+    "build:electron": "electron-builder build",
+    "prebuild:electron": "yarn clean:root && yarn build",
     "dev": "lerna run dev --parallel",
     "start": "lerna run start --parallel",
+    "build": "lerna run build --parallel",
     "preview": "lerna run preview --parallel",
     "format": "lerna run format --parallel",
+    "clean": "lerna run clean --parallel",
+    "clean:root": "rm -rf dist && rm -rf build",
     "lint": "lerna run lint --parallel",
     "prepare": "husky install"
   },
@@ -15,18 +22,39 @@
     "packages/*"
   ],
   "keywords": [],
-  "author": "",
+  "author": "Ankit Kumar Pandit",
   "license": "ISC",
+  "build": {
+    "files": [
+      "packages/frontend/dist/**/*",
+      "packages/frontend/node_modules",
+      "packages/backend/dist/**/*",
+      "packages/backend/node_modules",
+      "node_modules",
+      "package.json",
+      "electron"
+    ],
+    "win": {
+      "icon": "packages/frontend/dist/logo.png"
+    }
+  },
   "devDependencies": {
     "@types/express": "^4.17.17",
     "@types/node": "^20.4.2",
+    "copyfiles": "^2.4.1",
+    "electron": "25.3.1",
+    "electron-builder": "^24.4.0",
+    "electron-devtools-installer": "^3.2.0",
     "eslint": "^8.45.0",
     "husky": "^8.0.3",
     "lerna": "^7.1.4",
     "lint-staged": "^13.2.3",
+    "prettier": "^3.0.0",
     "typescript": "^5.1.6"
   },
   "dependencies": {
-    "prettier": "^3.0.0"
+    "dotenv": "^16.3.1",
+    "electron-is-dev": "^2.0.0",
+    "electron-log": "^4.4.8"
   }
 }
