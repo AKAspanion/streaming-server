@@ -164,10 +164,14 @@ function startBackend() {
       expressPath = path.join('./resources/app.asar', expressPath);
     }
 
-    log.info('Express path', expressPath);
+    const dataPath = path.join(appDataPath(), name);
 
     const expressAppProcess = cp.spawn(appName, [expressPath], {
-      env: { ELECTRON_RUN_AS_NODE: '1', NODE_ENV: 'production' },
+      env: {
+        NODE_ENV: 'production',
+        ELECTRON_RUN_AS_NODE: '1',
+        RESOURCE_PATH_IN_ELECTRON: dataPath,
+      },
     });
 
     redirectOutput(expressAppProcess.stdout);
@@ -202,6 +206,15 @@ async function exitBackend(callback) {
     proc.kill();
   });
   callback();
+}
+
+function appDataPath() {
+  return (
+    process.env.APPDATA ||
+    (process.platform == 'darwin'
+      ? process.env.HOME + '/Library/Preferences'
+      : process.env.HOME + '/.local/share')
+  );
 }
 
 function redirectOutput(x) {

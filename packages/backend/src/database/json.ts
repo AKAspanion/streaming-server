@@ -1,10 +1,10 @@
 import { IS_DEV } from '@config/app';
+import { getResourcePath } from '@utils/helper';
 import { JsonDB, Config } from 'node-json-db';
-import path from 'path';
 
-export const vidoesDB = new JsonDB(
-  new Config(path.resolve(__dirname, '../../_db/StreamingServerVideoDB'), true, IS_DEV, '/'),
-);
+const videoDBPath = getResourcePath('/_db/StreamingServerVideoDB');
+
+export const vidoesDB = new JsonDB(new Config(videoDBPath, true, IS_DEV, '/'));
 
 export const getVideoDataDB = async <T>(path: string) => {
   try {
