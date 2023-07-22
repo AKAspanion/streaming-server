@@ -34,6 +34,9 @@
       "package.json",
       "electron"
     ],
+    "nsis": {
+      "oneClick": false
+    },
     "win": {
       "icon": "packages/frontend/dist/logo.png"
     }
