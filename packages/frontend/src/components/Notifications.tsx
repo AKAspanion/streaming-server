@@ -29,7 +29,7 @@ const Notifications = () => {
           <div
             key={toast.id}
             ref={ref}
-            className="bg-slate-700 p-3 shadow-md rounded-lg absolute w-[300px]"
+            className="dark:bg-slate-800 bg-slate-50 p-3 shadow-md rounded-lg absolute w-[300px]"
             style={{
               transition: 'all 0.3s ease-out',
               opacity: toast.visible ? 1 : 0,

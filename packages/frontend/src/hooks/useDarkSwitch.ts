@@ -1,9 +1,9 @@
 import { useEffect, useCallback, useState } from 'react';
 
-const storageTheme: string = localStorage?.theme === 'dark' ? 'dark' : 'light';
+const getStorageTheme = () => (localStorage.getItem('theme') === 'dark' ? 'dark' : 'light');
 
 const useDarkSwitch = () => {
-  const [theme, setTheme] = useState<string>(storageTheme);
+  const [theme, setTheme] = useState<string>(getStorageTheme());
 
   const switchTheme = useCallback(() => {
     setTheme((t) => (t === 'dark' ? 'light' : 'dark'));

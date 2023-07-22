@@ -1,3 +1,5 @@
+import cs from 'classnames';
+
 type SpinnerProps = {
   full?: boolean;
 };
@@ -5,10 +7,16 @@ type SpinnerProps = {
 function Spinner(props: SpinnerProps) {
   const { full } = props;
   return (
-    <div role="status" className={full ? 'w-screen h-screen flex items-center justify-center' : ''}>
+    <div
+      role="status"
+      className={cs({
+        'fixed w-screen h-screen flex items-center justify-center bg-slate-100 dark:bg-slate-950':
+          full,
+      })}
+    >
       <svg
         aria-hidden="true"
-        className="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-slate-600"
+        className="w-8 h-8 text-slate-300 animate-spin dark:text-slate-700 fill-slate-600 dark:fill-slate-300"
         viewBox="0 0 100 101"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"

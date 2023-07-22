@@ -1,80 +1,93 @@
 import { useGetVideoByIdQuery } from '@services/video';
 import { baseUrl } from '@config/api';
 import { useParams } from 'react-router-dom';
-import { useEffect, useLayoutEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import LazyHeader from '@components/LazyHeader';
 import { useGetSubtitleByIdQuery } from '@services/subtitle';
 import Spinner from '@components/spinner/Spinner';
-
+import useToastStatus from '@hooks/useToastStatus';
 import './VideoPlay.css';
 
 function VIdeoPlay() {
   const ref = useRef<HTMLVideoElement>(null);
   const { videoId = '' } = useParams();
 
-  const { data, error, isLoading } = useGetVideoByIdQuery(videoId);
+  const { data: videoData, isLoading, status } = useGetVideoByIdQuery(videoId);
   const { data: subData, isLoading: subLoading } = useGetSubtitleByIdQuery(videoId);
 
-  const srcUrl = `${baseUrl}/video/stream/${videoId}`;
-
-  const handleSubtitleLoad = (textTrackUrl: string) => {
+  const handleSubtitleLoad = (trackText: string) => {
     try {
-      if (ref.current) {
-        const track = ref.current.children[1] as HTMLTrackElement; // Track element (which is child of a video element)
-        const video = ref.current; // Main video element
+      const videoRef = ref.current;
+      if (videoRef && trackText) {
+        const hasTrack = videoRef.getElementsByTagName('track');
 
-        if (track && video) {
-          track.src = textTrackUrl; // Set the converted URL to track's source
-          video.textTracks[0].mode = 'showing'; // Start showing subtitle to your track
+        if (hasTrack && hasTrack.length > 0) {
+          for (const e of hasTrack) {
+            videoRef.removeChild(e);
+          }
         }
+
+        const track = document.createElement('track');
+        track.src = trackText;
+        track.label = 'English';
+        track.srclang = 'en';
+        track.default = true;
+        videoRef.appendChild(track);
+
+        videoRef.textTracks[0].mode = 'showing';
       }
     } catch (e) {
       console.error(e);
     }
   };
 
-  useEffect(() => {
-    if (subData) {
-      handleSubtitleLoad(subData);
-    }
-  }, [subData]);
+  const handleSourceLoad = (videoResult: { data: VideoType }) => {
+    try {
+      const videoRef = ref.current;
+      if (videoRef && videoResult?.data) {
+        const hasSource = videoRef.getElementsByTagName('source');
 
-  useLayoutEffect(() => {
-    const videoRef = ref.current;
-    if (videoRef) {
-      setTimeout(async () => {
-        await videoRef?.play();
-      }, 1000);
+        if (hasSource && hasSource.length > 0) {
+          for (const e of hasSource) {
+            videoRef.removeChild(e);
+          }
+        }
 
-      window.addEventListener('blur', function () {
-        videoRef?.pause();
-      });
-      window.addEventListener('focus', async () => {
-        await videoRef?.play();
-      });
+        const source = document.createElement('source');
+        source.src = `${baseUrl}/video/stream/${videoResult?.data?.id}`;
+        source.type = videoResult?.data?.mimetype;
+        videoRef.appendChild(source);
+      }
+    } catch (e) {
+      console.error(e);
     }
-    return () => {
-      videoRef && videoRef.pause();
-    };
-  }, []);
+  };
 
   const loading = isLoading || subLoading;
 
+  useToastStatus(status, {
+    errorMessage: 'Failed to fetch video details',
+  });
+
+  useEffect(() => {
+    if (!loading && videoData) {
+      handleSourceLoad(videoData);
+    }
+  }, [loading, videoData]);
+
+  useEffect(() => {
+    if (!loading && subData) {
+      handleSubtitleLoad(subData);
+    }
+  }, [loading, subData]);
+
   return (
     <div>
-      <LazyHeader name={data?.data?.originalname} />
-      {loading ? (
-        <Spinner full />
-      ) : error ? (
-        <div className="p-4">{JSON.stringify(error)}</div>
-      ) : (
-        <div className="bg-black h-screen">
-          <video autoPlay controls ref={ref} id="myVideo">
-            <source src={srcUrl} type="video/mp4" />
-            <track label="English" kind="subtitles" srcLang="en" default />
-          </video>
-        </div>
-      )}
+      {loading && <Spinner full />}
+      <div className="bg-black h-screen">
+        <LazyHeader name={videoData?.data?.originalname} />
+        <video autoPlay controls ref={ref} id="myVideo" />
+      </div>
     </div>
   );
 }

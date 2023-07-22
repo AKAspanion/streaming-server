@@ -166,5 +166,5 @@ export const getVideo: RequestHandler = async (req, res) => {
     throw new AppError({ httpCode: HttpCode.BAD_REQUEST, description: 'Video not found' });
   }
 
-  return res.status(HttpCode.OK).send({ data });
+  return res.status(HttpCode.OK).send({ data: { ...data, id } });
 };

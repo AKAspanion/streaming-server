@@ -88,9 +88,7 @@ function VideoUpload() {
           <Progress full value={videoLoadProgress} />
         </div>
       ) : loading ? (
-        <div className="fixed">
-          <Spinner full />
-        </div>
+        <Spinner full />
       ) : (
         <>
           <Header title="Upload Video" />
