@@ -1,7 +1,7 @@
 import React, { FC, useMemo, useRef, useState } from 'react';
 import { buttonVariant } from '@components/button';
 import { Link } from 'react-router-dom';
-import { LinkIcon, TrashIcon } from '@heroicons/react/24/solid';
+import { ChatBubbleLeftEllipsisIcon, LinkIcon, TrashIcon } from '@heroicons/react/24/solid';
 import { PlayIcon } from '@heroicons/react/24/solid';
 import Spinner from '@components/spinner/Spinner';
 import Button from '@components/button/Button';
@@ -82,14 +82,14 @@ const VideoListItem: FC<VideoListItemProps> = ({ video, loading, onDelete, onSub
             </div>
             <div className="text-lg flex">
               <Button onClick={() => copyLink(`/video-play/${video.id}`)}>
-                <div title="Copy network link" className="w-5">
+                <div title="Copy network link" className="w-4 mt-0.5">
                   <LinkIcon />
                 </div>
               </Button>
               <Button onClick={() => openFile()}>
-                <p title="Add subtitle" className="font-bold">
-                  CC
-                </p>
+                <div title="Add subtitle" className="w-5">
+                  <ChatBubbleLeftEllipsisIcon />
+                </div>
               </Button>
               <Button onClick={() => onDelete(video)}>
                 <div title="Delete video" className="w-5">
