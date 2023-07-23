@@ -29,6 +29,8 @@
       "@modules": ["src/modules"],
       "@config/*": ["src/config/*"],
       "@config": ["src/config"],
+      "@static/*": ["src/static/*"],
+      "@static": ["src/static"],
       "@utils/*": ["src/utils/*"],
       "@utils": ["src/utils"]
     },

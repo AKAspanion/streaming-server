@@ -1,10 +1,13 @@
 import React, { FC, useMemo, useRef, useState } from 'react';
 import { buttonVariant } from '@components/button';
 import { Link } from 'react-router-dom';
-import { TrashIcon } from '@heroicons/react/24/solid';
+import { LinkIcon, TrashIcon } from '@heroicons/react/24/solid';
 import { PlayIcon } from '@heroicons/react/24/solid';
 import Spinner from '@components/spinner/Spinner';
 import Button from '@components/button/Button';
+import { toast } from 'react-hot-toast/headless';
+import { copyTextToClipboard } from '@utils/dom';
+import { baseUrl } from '@config/api';
 
 interface VideoListItemProps {
   video: VideoType;
@@ -31,6 +34,12 @@ const VideoListItem: FC<VideoListItemProps> = ({ video, loading, onDelete, onSub
     if (subInputDom) {
       subInputDom.click();
     }
+  };
+
+  const copyLink = async (txt: string) => {
+    const res = await copyTextToClipboard(baseUrl + '/#' + txt);
+    if (res) toast.success('Network link copied');
+    else toast.error('Failed to copy link');
   };
 
   const handleDetails = () => {
@@ -72,16 +81,23 @@ const VideoListItem: FC<VideoListItemProps> = ({ video, loading, onDelete, onSub
               {video.originalname}
             </div>
             <div className="text-lg flex">
+              <Button onClick={() => copyLink(`/video-play/${video.id}`)}>
+                <div title="Copy network link" className="w-5">
+                  <LinkIcon />
+                </div>
+              </Button>
               <Button onClick={() => openFile()}>
-                <p className="font-bold">CC</p>
+                <p title="Add subtitle" className="font-bold">
+                  CC
+                </p>
               </Button>
               <Button onClick={() => onDelete(video)}>
-                <div className="w-5">
+                <div title="Delete video" className="w-5">
                   <TrashIcon />
                 </div>
               </Button>
               <Link {...buttonVariant()} to={`/video-play/${video.id}`}>
-                <div className="w-5">
+                <div title="Play video" className="w-5">
                   <PlayIcon />
                 </div>
               </Link>

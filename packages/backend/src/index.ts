@@ -4,11 +4,12 @@ import { dotenvConfig } from '@config/dotenv';
 dotenv.config(dotenvConfig);
 
 import 'express-async-errors';
-import express, { Express } from 'express';
 import cors from 'cors';
+import express, { Express } from 'express';
 import { requestLogger, appErrorHandler, notFoundHandler } from '@middleware';
 import { routes } from '@modules';
 import { getIPv4Address } from '@utils/ip';
+import { staticFiles } from '@static';
 import '@utils/process';
 
 const app: Express = express();
@@ -23,6 +24,7 @@ Object.keys(routes).forEach((key) => {
   app.use(key, routes[key]);
 });
 
+app.use(staticFiles);
 app.use(notFoundHandler);
 app.use(appErrorHandler);
 
