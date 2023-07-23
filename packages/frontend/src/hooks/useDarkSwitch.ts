@@ -12,8 +12,11 @@ const useDarkSwitch = () => {
   useEffect(() => {
     try {
       const root = window.document.documentElement;
-      root.removeAttribute('class');
-      root.classList.add(theme);
+      if (theme === 'dark') {
+        root.classList.add('dark');
+      } else {
+        root.classList.remove('dark');
+      }
       localStorage.setItem('theme', theme);
     } catch (error) {
       //

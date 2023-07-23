@@ -14,6 +14,8 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
+
+  @apply bg-slate-100 text-slate-950;
 }
 
 a {
@@ -24,10 +26,6 @@ a {
 body {
   margin: 0;
   padding: 0;
-}
-
-.light {
-  @apply bg-slate-100 text-slate-950;
 }
 
 .dark {
