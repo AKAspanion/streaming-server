@@ -19,7 +19,7 @@ function createWindow() {
     minHeight: dimensions.app.height,
     show: false,
     frame: true,
-    title: 'Streaming Server',
+    title: 'Video Streaming Server',
     backgroundColor: '#020202',
     titleBarStyle: 'hiddenInset',
     autoHideMenuBar: true,

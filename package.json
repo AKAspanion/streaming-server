@@ -1,7 +1,7 @@
 {
   "name": "streaming-server",
   "version": "1.0.0",
-  "description": "Streaming server application",
+  "description": "A server to stream videos in local network",
   "private": true,
   "main": "electron/electron.js",
   "scripts": {
@@ -16,7 +16,8 @@
     "clean": "lerna run clean --parallel",
     "clean:root": "rm -rf dist && rm -rf build",
     "lint": "lerna run lint --parallel",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "deploy": "gh-pages -d github"
   },
   "workspaces": [
     "packages/*"
@@ -40,7 +41,7 @@
       "oneClick": false,
       "perMachine": true,
       "allowToChangeInstallationDirectory": true,
-      "uninstallDisplayName": "Streaming Server"
+      "uninstallDisplayName": "Video Streaming Server"
     },
     "win": {
       "icon": "packages/frontend/dist/logo.png"
@@ -54,6 +55,7 @@
     "electron-builder": "^24.4.0",
     "electron-devtools-installer": "^3.2.0",
     "eslint": "^8.45.0",
+    "gh-pages": "^5.0.0",
     "husky": "^8.0.3",
     "lerna": "^7.1.4",
     "lint-staged": "^13.2.3",
