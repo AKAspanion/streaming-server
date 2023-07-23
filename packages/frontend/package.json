@@ -16,7 +16,8 @@
     "prepreview": "yarn build",
     "clean": "rm -rf dist && rm -rf build",
     "format": "prettier . --write",
-    "prebuild": "yarn clean"
+    "predev": "yarn",
+    "prebuild": "yarn && yarn clean"
   },
   "keywords": [],
   "author": "Ankit Kumar Pandit",

@@ -161,7 +161,7 @@ function startBackend() {
   try {
     log.info('Backend starting');
     const appName = app.getPath('exe');
-    let expressPath = './packages/backend/dist/src/index.js';
+    let expressPath = './packages/backend/dist/index.js';
 
     if (appName.endsWith(`${name}.exe`)) {
       expressPath = path.join('./resources/app.asar', expressPath);

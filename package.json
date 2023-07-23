@@ -25,17 +25,22 @@
   "author": "Ankit Kumar Pandit",
   "license": "ISC",
   "build": {
+    "appId": "com.spanion.streaming-server",
+    "copyright": "Copyright © 2023 Ankit Kumar Pandit",
     "files": [
       "packages/frontend/dist/**/*",
-      "packages/frontend/node_modules",
+      "packages/frontend/package.json",
       "packages/backend/dist/**/*",
-      "packages/backend/node_modules",
-      "node_modules",
+      "packages/backend/package.json",
+      "**/node_modules/**/*",
       "package.json",
       "electron"
     ],
     "nsis": {
-      "oneClick": false
+      "oneClick": false,
+      "perMachine": true,
+      "allowToChangeInstallationDirectory": true,
+      "uninstallDisplayName": "Streaming Server"
     },
     "win": {
       "icon": "packages/frontend/dist/logo.png"

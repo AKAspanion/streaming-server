@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "outDir": "./dist/src",
+    "outDir": "./build/src",
     "strictPropertyInitialization": false,
     "skipLibCheck": true,
     "types": ["../../global.d.ts"],
