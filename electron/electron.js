@@ -8,7 +8,7 @@ const { name } = require('../package.json');
 let mainWindow;
 
 const dimensions = {
-  app: { width: 1350, height: 800 },
+  app: { width: 800, height: 600 },
 };
 
 function createWindow() {
@@ -161,14 +161,13 @@ function startBackend() {
   try {
     log.info('Backend starting');
     const appName = app.getPath('exe');
-    let expressPath = './packages/backend/dist/index.js';
 
-    if (appName.endsWith(`${name}.exe`)) {
-      expressPath = path.join('./resources/app.asar', expressPath);
-    }
+    const expressPath = path.join('./resources/app.asar', './packages/backend/dist/index.js');
 
     const dataPath = path.join(appDataPath(), name);
 
+    log.info('App Name', appName);
+    log.info('Express Path', expressPath);
     const expressAppProcess = cp.spawn(appName, [expressPath], {
       env: {
         NODE_ENV: 'production',

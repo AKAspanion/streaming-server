@@ -26,6 +26,7 @@
   "author": "Ankit Kumar Pandit",
   "license": "ISC",
   "build": {
+    "productName": "Video Streaming Server",
     "appId": "com.spanion.streaming-server",
     "copyright": "Copyright © 2023 Ankit Kumar Pandit",
     "files": [
