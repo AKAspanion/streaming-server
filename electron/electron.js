@@ -1,4 +1,12 @@
-const { app, ipcMain, BrowserWindow, globalShortcut } = require('electron');
+const {
+  app,
+  ipcMain,
+  BrowserWindow,
+  nativeImage,
+  Menu,
+  Tray,
+  globalShortcut,
+} = require('electron');
 const isDev = require('electron-is-dev');
 const log = require('electron-log');
 const cp = require('child_process');
@@ -8,10 +16,14 @@ const { name } = require('../package.json');
 let mainWindow;
 
 const dimensions = {
-  app: { width: 800, height: 600 },
+  app: { width: 1200, height: 720 },
 };
 
 function createWindow() {
+  if (!tray) {
+    createTray();
+  }
+
   mainWindow = new BrowserWindow({
     width: dimensions.app.width,
     height: dimensions.app.height,
@@ -81,11 +93,7 @@ app.whenReady().then(() => {
 });
 
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    exitBackend(() => {
-      app.quit();
-    });
-  }
+  app.hide();
 });
 
 app.on('activate', () => {
@@ -95,7 +103,7 @@ app.on('activate', () => {
 });
 
 ipcMain.on('close-app', () => {
-  app.quit();
+  app.hide();
 });
 
 ipcMain.on('maximize', () => {
@@ -124,24 +132,20 @@ if (!gotTheLock) {
   app.quit();
 } else {
   app.on('second-instance', () => {
-    // Someone tried to run a second instance, we should focus our window.
     if (mainWindow) {
       if (mainWindow.isMinimized()) mainWindow.restore();
       mainWindow.focus();
     }
   });
 
-  // Create myWindow, load the rest of the app, etc...
   app.on('ready', () => {
     log.info('App starting');
 
     if (!isDev) {
       startBackend();
-      // startLocalBackend();
     }
 
     if (!isDev) {
-      // Disable some shortcuts
       globalShortcut.register('Control+Shift+I', () => {
         return false;
       });
@@ -179,8 +183,6 @@ function startBackend() {
     redirectOutput(expressAppProcess.stdout);
     redirectOutput(expressAppProcess.stderr);
 
-    // const expressAppProcess = cp.fork(bePath, { stdio: 'overlapped' });
-    // // const expressAppProcess = cp.spawn('node', [bePath]);
     processes.push(expressAppProcess);
 
     expressAppProcess.on('uncaughtException', function (err) {
@@ -191,7 +193,6 @@ function startBackend() {
       log.error('Backend error', error);
     });
 
-    // close parent process when server closes
     expressAppProcess.on('exit', (code) => {
       log.info('Exit Server', code);
       process.exit();
@@ -226,7 +227,6 @@ function redirectOutput(x) {
       .split('\n')
       .forEach((line) => {
         if (line !== '') {
-          // regex from: http://stackoverflow.com/a/29497680/170217
           // REGEX to Remove all ANSI colors/styles from strings
           let serverLogEntry = line.replace(
             /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
@@ -239,4 +239,29 @@ function redirectOutput(x) {
         }
       });
   });
+}
+
+let tray = null;
+function createTray() {
+  const icon = path.join(__dirname, '../packages/frontend/dist/logo.png');
+  const trayicon = nativeImage.createFromPath(icon);
+  tray = new Tray(trayicon.resize({ width: 16 }));
+  const contextMenu = Menu.buildFromTemplate([
+    {
+      label: 'Open Server',
+      click: () => {
+        createWindow();
+      },
+    },
+    {
+      label: 'Quit',
+      click: () => {
+        exitBackend(() => {
+          app.quit();
+        });
+      },
+    },
+  ]);
+
+  tray.setContextMenu(contextMenu);
 }

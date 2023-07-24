@@ -91,7 +91,7 @@ function VideoUpload() {
         <Spinner full />
       ) : (
         <>
-          <Header title="Upload Video" />
+          <Header title="Streaming Server" />
           <form className="m-4" onSubmit={(e) => handleSubmit(e)}>
             <div className="flex gap-4 justify-between items-center ">
               <div className="h-6 flex gap-2 justify-start content-center">
