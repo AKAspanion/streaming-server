@@ -24,7 +24,7 @@ function Home() {
         </div>
         <div className="">
           <Breadcrumbs />
-          <div className="w-[var(--content-width)]  h-[var(--content-height)] relative">
+          <div className="w-[var(--content-width)]  h-[var(--content-height)] relative overflow-y-auto">
             <Outlet />
           </div>
         </div>

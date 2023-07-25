@@ -47,3 +47,13 @@ export const pushMediaDB = async <T>(path: string, body: T) => {
     return { error };
   }
 };
+
+export const getMediaDataDB = async <T>(path: string) => {
+  try {
+    const data: T = await mediaDB.getData(path);
+
+    return { error: undefined, data };
+  } catch (error) {
+    return { error, data: undefined };
+  }
+};

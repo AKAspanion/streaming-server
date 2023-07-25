@@ -58,15 +58,20 @@ declare type FileLocationType = {
   isFile?: boolean;
 };
 
-declare type MediaTypeJSONDB = {
-  originalName: string;
-  mimeType: string;
+declare type MediaTypeJSONDB = MediaType & {
+  streams: any;
+  format: any;
+  chapters: any;
   thumbnail: {
     path: string;
     name: string;
   };
-  parsedData: any;
-  streams: any;
+};
+
+declare type MediaType = {
+  id: string;
   format: any;
-  chapters: any;
+  parsedData: any;
+  originalName: string;
+  mimeType: string;
 };

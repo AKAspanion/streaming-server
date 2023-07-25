@@ -31,7 +31,7 @@ export const createVideoThumbnail = (pathToFile: string, filename: string) =>
         pathToSnapshot,
       )
       .on('end', () => {
-        resolve({ thumbnailPath, name: thumbnailFile });
+        resolve({ path: thumbnailPath, name: thumbnailFile });
       })
       .on('error', (err: any) => {
         return reject(new Error(err));

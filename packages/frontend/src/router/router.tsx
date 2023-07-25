@@ -59,42 +59,30 @@ export const routes: RouteObject[] = [
       },
       {
         path: '/manage-media',
-        element: <ManageMedia />,
+        element: <Empty />,
         handle: {
           name: 'Manage Media',
           icon: <FolderIcon />,
+          crumb: [() => ({ to: '/manage-media', label: 'Manage Media' })],
         },
         children: [
           {
-            path: 'video-play/:videoId',
-            element: <div>Manage Media</div>,
+            path: '',
+            element: <ManageMedia />,
+            handle: {
+              hide: true,
+              name: 'Media List',
+              crumb: [() => ({ to: 'manage-media', label: 'Media List' })],
+            },
+          },
+          {
+            path: ':mediaId/details',
+            element: <ManageMedia />,
             handle: {
               hide: true,
               name: 'Video Watch',
-              crumb: () => ({ to: 'manage-media', label: 'Manage Media' }),
+              crumb: [() => ({ to: 'manage-media', label: 'Manage Media' })],
             },
-            children: [
-              {
-                path: 'video-play/:videoId',
-                element: <div>Media Details</div>,
-                handle: {
-                  hide: true,
-                  name: 'Video Watch 2',
-                  crumb: () => ({ to: 'manage-media', label: 'Manage Media' }),
-                },
-                children: [
-                  {
-                    path: 'video-play/:videoId',
-                    element: <div>Media Details</div>,
-                    handle: {
-                      hide: true,
-                      name: 'Video Watch 3',
-                      crumb: () => ({ to: 'manage-media', label: 'Manage Media' }),
-                    },
-                  },
-                ],
-              },
-            ],
           },
         ],
       },
