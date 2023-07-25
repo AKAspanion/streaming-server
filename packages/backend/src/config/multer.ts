@@ -30,7 +30,7 @@ const multerSubsStorage = multer.diskStorage({
 export const uploadVideo = multer({
   storage: multerVideoStorage,
   fileFilter: (req, file, cb) => {
-    const allowed = ['mp4', 'mkv'];
+    const allowed = ['mp4', 'x-matroska'];
     if (allowed.includes(file.mimetype.split('/')[1])) {
       cb(null, true);
     } else {

@@ -2,7 +2,7 @@ import { RouteObject, createHashRouter } from 'react-router-dom';
 import VideoPlay from '@pages/video-play/VideoPlay';
 import VideoUpload from '@pages/video-upload/VideoUpload';
 import Home from '@pages/home/Home';
-import { HomeIcon } from '@heroicons/react/24/solid';
+import { FolderIcon, HomeIcon } from '@heroicons/react/24/solid';
 import Empty from '../layout/Empty';
 
 export const routes: RouteObject[] = [
@@ -26,6 +26,7 @@ export const routes: RouteObject[] = [
             element: <VideoUpload />,
             handle: {
               name: 'Video List',
+              icon: <FolderIcon />,
               crumb: [
                 () => ({ to: '/', label: 'Home' }),
                 () => ({ to: 'video-upload', label: 'Video List' }),
@@ -57,9 +58,10 @@ export const routes: RouteObject[] = [
       },
       {
         path: '/manage-media',
-        element: <div>Manage Media</div>,
+        element: <VideoUpload />,
         handle: {
           name: 'Manage Media',
+          icon: <FolderIcon />,
         },
         children: [
           {

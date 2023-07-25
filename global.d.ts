@@ -45,3 +45,26 @@ declare type SubsType = {
 declare type VideoTypeJSONDB = VideoType & {
   sub?: SubsType;
 };
+
+declare type PathLocationType = 'directory' | 'file';
+
+declare type FileLocationType = {
+  path: string;
+  name: string;
+  type: PathLocationType;
+  ext?: string;
+  stat?: Stats;
+};
+
+declare type MediaTypeJSONDB = {
+  originalName: string;
+  mimeType: string;
+  thumbnail: {
+    path: string;
+    name: string;
+  };
+  parsedData: any;
+  streams: any;
+  format: any;
+  chapters: any;
+};
