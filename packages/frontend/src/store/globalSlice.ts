@@ -16,9 +16,6 @@ export const globalSlice = createSlice({
       };
     },
     setSidebarOpen: (state, action) => {
-      const flag = !!action.payload;
-      document.documentElement.style.setProperty('--sidebar-width', flag ? '220px' : '64px');
-
       return {
         ...state,
         sidebarOpen: action.payload,

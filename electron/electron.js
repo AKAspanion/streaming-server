@@ -93,7 +93,11 @@ app.whenReady().then(() => {
 });
 
 app.on('window-all-closed', () => {
-  app.hide();
+  if (process.platform == 'darwin') {
+    app.hide();
+  }
+
+  mainWindow.hide();
 });
 
 app.on('activate', () => {
@@ -103,7 +107,11 @@ app.on('activate', () => {
 });
 
 ipcMain.on('close-app', () => {
-  app.hide();
+  if (process.platform == 'darwin') {
+    app.hide();
+  }
+
+  mainWindow.hide();
 });
 
 ipcMain.on('maximize', () => {
@@ -248,13 +256,21 @@ function createTray() {
   tray = new Tray(trayicon.resize({ width: 16 }));
   const contextMenu = Menu.buildFromTemplate([
     {
+      label: 'Video Streaming Server',
+      icon: trayicon.resize({ width: 16 }),
+      enabled: false,
+    },
+    {
+      type: 'separator',
+    },
+    {
       label: 'Open Server',
       click: () => {
         createWindow();
       },
     },
     {
-      label: 'Quit',
+      label: 'Exit',
       click: () => {
         exitBackend(() => {
           app.quit();

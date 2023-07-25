@@ -1,14 +1,17 @@
 import { RouterProvider } from 'react-router-dom';
 import { router } from '@router/router';
 import { Provider } from 'react-redux';
-import { store } from '@store/store';
+import { persistor, store } from '@store/store';
 import Notifications from '@components/Notifications';
+import { PersistGate } from 'redux-persist/integration/react';
 
 function App() {
   return (
     <Provider store={store}>
-      <RouterProvider router={router} />
-      <Notifications />
+      <PersistGate loading={null} persistor={persistor}>
+        <RouterProvider router={router} />
+        <Notifications />
+      </PersistGate>
     </Provider>
   );
 }
