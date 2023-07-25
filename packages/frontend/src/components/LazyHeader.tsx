@@ -28,7 +28,7 @@ export default function LazyHeader(props: { name?: string }) {
 
   return (
     <div
-      className="fixed bg-gradient-to-b from-black to-transparent  z-40 transition-all duration-500"
+      className="fixed top-0 left-0 bg-gradient-to-b from-black to-transparent  z-40 transition-all duration-500"
       style={{ opacity: `${visible ? 1 : 0}` }}
     >
       <div

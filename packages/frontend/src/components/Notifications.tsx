@@ -7,11 +7,7 @@ const Notifications = () => {
   const { startPause, endPause, calculateOffset, updateHeight } = handlers;
 
   return (
-    <div
-      style={{ position: 'fixed', bottom: 64, left: 16 }}
-      onMouseEnter={startPause}
-      onMouseLeave={endPause}
-    >
+    <div className="absolute bottom-16 left-4" onMouseEnter={startPause} onMouseLeave={endPause}>
       {toasts.map((toast) => {
         const offset = calculateOffset(toast, {
           reverseOrder: false,

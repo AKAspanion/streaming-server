@@ -1,5 +1,5 @@
 import cs from 'classnames';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useMemo } from 'react';
 import { Link, useMatches } from 'react-router-dom';
 import { ChevronRightIcon } from '@heroicons/react/24/outline';
@@ -24,18 +24,19 @@ function Breadcrumbs() {
 
   const crumbsLength = crumbs.length;
 
-  // const goBack = () => {
-  //   const backCrumb = crumbs[crumbsLength - 2];
-
-  //   if (backCrumb && backCrumb.to) {
-  //     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-  //     navigate(backCrumb.to);
-  //   }
-  // };
+  useEffect(() => {
+    document.documentElement.style.setProperty(
+      '--breadcrumbs-height',
+      crumbsLength ? '48px' : '0px',
+    );
+  }, [crumbsLength]);
 
   return crumbsLength === 0 ? null : (
     <div
-      className={cs('flex items-center gap-3 p-3 border-b dark:border-slate-700 border-slate-300')}
+      className={cs(
+        'flex items-center gap-3 p-3 border-b dark:border-slate-700 border-slate-300',
+        'h-[var(--breadcrumbs-height)]',
+      )}
     >
       {/* <IconButton onClick={goBack}>
         <div className="w-4">

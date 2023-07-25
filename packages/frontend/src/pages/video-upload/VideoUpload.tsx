@@ -81,16 +81,16 @@ function VideoUpload() {
   const loading = isLoading || subLoading || deleteLoading;
 
   return (
-    <>
+    <div>
       {addLoading && videoLoadProgress ? (
-        <div className="fixed w-screen">
+        <div className="absolute h-full w-full">
           <Progress full value={videoLoadProgress} />
         </div>
       ) : loading ? (
         <Spinner full />
       ) : (
         <>
-          <form className="m-4" onSubmit={(e) => handleSubmit(e)}>
+          <form className="p-4" onSubmit={(e) => handleSubmit(e)}>
             <div className="flex gap-4 justify-between items-center ">
               <div className="h-6 flex gap-2 justify-start content-center">
                 <input className="h-8" type="file" id="file" accept="video/mp4" />
@@ -101,7 +101,7 @@ function VideoUpload() {
               </div>
             </div>
           </form>
-          <div className="m-4">
+          <div className="p-4 pt-0">
             {parsedVideos.length === 0 && (
               <div className="flex flex-col items-center p-10">
                 <div className="text-3xl pb-1 text-yellow-400">⚠️</div>
@@ -122,7 +122,7 @@ function VideoUpload() {
           </div>
         </>
       )}
-    </>
+    </div>
   );
 }
 

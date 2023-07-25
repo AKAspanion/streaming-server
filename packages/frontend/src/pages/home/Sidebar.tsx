@@ -32,19 +32,21 @@ const Sidebar: FC<SidebarProps> = () => {
           <NavLink to={route.path || '/'}>
             {({ isActive }) => (
               <div
-                className={classNames('flex items-center cursor-pointer rounded-lg  mb-1', {
-                  'dark:text-green-500 text-green-600 bg-green-500 bg-opacity-20': isActive,
+                className={classNames('flex items-center cursor-pointer rounded-lg', {
+                  'dark:bg-slate-700 bg-slate-800 bg-opacity-10': isActive,
                   'dark:hover:bg-slate-600 hover:bg-slate-100': !isActive,
-                  'px-3 py-1 justify-between': sidebarOpen,
-                  'px-2 py-2 justify-center w-8 mx-1': !sidebarOpen,
+                  'px-3 py-2 justify-between': sidebarOpen,
+                  'px-3 py-2 justify-center w-10': !sidebarOpen,
                 })}
               >
                 <div className="flex items-center gap-3">
-                  <div className={classNames('w-4')}>
+                  <div className={classNames('w-5')}>
                     {!route?.handle?.icon ? <QuestionMarkCircleIcon /> : route?.handle?.icon}
                   </div>
 
-                  {sidebarOpen && <div className={classNames('')}>{route?.handle?.name}</div>}
+                  {sidebarOpen && (
+                    <div className={classNames('text-sm')}>{route?.handle?.name}</div>
+                  )}
                 </div>
                 {/* {route?.children && (
               <div className="w-4">
@@ -64,12 +66,12 @@ const Sidebar: FC<SidebarProps> = () => {
   return (
     <div className="bg-slate-200 select-none dark:bg-slate-800 border-r dark:border-slate-700 border-slate-300 h-full p-3">
       <div
-        className={classNames('flex items-center justify-between mb-4', {
-          'ml-1': !sidebarOpen,
-          'ml-3': sidebarOpen,
+        className={classNames('flex items-center justify-between mb-4 ml-1 w-10', {
+          'ml-0.5': !sidebarOpen,
+          'ml-1': sidebarOpen,
         })}
       >
-        <div className="w-8 h-8 rounded dark:bg-slate-500 bg-slate-50">
+        <div className="w-8 h-8 p-1 rounded dark:bg-slate-500 bg-slate-50">
           <img src="/logo.png" />
         </div>
         <div className="fixed left-4 bottom-3">

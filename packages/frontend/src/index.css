@@ -15,12 +15,13 @@
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
 
+  --breadcrumbs-height: 48px;
   --header-height: 36px;
 
   --sidebar-width: 220px;
-  --sidebar-height: calc(100vh - var(--header-height));
-  --content-width: calc(100vw - var(--sidebar-width));
-  --content-height: calc(100vh - 100px);
+  --sidebar-height: calc(100vh - var(--header-height, 0px));
+  --content-width: calc(100vw - var(--sidebar-width, 0px));
+  --content-height: calc(100vh - var(--header-height, 36px) - var(--breadcrumbs-height, 0px));
 
   @apply bg-slate-100 text-slate-950;
 }
@@ -38,6 +39,7 @@ body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 #root {

@@ -22,9 +22,11 @@ function Home() {
         <div className="w-[var(--sidebar-width)] h-[var(--sidebar-height)] overflow-auto">
           <Sidebar />
         </div>
-        <div className="w-[var(--content-width)]  h-[var(--content-height)]">
+        <div className="">
           <Breadcrumbs />
-          <Outlet />
+          <div className="w-[var(--content-width)]  h-[var(--content-height)] relative">
+            <Outlet />
+          </div>
         </div>
       </div>
     </div>

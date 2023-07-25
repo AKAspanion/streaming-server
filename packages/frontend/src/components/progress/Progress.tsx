@@ -10,7 +10,7 @@ function Progress(props: ProgressProps) {
   return (
     <div
       className={cs('h-1 w-full bg-slate-100 dark:bg-slate-950 transition-all', {
-        'fixed w-screen h-screen flex items-center justify-center': full,
+        'absolute w-full h-full flex items-center justify-center': full,
       })}
     >
       <div

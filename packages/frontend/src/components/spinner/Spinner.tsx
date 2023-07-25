@@ -10,7 +10,7 @@ function Spinner(props: SpinnerProps) {
     <div
       role="status"
       className={cs({
-        'fixed w-screen h-screen flex items-center justify-center bg-slate-100 dark:bg-slate-950':
+        'absolute w-full h-full flex items-center justify-center bg-slate-100 dark:bg-slate-950':
           full,
       })}
     >
