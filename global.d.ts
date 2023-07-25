@@ -54,6 +54,7 @@ declare type FileLocationType = {
   type: PathLocationType;
   ext?: string;
   stat?: Stats;
+  isFile?: boolean;
 };
 
 declare type MediaTypeJSONDB = {

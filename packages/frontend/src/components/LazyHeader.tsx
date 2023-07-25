@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { buttonVariant } from './button';
+import { buttonVariant } from './atoms/button';
 import { ArrowLeftIcon } from '@heroicons/react/20/solid';
 
 let lazyTimeout: NodeJS.Timeout;

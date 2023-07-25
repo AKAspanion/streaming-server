@@ -2,7 +2,7 @@ import useDarkSwitch from '@hooks/useDarkSwitch';
 import React from 'react';
 import { MinusIcon, MoonIcon, SunIcon, XMarkIcon } from '@heroicons/react/24/solid';
 
-import IconButton from '@components/icon-button/IconButton';
+import IconButton from '@components/atoms/icon-button/IconButton';
 import { cs } from '@utils/helpers';
 import './Header.css';
 import useIPCRenderer from '@hooks/useIPCRenderer';

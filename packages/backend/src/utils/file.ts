@@ -13,5 +13,5 @@ export const getFileType = (filepath: string) => {
   const stat = fs.statSync(filepath);
   const isFile = stat.isFile();
 
-  return isFile ? 'file' : 'directory';
+  return { type: isFile ? 'file' : ('directory' as PathLocationType), isFile };
 };

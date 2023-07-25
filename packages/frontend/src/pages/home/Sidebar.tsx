@@ -1,4 +1,4 @@
-import IconButton from '@components/icon-button/IconButton';
+import IconButton from '@components/atoms/icon-button/IconButton';
 import {
   ArrowLeftOnRectangleIcon,
   ArrowRightOnRectangleIcon,

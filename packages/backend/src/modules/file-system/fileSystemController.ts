@@ -10,35 +10,36 @@ const drivelist = require('drivelist');
 
 export const getFilesInPath: RequestHandler = async (req, res) => {
   const { dir } = req.body;
+  const drives: FileLocationType[] = [];
 
-  if (!dir) {
-    try {
-      const drives: FileLocationType[] = [];
-      const systemDrives: Drive[] = await drivelist.list();
+  try {
+    const systemDrives: Drive[] = await drivelist.list();
 
-      (systemDrives || []).forEach((d) => {
-        (d?.mountpoints || []).forEach((m) => {
-          drives.push({
-            path: m?.path,
-            name: m?.path,
-            type: 'directory',
-          });
+    (systemDrives || []).forEach((d) => {
+      (d?.mountpoints || []).forEach((m) => {
+        drives.push({
+          path: m?.path,
+          name: m?.path,
+          type: 'directory',
         });
       });
+    });
 
-      const homeDir = os.homedir();
-      drives.push({
-        path: homeDir,
-        name: homeDir,
-        type: 'directory',
-      });
-      return res.status(HttpCode.OK).send({ data: drives });
-    } catch (error) {
-      throw new AppError({
-        description: 'Directory not found',
-        httpCode: HttpCode.BAD_REQUEST,
-      });
-    }
+    const homeDir = os.homedir();
+    drives.push({
+      path: homeDir,
+      name: homeDir,
+      type: 'directory',
+    });
+  } catch (error) {
+    throw new AppError({
+      description: 'Directory not found',
+      httpCode: HttpCode.BAD_REQUEST,
+    });
+  }
+
+  if (!dir) {
+    return res.status(HttpCode.OK).send({ data: drives });
   } else {
     try {
       const files: FileLocationType[] = [];
@@ -53,7 +54,7 @@ export const getFilesInPath: RequestHandler = async (req, res) => {
           const ext = path.parse(filename).ext;
           const filepath = path.resolve(dir, filename);
 
-          files.push({ path: filepath, name, ext, type: getFileType(filepath) });
+          files.push({ path: filepath, name, ext, ...getFileType(filepath) });
         }
       });
 
@@ -65,10 +66,15 @@ export const getFilesInPath: RequestHandler = async (req, res) => {
         return a.type.localeCompare(b.type, undefined, { numeric: false, sensitivity: 'base' });
       });
 
+      const isRootDrive = drives.findIndex((d) => path.resolve(d.path) === path.resolve(dir));
+      const prevDir = isRootDrive !== -1 ? '' : path.resolve(dir, '..');
+
+      files.unshift({ name: '...', path: prevDir, type: 'directory', isFile: false });
+
       return res.status(HttpCode.OK).send({ data: files });
     } catch (error) {
       throw new AppError({
-        description: 'Directory not found',
+        description: 'Failed to load directory',
         httpCode: HttpCode.BAD_REQUEST,
       });
     }

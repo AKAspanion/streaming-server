@@ -1,10 +1,10 @@
 import React, { FC, useMemo, useRef, useState } from 'react';
-import { buttonVariant } from '@components/button';
+import { buttonVariant } from '@components/atoms/button';
 import { Link } from 'react-router-dom';
 import { ChatBubbleLeftEllipsisIcon, LinkIcon, TrashIcon } from '@heroicons/react/24/solid';
 import { PlayIcon } from '@heroicons/react/24/solid';
-import Spinner from '@components/spinner/Spinner';
-import Button from '@components/button/Button';
+import Spinner from '@components/atoms/spinner/Spinner';
+import Button from '@components/atoms/button/Button';
 import { toast } from 'react-hot-toast/headless';
 import { copyTextToClipboard } from '@utils/dom';
 import { baseUrl } from '@config/api';

@@ -1,13 +1,13 @@
 import React, { useMemo } from 'react';
 import { useAddVideoMutation, useDeleteVideoMutation, useGetVideosQuery } from '@services/video';
-import { buttonVariant } from '@components/button';
+import { buttonVariant } from '@components/atoms/button';
 import VideoListItem from './VideoListItem';
 import { useAddSubtitleMutation } from '@services/subtitle';
 import { toast } from 'react-hot-toast/headless';
 import useToastStatus from '@hooks/useToastStatus';
-import Spinner from '@components/spinner/Spinner';
+import Spinner from '@components/atoms/spinner/Spinner';
 import { useAppDispatch, useAppSelector } from '@store/hook';
-import Progress from '@components/progress/Progress';
+import Progress from '@components/atoms/progress/Progress';
 import { setVideoUploadProgress } from '@store/globalSlice';
 
 function VideoUpload() {

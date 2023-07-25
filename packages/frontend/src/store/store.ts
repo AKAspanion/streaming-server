@@ -6,6 +6,7 @@ import { persistReducer, persistStore } from 'redux-persist';
 import { videoApi } from '../services/video';
 import { subtitleApi } from '../services/subtitle';
 import globalReducer from './globalSlice';
+import { fileSystemApi } from '@services/file-system';
 
 const persistConfig = { key: 'streamin-server', storage };
 
@@ -16,9 +17,13 @@ export const store = configureStore({
     globalData: persistReducer(persistConfig, globalReducer),
     [videoApi.reducerPath]: videoApi.reducer,
     [subtitleApi.reducerPath]: subtitleApi.reducer,
+    [fileSystemApi.reducerPath]: fileSystemApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(videoApi.middleware).concat(subtitleApi.middleware),
+    getDefaultMiddleware()
+      .concat(videoApi.middleware)
+      .concat(subtitleApi.middleware)
+      .concat(fileSystemApi.middleware),
   devTools: process.env.NODE_ENV !== 'production',
 });
 

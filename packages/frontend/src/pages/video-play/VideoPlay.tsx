@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 import { useEffect, useRef } from 'react';
 import LazyHeader from '@components/LazyHeader';
 import { useGetSubtitleByIdQuery } from '@services/subtitle';
-import Spinner from '@components/spinner/Spinner';
+import Spinner from '@components/atoms/spinner/Spinner';
 import useToastStatus from '@hooks/useToastStatus';
 import './VideoPlay.css';
 

@@ -4,6 +4,7 @@ import VideoUpload from '@pages/video-upload/VideoUpload';
 import Home from '@pages/home/Home';
 import { FolderIcon, HomeIcon } from '@heroicons/react/24/solid';
 import Empty from '../layout/Empty';
+import ManageMedia from '@pages/manage-media/ManageMedia';
 
 export const routes: RouteObject[] = [
   {
@@ -58,7 +59,7 @@ export const routes: RouteObject[] = [
       },
       {
         path: '/manage-media',
-        element: <VideoUpload />,
+        element: <ManageMedia />,
         handle: {
           name: 'Manage Media',
           icon: <FolderIcon />,

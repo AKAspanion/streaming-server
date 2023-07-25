@@ -10,9 +10,9 @@ import { RequestHandler } from 'express';
 export const addMedia: RequestHandler = async (req, res) => {
   const { file } = req.body;
 
-  const fileType = getFileType(file);
+  const { type } = getFileType(file);
 
-  if (fileType === 'directory') {
+  if (type === 'directory') {
     throw new AppError({
       description: 'File path points to a directory',
       httpCode: HttpCode.BAD_REQUEST,
