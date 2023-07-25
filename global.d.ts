@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 declare type RouterMatcher = {
   id: string;
   pathname: string;

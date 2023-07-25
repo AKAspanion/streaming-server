@@ -11,7 +11,6 @@ function Breadcrumbs() {
     const crumbList: CrumbType[] = [];
     matches
       .filter((match) => Boolean((match.handle as RouterHandler)?.crumb))
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       .forEach((match) => {
         (match.handle as RouterHandler).crumb.forEach((c) => {
           const res = c(match.data);

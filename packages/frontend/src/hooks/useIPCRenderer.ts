@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 
 const useIPCRenderer = () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const renderRef = useRef<any>(null);
 
   useEffect(() => {
