@@ -5,6 +5,7 @@ import { copyTextToClipboard } from '@utils/dom';
 import { toast } from 'react-hot-toast/headless';
 import { FC } from 'react';
 import { InformationCircleIcon } from '@heroicons/react/24/outline';
+import { Link } from 'react-router-dom';
 
 interface MediaCardProps {
   media: MediaType;
@@ -13,7 +14,6 @@ interface MediaCardProps {
 const MediaCard: FC<MediaCardProps> = ({ media }) => {
   const copyLink = async (txt: string) => {
     const res = await copyTextToClipboard(baseUrl + '/#' + txt);
-    console.log(res);
     if (res) toast.success('Network link copied');
     else toast.error('Failed to copy link');
   };
@@ -43,9 +43,11 @@ const MediaCard: FC<MediaCardProps> = ({ media }) => {
         )}
         <div className="flex-1"></div>
         <div className="p-3 flex justify-end w-full gap-3">
-          <IconButton>
-            <InformationCircleIcon />
-          </IconButton>
+          <Link to={`/manage-media/${media.id}`}>
+            <IconButton>
+              <InformationCircleIcon />
+            </IconButton>
+          </Link>
           <IconButton onClick={() => copyLink(`/video-play/${media.id}`)}>
             <div className="w-3.5 mt-0.5 ml-0.5">
               <LinkIcon />

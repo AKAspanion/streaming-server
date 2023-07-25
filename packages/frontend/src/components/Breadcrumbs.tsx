@@ -53,7 +53,13 @@ function Breadcrumbs() {
           return (
             <React.Fragment key={crumb.label}>
               <Link to={crumb.to} className={cs({ '': isLast })}>
-                <p className={cs({ 'text-slate-500': !isLast })}>{crumb.label}</p>
+                <p
+                  className={cs({
+                    'text-slate-500 dark:hover:text-slate-100 hover:text-slate-950': !isLast,
+                  })}
+                >
+                  {crumb.label}
+                </p>
               </Link>
               <p className="text-slate-500 w-4">{isLast ? '' : <ChevronRightIcon />}</p>
             </React.Fragment>

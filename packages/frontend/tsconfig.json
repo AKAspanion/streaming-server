@@ -22,6 +22,8 @@
     "paths": {
       "@assets/*": ["src/assets/*"],
       "@assets": ["src/assets"],
+      "@layout/*": ["src/layout/*"],
+      "@layout": ["src/layout"],
       "@config/*": ["src/config/*"],
       "@config": ["src/config"],
       "@hooks/*": ["src/hooks/*"],

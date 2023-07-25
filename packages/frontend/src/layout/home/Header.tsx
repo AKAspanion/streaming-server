@@ -30,8 +30,15 @@ const Header: React.FC<HeaderProps> = ({ title }) => {
         'border-slate-300 border-b dark:border-slate-700 h-[var(--header-height)]',
       )}
     >
-      <div className="w-20"></div>
-      <h1 className={cs('header-text p-2 text-sm font-semibold flex-1 text-center')}>{title}</h1>
+      {ipcRenderer && <div className="w-20"></div>}
+      <h1
+        className={cs('header-text p-2 px-4 text-sm font-semibold flex-1', {
+          'text-left': !ipcRenderer,
+          'text-center': !!ipcRenderer,
+        })}
+      >
+        {title}
+      </h1>
       <div className="flex gap-1 px-2">
         <IconButton onClick={switchTheme}>
           <div className="w-4">{isDark ? <SunIcon /> : <MoonIcon />}</div>

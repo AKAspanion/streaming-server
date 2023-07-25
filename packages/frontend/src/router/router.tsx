@@ -1,56 +1,71 @@
-import { RouteObject, createHashRouter } from 'react-router-dom';
+import { Params, RouteObject, createHashRouter } from 'react-router-dom';
 import VideoPlay from '@pages/video-play/VideoPlay';
 import VideoUpload from '@pages/video-upload/VideoUpload';
-import Home from '@pages/home/Home';
-import { FolderIcon, HomeIcon } from '@heroicons/react/24/solid';
-import Empty from '../layout/Empty';
+import HomeLayout from '@layout/home/HomeLayout';
+import { FolderIcon, HomeIcon, MagnifyingGlassIcon } from '@heroicons/react/24/solid';
+import EmptyLayout from '@layout/empty/EmptyLayout';
 import ManageMedia from '@pages/manage-media/ManageMedia';
+import MediaDetails from '@pages/media-details/MediaDetails';
+import Home from '@pages/home/Home';
 
 export const routes: RouteObject[] = [
   {
     path: '/',
-    element: <Home />,
+    element: <HomeLayout />, // Home Layout
     handle: { name: 'Root', hide: true },
     children: [
       {
-        path: '/',
-        element: <Empty />,
-        handle: { name: 'Home', icon: <HomeIcon /> },
+        index: true,
+        element: <Home />, // Home
+        handle: {
+          name: 'Home',
+          icon: <HomeIcon />,
+          handle: {
+            crumb: [() => ({ to: '/', label: 'Home' })],
+          },
+        },
+      },
+      {
+        path: '/video-upload',
+        element: <EmptyLayout />,
+        handle: {
+          name: 'Manage Media',
+          icon: <FolderIcon />,
+          crumb: [() => ({ to: '/video-upload', label: 'Video Upload' })],
+        },
         children: [
           {
-            path: 'about',
-            element: <div>About</div>,
-            handle: { name: 'About', hide: true },
-          },
-          {
-            path: 'video-upload',
+            index: true,
             element: <VideoUpload />,
             handle: {
+              hide: true,
               name: 'Video List',
-              icon: <FolderIcon />,
-              crumb: [
-                () => ({ to: '/', label: 'Home' }),
-                () => ({ to: 'video-upload', label: 'Video List' }),
-              ],
+              crumb: [() => ({ to: '/video-upload', label: 'Video List' })],
             },
           },
+        ],
+      },
+
+      {
+        path: '/media-search',
+        element: <EmptyLayout />,
+        handle: {
+          name: 'Search Media',
+          icon: <MagnifyingGlassIcon />,
+        },
+        children: [
           {
-            path: 'video-details',
-            element: <div>Details</div>,
+            index: true,
+            element: <div className="p-3">Search</div>,
             handle: {
               hide: true,
-              name: 'Video Details',
-              crumb: [
-                () => ({ to: '/', label: 'Home' }),
-                () => ({ to: 'video-upload', label: 'Video List' }),
-                () => ({ to: 'video-details', label: 'Video Details' }),
-              ],
+              crumb: [() => ({ to: '/media-search', label: 'Search Media' })],
             },
           },
         ],
       },
       {
-        path: 'video-play/:videoId',
+        path: '/video-play/:videoId',
         element: <VideoPlay />,
         handle: {
           hide: true,
@@ -59,7 +74,7 @@ export const routes: RouteObject[] = [
       },
       {
         path: '/manage-media',
-        element: <Empty />,
+        element: <EmptyLayout />,
         handle: {
           name: 'Manage Media',
           icon: <FolderIcon />,
@@ -67,21 +82,27 @@ export const routes: RouteObject[] = [
         },
         children: [
           {
-            path: '',
+            index: true,
             element: <ManageMedia />,
             handle: {
               hide: true,
               name: 'Media List',
-              crumb: [() => ({ to: 'manage-media', label: 'Media List' })],
+              crumb: [() => ({ to: '/manage-media', label: 'Media List' })],
             },
           },
           {
-            path: ':mediaId/details',
-            element: <ManageMedia />,
+            path: '/manage-media/:mediaId',
+            element: <MediaDetails />,
+            loader: ({ params }) => params,
             handle: {
               hide: true,
-              name: 'Video Watch',
-              crumb: [() => ({ to: 'manage-media', label: 'Manage Media' })],
+              name: 'Media Details',
+              crumb: [
+                (p: Params<string>) => ({
+                  to: `/manage-media/${p.mediaId}`,
+                  label: 'Media Details',
+                }),
+              ],
             },
           },
         ],
