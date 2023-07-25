@@ -4,13 +4,16 @@ import { Drive } from 'drivelist';
 import path from 'path';
 import fs from 'fs';
 import os from 'os';
+import uniqBy from 'lodash.uniqby';
 import { getFileType } from '@utils/file';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const drivelist = require('drivelist');
 
+const allowedFiles = ['.mkv', '.mp4'];
+
 export const getFilesInPath: RequestHandler = async (req, res) => {
   const { dir } = req.body;
-  const drives: FileLocationType[] = [];
+  let drives: FileLocationType[] = [];
 
   try {
     const systemDrives: Drive[] = await drivelist.list();
@@ -26,11 +29,13 @@ export const getFilesInPath: RequestHandler = async (req, res) => {
     });
 
     const homeDir = os.homedir();
-    drives.push({
+    drives.unshift({
       path: homeDir,
       name: homeDir,
       type: 'directory',
     });
+
+    drives = uniqBy(drives, 'path');
   } catch (error) {
     throw new AppError({
       description: 'Directory not found',
@@ -42,7 +47,7 @@ export const getFilesInPath: RequestHandler = async (req, res) => {
     return res.status(HttpCode.OK).send({ data: drives });
   } else {
     try {
-      const files: FileLocationType[] = [];
+      let files: FileLocationType[] = [];
 
       fs.readdirSync(dir).forEach((filename) => {
         const isSystem = filename.includes('System Volume Information');
@@ -50,11 +55,16 @@ export const getFilesInPath: RequestHandler = async (req, res) => {
 
         const canShow = !isSystem && !isHidden;
         if (canShow) {
-          const name = path.parse(filename).name;
           const ext = path.parse(filename).ext;
+          const name = path.parse(filename).name;
           const filepath = path.resolve(dir, filename);
+          const { type, isFile } = getFileType(filepath);
 
-          files.push({ path: filepath, name, ext, ...getFileType(filepath) });
+          if (isFile && allowedFiles.includes(ext)) {
+            files.push({ path: filepath, name, ext, type, isFile });
+          } else if (!isFile) {
+            files.push({ path: filepath, name, ext, type, isFile });
+          }
         }
       });
 
@@ -69,8 +79,10 @@ export const getFilesInPath: RequestHandler = async (req, res) => {
       const isRootDrive = drives.findIndex((d) => path.resolve(d.path) === path.resolve(dir));
       const prevDir = isRootDrive !== -1 ? '' : path.resolve(dir, '..');
 
-      files.unshift({ name: '...', path: prevDir, type: 'directory', isFile: false });
-
+      files = [
+        { name: '...', path: prevDir, type: 'directory', isFile: false },
+        ...uniqBy(files, 'path'),
+      ];
       return res.status(HttpCode.OK).send({ data: files });
     } catch (error) {
       throw new AppError({

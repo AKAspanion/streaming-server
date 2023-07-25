@@ -22,13 +22,13 @@ const Modal: React.FC<ModalProps> = (props) => {
       onAfterOpen={onAfterOpen}
       onRequestClose={onClose}
       overlayClassName={
-        'fixed dark:bg-slate-900 bg-slate-400 bg-opacity-80 dark:bg-opacity-80 w-screen h-screen top-0'
+        'fixed dark:bg-slate-800 bg-slate-400 bg-opacity-80 dark:bg-opacity-80 w-screen h-screen top-0'
       }
       className="flex items-center justify-center h-screen w-screen"
       contentLabel="Example Modal"
     >
       <div
-        className="dark:bg-slate-800  bg-slate-200 p-3 rounded-md"
+        className="dark:bg-slate-900  bg-slate-200 p-3 rounded-md"
         style={{
           maxWidth: 'calc(100vw - 100px)',
           minWidth: '400px',

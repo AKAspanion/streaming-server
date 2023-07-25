@@ -18,8 +18,13 @@ const ManageMedia = () => {
           </div>
         </Button>
       </div>
-      <Modal title={'Select Files'} open={open} onClose={() => setOpen(false)}>
-        <FilePicker />
+      <Modal title={'Select Video Files'} open={open} onClose={() => setOpen(false)}>
+        <FilePicker
+          onSubmit={(files) => {
+            setOpen(false);
+            console.log(files);
+          }}
+        />
       </Modal>
     </div>
   );
