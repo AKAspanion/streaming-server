@@ -82,7 +82,7 @@ function VIdeoPlay() {
   }, [loading, subData]);
 
   return (
-    <div>
+    <div className="fixed w-screen h-screen top-0 left-0">
       {loading && <Spinner full />}
       <div className="bg-black h-screen">
         <LazyHeader name={videoData?.data?.originalname} />

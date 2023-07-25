@@ -30,7 +30,7 @@ function createWindow() {
     minWidth: dimensions.app.width,
     minHeight: dimensions.app.height,
     show: false,
-    frame: true,
+    frame: false,
     title: 'Video Streaming Server',
     backgroundColor: '#020202',
     titleBarStyle: 'hiddenInset',

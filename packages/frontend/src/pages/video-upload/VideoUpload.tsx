@@ -9,7 +9,6 @@ import Spinner from '@components/spinner/Spinner';
 import { useAppDispatch, useAppSelector } from '@store/hook';
 import Progress from '@components/progress/Progress';
 import { setVideoUploadProgress } from '@store/globalSlice';
-import Header from '@components/Header';
 
 function VideoUpload() {
   const videoLoadProgress = useAppSelector((s) => s?.globalData?.videoUploadProgress);
@@ -91,7 +90,6 @@ function VideoUpload() {
         <Spinner full />
       ) : (
         <>
-          <Header title="Streaming Server" />
           <form className="m-4" onSubmit={(e) => handleSubmit(e)}>
             <div className="flex gap-4 justify-between items-center ">
               <div className="h-6 flex gap-2 justify-start content-center">

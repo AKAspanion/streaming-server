@@ -2,6 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   videoUploadProgress: 0,
+  sidebarOpen: true,
 };
 
 export const globalSlice = createSlice({
@@ -14,9 +15,18 @@ export const globalSlice = createSlice({
         videoUploadProgress: action.payload,
       };
     },
+    setSidebarOpen: (state, action) => {
+      const flag = !!action.payload;
+      document.documentElement.style.setProperty('--sidebar-width', flag ? '220px' : '64px');
+
+      return {
+        ...state,
+        sidebarOpen: action.payload,
+      };
+    },
   },
 });
 
-export const { setVideoUploadProgress } = globalSlice.actions;
+export const { setSidebarOpen, setVideoUploadProgress } = globalSlice.actions;
 
 export default globalSlice.reducer;
