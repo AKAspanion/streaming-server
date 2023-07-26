@@ -12,7 +12,7 @@ function VIdeoPlay() {
   const ref = useRef<HTMLVideoElement>(null);
   const { videoId = '' } = useParams();
 
-  const { data: videoData, isLoading, status } = useGetVideoByIdQuery(videoId);
+  const { data: videoData, isFetching, status } = useGetVideoByIdQuery(videoId);
   const { data: subData, isLoading: subLoading } = useGetSubtitleByIdQuery(videoId);
 
   const handleSubtitleLoad = (trackText: string) => {
@@ -63,7 +63,7 @@ function VIdeoPlay() {
     }
   };
 
-  const loading = isLoading || subLoading;
+  const loading = isFetching || subLoading;
 
   useToastStatus(status, {
     errorMessage: 'Failed to fetch video details',

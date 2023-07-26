@@ -33,8 +33,8 @@ const Header: React.FC<HeaderProps> = ({ title }) => {
       {ipcRenderer && <div className="w-20"></div>}
       <h1
         className={cs('header-text p-2 px-4 text-sm font-semibold flex-1', {
-          'text-left': !ipcRenderer,
-          'text-center': !!ipcRenderer,
+          'text-left opacity-1': !ipcRenderer,
+          'text-center opacity-1': !!ipcRenderer,
         })}
       >
         {title}

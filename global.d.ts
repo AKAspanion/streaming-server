@@ -58,15 +58,32 @@ declare type FileLocationType = {
   isFile?: boolean;
 };
 
+declare type MediaChapterType = any;
+declare type MediaStreamType = any;
+declare type MediaFormatType = {
+  filename?: string;
+  nb_streams: number;
+  nb_programs: number;
+  format_name?: string;
+  format_long_name?: string;
+  start_time: number;
+  duration: number;
+  size: number;
+  bit_rate: number;
+  probe_score: number;
+  tags: Record<string, string>;
+};
+
 declare type MediaTypeJSONDB = MediaType & {
-  streams: any;
-  format: any;
-  chapters: any;
+  streams: MediaStreamType[];
+  format: MediaFormatType;
+  chapters: MediaChapterType[];
   thumbnail: {
     path: string;
     name: string;
   };
 };
+declare type MediaTypeFull = MediaTypeJSONDB;
 
 declare type MediaType = {
   id: string;

@@ -6,6 +6,10 @@ export const mediaApi = createApi({
   baseQuery: fetchBaseQuery({ baseUrl }),
   tagTypes: ['Media'],
   endpoints: (builder) => ({
+    getMediaById: builder.query<{ data: MediaTypeFull }, string>({
+      query: (id) => `media/${id}`,
+      providesTags: ['Media'],
+    }),
     getMedia: builder.query<{ data: MediaType[] }, string>({
       query: () => `media`,
       providesTags: ['Media'],
@@ -21,4 +25,4 @@ export const mediaApi = createApi({
   }),
 });
 
-export const { useAddMediaMutation, useGetMediaQuery } = mediaApi;
+export const { useAddMediaMutation, useGetMediaQuery, useGetMediaByIdQuery } = mediaApi;

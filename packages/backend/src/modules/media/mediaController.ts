@@ -72,6 +72,21 @@ export const getAllMedia: AddMediaRequestHandler = async (req, res) => {
   return res.status(HttpCode.OK).send({ data });
 };
 
+export const getMedia: RequestHandler = async (req, res) => {
+  const id = req.params.id || '';
+  const { data, error } = await getMediaDataDB<MediaTypeJSONDB>(`/${id}`);
+
+  if (error) {
+    handleJSONDBDataError(error, id);
+  }
+
+  if (!data) {
+    throw new AppError({ httpCode: HttpCode.BAD_REQUEST, description: 'Media not found' });
+  }
+
+  return res.status(HttpCode.OK).send({ data: { ...data, id } });
+};
+
 export const getThumbnail: RequestHandler = async (req, res) => {
   const mediaId = req.params.mediaId || '';
   const { data, error } = await getMediaDataDB<MediaTypeJSONDB>(`/${mediaId}`);
