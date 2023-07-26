@@ -15,8 +15,6 @@ const ManageMedia = () => {
   const handleFileSubmit = (files: FileLocationType[]) => {
     setOpen(false);
 
-    console.log(files);
-
     files.forEach((f) => {
       addMedia({ file: f });
     });
