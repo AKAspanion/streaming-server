@@ -70,27 +70,6 @@ const MediaDetails: FC<MediaDetailsProps> = () => {
         </div>
 
         <MediaStreamDetails streams={media?.streams} />
-        {/* {videoStreams.length > 0 && (
-          <MediaStreamDetails
-            title="Video Streams"
-            icon={<VideoCameraIcon />}
-            streams={videoStreams}
-          />
-        )}
-        {audioStreams.length > 0 && (
-          <MediaStreamDetails
-            title="Audio Streams"
-            icon={<MusicalNoteIcon />}
-            streams={audioStreams}
-          />
-        )}
-        {imageStreams.length > 0 && (
-          <MediaStreamDetails
-            title="Audio Streams"
-            icon={<MusicalNoteIcon />}
-            streams={imageStreams}
-          />
-        )} */}
       </div>
     </div>
   );

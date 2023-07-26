@@ -88,7 +88,7 @@ declare type MediaTypeFull = MediaTypeJSONDB;
 declare type MediaType = {
   id: string;
   format: any;
-  parsedData: any;
   originalName: string;
   mimeType: string;
+  path: string;
 };

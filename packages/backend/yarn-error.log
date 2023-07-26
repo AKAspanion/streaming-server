@@ -1,29 +1,29 @@
 Arguments: 
-  /usr/local/bin/node /Users/ankitkumarpandit/.yarn/bin/yarn.js add -D @typeslodash.uniqby
+  C:\Program Files\nodejs\node.exe C:\Users\Ankit Kumar\AppData\Roaming\npm\node_modules\yarn\bin\yarn.js add -D @types/hls-server
 
 PATH: 
-  /Users/ankitkumarpandit/.yarn/bin:/Users/ankitkumarpandit/.config/yarn/global/node_modules/.bin:/Library/Frameworks/Python.framework/Versions/3.11/bin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/Apple/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/Users/ankitkumarpandit/.yarn/bin:/Users/ankitkumarpandit/.config/yarn/global/node_modules/.bin:/Library/Frameworks/Python.framework/Versions/3.11/bin
+  C:\Users\Ankit Kumar\bin;C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\local\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\bin;C:\Users\Ankit Kumar\bin;C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2\wbin;C:\windows\system32;C:\windows;C:\windows\System32\Wbem;C:\windows\System32\WindowsPowerShell\v1.0;C:\windows\System32\OpenSSH;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR;C:\Program Files\Git\cmd;C:\Program Files\Docker\Docker\resources\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0;C:\WINDOWS\System32\OpenSSH;C:\Program Files\nodejs;C:\ProgramData\chocolatey\bin;C:\Program Files\MySQL\MySQL Shell 8.0\bin;C:\Users\Ankit Kumar\AppData\Local\Microsoft\WindowsApps;C:\Users\Ankit Kumar\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\Ankit Kumar\AppData\Local\GitHubDesktop\bin;C:\Users\Ankit Kumar\AppData\Roaming\npm;C:\Program Files\Git\usr\bin\vendor_perl;C:\Program Files\Git\usr\bin\core_perl
 
 Yarn version: 
-  1.22.19
+  1.22.15
 
 Node version: 
-  16.16.0
+  16.20.1
 
 Platform: 
-  darwin x64
+  win32 x64
 
 Trace: 
-  Error: https://registry.yarnpkg.com/@typeslodash.uniqby: Request "https://registry.yarnpkg.com/@typeslodash.uniqby" returned a 405
-      at Request.params.callback [as _callback] (/Users/ankitkumarpandit/.yarn/lib/cli.js:66154:18)
-      at Request.self.callback (/Users/ankitkumarpandit/.yarn/lib/cli.js:140890:22)
-      at Request.emit (node:events:527:28)
-      at Request.<anonymous> (/Users/ankitkumarpandit/.yarn/lib/cli.js:141862:10)
-      at Request.emit (node:events:527:28)
-      at IncomingMessage.<anonymous> (/Users/ankitkumarpandit/.yarn/lib/cli.js:141784:12)
-      at Object.onceWrapper (node:events:641:28)
-      at IncomingMessage.emit (node:events:539:35)
-      at endReadableNT (node:internal/streams/readable:1345:12)
+  Error: https://registry.yarnpkg.com/@types%2fhls-server: Not found
+      at Request.params.callback [as _callback] (C:\Users\Ankit Kumar\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:66140:18)
+      at Request.self.callback (C:\Users\Ankit Kumar\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:140885:22)
+      at Request.emit (node:events:513:28)
+      at Request.<anonymous> (C:\Users\Ankit Kumar\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:141857:10)
+      at Request.emit (node:events:513:28)
+      at IncomingMessage.<anonymous> (C:\Users\Ankit Kumar\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:141779:12)
+      at Object.onceWrapper (node:events:627:28)
+      at IncomingMessage.emit (node:events:525:35)
+      at endReadableNT (node:internal/streams/readable:1358:12)
       at processTicksAndRejections (node:internal/process/task_queues:83:21)
 
 npm manifest: 
@@ -62,6 +62,7 @@ npm manifest:
       "ffmpeg": "^0.0.4",
       "ffprobe": "^1.1.2",
       "fluent-ffmpeg": "^2.1.2",
+      "hls-server": "^1.5.0",
       "lodash.uniqby": "^4.7.0",
       "mime": "^3.0.0",
       "multer": "^1.4.5-lts.1",
@@ -72,6 +73,7 @@ npm manifest:
       "@types/cors": "^2.8.13",
       "@types/ffmpeg": "^1.0.4",
       "@types/fluent-ffmpeg": "^2.1.21",
+      "@types/lodash.uniqby": "^4.7.7",
       "@types/multer": "^1.4.7",
       "@types/mysql": "^2.15.21",
       "copyfiles": "^2.4.1",
@@ -1192,6 +1194,18 @@ Lockfile:
     integrity sha512-BQ5aZNSCpj7D6K2ksrRCTmKRLEpnPvWDiLPfoGyhZ++8YtiK9d/3DBKPJgry359X/P1PfruyYwvnvwFjuEiEIg==
     dependencies:
       "@types/node" "*"
+  
+  "@types/lodash.uniqby@^4.7.7":
+    version "4.7.7"
+    resolved "https://registry.yarnpkg.com/@types/lodash.uniqby/-/lodash.uniqby-4.7.7.tgz#48dbb652c41cc8fb30aa61a44174368081835ab5"
+    integrity sha512-sv2g6vkCIvEUsK5/Vq17haoZaisfj2EWW8mP7QWlnKi6dByoNmeuHDDXHR7sabuDqwO4gvU7ModIL22MmnOocg==
+    dependencies:
+      "@types/lodash" "*"
+  
+  "@types/lodash@*":
+    version "4.14.195"
+    resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.195.tgz#bafc975b252eb6cea78882ce8a7b6bf22a6de632"
+    integrity sha512-Hwx9EUgdwf2GLarOjQp5ZH8ZmblzcbTBC2wtQWNKARBSxM9ezRIAUpeDTgoQRAFB0+8CNWXVA9+MaSOzOF3nPg==
   
   "@types/mime@*":
     version "3.0.1"
@@ -3855,6 +3869,14 @@ Lockfile:
     dependencies:
       function-bind "^1.1.1"
   
+  hls-server@^1.5.0:
+    version "1.5.0"
+    resolved "https://registry.yarnpkg.com/hls-server/-/hls-server-1.5.0.tgz#496a006743dc20abca1c9149987e5f455d4f66aa"
+    integrity sha512-uDTPyuNvHjd5KkK/Zmm6vAWERdRp0l8rlkfSO56KcJGsEfFMwVcgkzbScTmrV+kuOq9FznWf9ze9pprtGEletA==
+    dependencies:
+      http-attach "^1.0.0"
+      minimist "^1.2.0"
+  
   hoist-non-react-statics@^3.3.0, hoist-non-react-statics@^3.3.2:
     version "3.3.2"
     resolved "https://registry.yarnpkg.com/hoist-non-react-statics/-/hoist-non-react-statics-3.3.2.tgz#ece0acaf71d62c2969c2ec59feff42a4b1a85b45"
@@ -3887,6 +3909,11 @@ Lockfile:
     integrity sha512-r0EI+HBMcXadMrugk0GCQ+6BQV39PiWAZVfq7oIckeGiN7sjRGyQxPdft3nQekFTCQbYxLBH+/axZMeH8UX6+w==
     dependencies:
       lru-cache "^7.5.1"
+  
+  http-attach@^1.0.0:
+    version "1.0.0"
+    resolved "https://registry.yarnpkg.com/http-attach/-/http-attach-1.0.0.tgz#65ea80f00696301dece5d6cc882d811b3132d006"
+    integrity sha512-RWbYNCz3ybfIvjbELCaLD3eh01yKmqro/hoCzBFiUCoHZfb6FdNeSalYjMInVGsM0cj7M8DmXf290sWFJLsz4w==
   
   http-cache-semantics@^4.0.0, http-cache-semantics@^4.1.1:
     version "4.1.1"

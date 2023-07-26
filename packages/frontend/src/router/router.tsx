@@ -7,6 +7,7 @@ import EmptyLayout from '@layout/empty/EmptyLayout';
 import ManageMedia from '@pages/manage-media/ManageMedia';
 import MediaDetails from '@pages/media-details/MediaDetails';
 import Home from '@pages/home/Home';
+import MediaPlay from '@pages/media-play/MediaPlay';
 
 export const routes: RouteObject[] = [
   {
@@ -70,6 +71,14 @@ export const routes: RouteObject[] = [
         handle: {
           hide: true,
           name: 'Video Play',
+        },
+      },
+      {
+        path: '/media-play/:mediaId',
+        element: <MediaPlay />,
+        handle: {
+          hide: true,
+          name: 'Media Play',
         },
       },
       {

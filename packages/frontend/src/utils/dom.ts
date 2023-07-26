@@ -4,6 +4,7 @@ export const copyTextToClipboard = async (value: string) => {
 
     return true;
   } catch (error) {
+    console.log(error);
     return false;
   }
 };

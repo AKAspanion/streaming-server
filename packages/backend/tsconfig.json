@@ -36,7 +36,7 @@
     },
     "plugins": [{ "transform": "typescript-transform-paths" }]
   },
-  "include": ["src", "src/index.ts"],
+  "include": ["src", "src/index.ts", "../../hls.d.ts"],
   "plugins": [{ "transform": "typescript-transform-paths" }],
   "exclude": [
     "node_modules",

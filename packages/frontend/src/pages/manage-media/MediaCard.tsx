@@ -53,9 +53,11 @@ const MediaCard: FC<MediaCardProps> = ({ media }) => {
               <LinkIcon />
             </div>
           </IconButton>
-          <IconButton>
-            <PlayIcon />
-          </IconButton>
+          <Link to={`/media-play/${media.id}`}>
+            <IconButton>
+              <PlayIcon />
+            </IconButton>
+          </Link>
           <IconButton>
             <TrashIcon />
           </IconButton>

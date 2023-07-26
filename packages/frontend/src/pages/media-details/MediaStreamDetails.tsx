@@ -52,8 +52,6 @@ const MediaStreamDetails: FC<MediaStreamDetailsProps> = ({ streams }) => {
     return all;
   }, [streams]);
 
-  console.log(streams);
-
   return (
     <div className="pt-4 flex gap-3 overflow-x-auto">
       {allStreams.map(({ title, icon, list }) => {

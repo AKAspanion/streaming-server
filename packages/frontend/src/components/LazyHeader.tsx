@@ -4,8 +4,8 @@ import { buttonVariant } from './atoms/button';
 import { ArrowLeftIcon } from '@heroicons/react/20/solid';
 
 let lazyTimeout: NodeJS.Timeout;
-export default function LazyHeader(props: { name?: string }) {
-  const { name } = props;
+export default function LazyHeader(props: { name?: string; backTo?: string }) {
+  const { name, backTo = '/' } = props;
   const [visible, setVisible] = useState(true);
 
   const lazyHide = () => {
@@ -36,7 +36,7 @@ export default function LazyHeader(props: { name?: string }) {
         style={{ '--max-wasd': 'calc(100vw - 160px)' } as React.CSSProperties}
       >
         <div className="text-white flex items-center gap-2 w-[var(--max-wasd)]">
-          <Link to="/" className="w-5">
+          <Link to={backTo} className="w-5">
             <ArrowLeftIcon className="text-white w-5" />
           </Link>
           <div className="text-md overflow-hidden overflow-ellipsis whitespace-nowrap">{name}</div>

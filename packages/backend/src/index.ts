@@ -11,6 +11,7 @@ import { routes } from '@modules';
 import { getIPv4Address } from '@utils/ip';
 import { staticFiles } from '@static';
 import '@utils/process';
+// import { hlsInit } from '@config/hls';
 
 const app: Express = express();
 const port = process.env.NODE_APP_PORT || 5708;
@@ -23,6 +24,8 @@ app.use(express.json());
 Object.keys(routes).forEach((key) => {
   app.use(key, routes[key]);
 });
+
+// hlsInit(app);
 
 app.use(staticFiles);
 app.use(notFoundHandler);
