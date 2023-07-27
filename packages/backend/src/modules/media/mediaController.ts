@@ -8,6 +8,7 @@ import {
   createHLSStream,
   createVideoThumbnail,
   getVideoMetaData,
+  testFFMPEG,
 } from '@utils/ffmpeg';
 import { getFileType } from '@utils/file';
 import { deleteDirectory, getResourcePath, makeDirectory } from '@utils/helper';
@@ -216,7 +217,7 @@ export const probeFile: RequestHandler = async (req, res) => {
 export const testStuff: RequestHandler = async (req, res) => {
   const { file } = req.body;
 
-  // const data = await createHLSSegment(file, { mediaId: string; segmentNo: number; duration: number });
+  const data = await testFFMPEG(file);
 
-  return res.status(HttpCode.OK).send({ file });
+  return res.status(HttpCode.OK).send({ data });
 };

@@ -1,8 +1,6 @@
 export const secToTime = (timeTnSeconds: number) => {
   const duration = timeTnSeconds * 1000;
 
-  console.log(duration);
-
   return msToTime(duration);
 };
 
