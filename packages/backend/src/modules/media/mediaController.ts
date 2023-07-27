@@ -140,7 +140,7 @@ export const streamMedia: RequestHandler = async (req, res) => {
 
   const mediaId = fileId.split(MPEGTS_FILE_NO_SEPERATOR)[0];
 
-  const tsPath = getResourcePath(`_hls/${mediaId}`);
+  const tsPath = getResourcePath(`_hls/${mediaId}/temp`);
   const tsFilePath = path.join(tsPath, file);
   makeDirectory(tsPath);
 

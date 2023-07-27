@@ -107,71 +107,36 @@ export const createHLSSegment = (
     const segementsDir = `_hls/${mediaId}`;
     const pathToSegments = getResourcePath(segementsDir);
     const segmentFile = `${mediaId}${MPEGTS_FILE_NO_SEPERATOR}%d.ts`;
-    const segmentListFile = `${pathToSegments}/${mediaId}.m3u8`;
-    const segmentTempPath = path.join(pathToSegments, segmentFile);
+    const pathToTemp = path.join(pathToSegments, 'temp');
+    const segmentListFile = path.join(pathToTemp, `${mediaId}.m3u8`);
+    const segmentTempPath = path.join(pathToTemp, segmentFile);
 
-    makeDirectory(pathToSegments);
+    makeDirectory(pathToTemp);
     deleteFile(segmentTempPath);
 
-    // const normalizedtime = (t: number) => (t > videoDuration ? videoDuration : t).toFixed(6);
-
-    // let toTime = MPEGTS_TARGET_DURATION * (segmentNo + 1);
-    // const startTime = MPEGTS_TARGET_DURATION * segmentNo;
-    // // const elapseTime = toTime > videoDuration ? videoDuration - startTime : MPEGTS_TARGET_DURATION;
-    // const muxDelay = segmentNo <= 0 ? segmentNo : startTime / 2;
-
-    // toTime = toTime > videoDuration ? videoDuration : toTime;
-    // const convertOptions: string[] = [
-    //   '-y',
-    //   segmentNo ? `-ss ${startTime.toFixed(6)}` : '',
-    //   `-to ${toTime.toFixed(6)}`,
-    //   '-map 0',
-    //   '-c copy',
-    //   '-c:a aac',
-    //   segmentNo ? `-muxdelay ${muxDelay}` : '',
-    //   segmentNo ? `-muxpreload ${muxDelay}` : '',
-    // ].filter(Boolean);
-
-    // ffmpeg(pathToFile, { timeout: 432000 })
-    //   .addOptions(convertOptions)
-    //   .output(segmentPath)
-    //   .on('start', function (commandLine) {
-    //     logger.info('Spawned FFmpeg with command: ' + commandLine);
-    //   })
-    //   .on('end', () => {
-    //     resolve(segmentPath);
-    //   })
-    //   .on('error', (err: any) => {
-    //     return reject(new Error(err));
-    //   })
-    //   .on('error', function (err, stdout, stderr) {
-    //     logger.info('stderr:\n' + stderr);
-    //   })
-    //   .run();
-
     ffmpeg(pathToFile, { timeout: 432000 })
-      .addOptions([
-        '-y',
-        // '-copyts',
-        // '-start_at_zero',
-        `-ss ${secToTime(segmentNo * MPEGTS_TARGET_DURATION)}`,
-        '-map 0',
-        '-c copy',
-        '-c:a aac',
-        // '-preset:v:0 veryfast',
-        // '-max_delay 5000000',
-        '-avoid_negative_ts disabled',
-        '-f segment',
-        '-map_metadata -1',
-        '-map_chapters -1',
-        '-segment_format mpegts',
-        `-segment_list ${segmentListFile}`,
-        '-segment_list_type m3u8',
-        `-segment_time ${secToTime(MPEGTS_TARGET_DURATION)}`,
-        `-segment_start_number ${segmentNo}`,
-        // '-individual_header_trailer 0',
-        // '-write_header_trailer 0',
-      ])
+      .addOptions(
+        [
+          '-y',
+          '-copyts',
+          '-start_at_zero',
+          segmentNo ? '' : `-ss ${secToTime(segmentNo * MPEGTS_TARGET_DURATION)}`,
+          '-map 0',
+          '-c copy',
+          '-c:a aac',
+          '-preset:v:0 veryfast',
+          '-max_delay 5000000',
+          '-avoid_negative_ts disabled',
+          '-f segment',
+          '-map_metadata -1',
+          '-map_chapters -1',
+          '-segment_format mpegts',
+          `-segment_list ${segmentListFile}`,
+          '-segment_list_type m3u8',
+          `-segment_time ${secToTime(MPEGTS_TARGET_DURATION)}`,
+          `-segment_start_number ${segmentNo}`,
+        ].filter(Boolean),
+      )
       .output(segmentTempPath)
       .on('start', function (commandLine) {
         logger.info('Spawned FFmpeg with command: ' + commandLine);

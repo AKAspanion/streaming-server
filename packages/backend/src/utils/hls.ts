@@ -29,11 +29,10 @@ export const generateManifest = (id: string, duration: number) => {
   } while (duration > 0);
 
   const manifestfile = `#EXTM3U
-#EXT-X-VERSION:6
-#EXT-X-TARGETDURATION:${targetDuration}
+#EXT-X-VERSION:3
 #EXT-X-MEDIA-SEQUENCE:0
-#EXT-X-PLAYLIST-TYPE:VOD
-#EXT-X-INDEPENDENT-SEGMENTS
+#EXT-X-ALLOW-CACHE:YES
+#EXT-X-TARGETDURATION:${targetDuration}
 ${segments.join('\n')}
 #EXT-X-ENDLIST`;
 
