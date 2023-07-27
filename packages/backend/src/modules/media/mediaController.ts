@@ -10,10 +10,12 @@ import {
   getVideoMetaData,
 } from '@utils/ffmpeg';
 import { getFileType } from '@utils/file';
-import { getResourcePath, makeDirectory } from '@utils/helper';
+import { deleteDirectory, getResourcePath, makeDirectory } from '@utils/helper';
 import { generateManifest } from '@utils/hls';
 import { randomUUID } from 'crypto';
 import { RequestHandler } from 'express';
+import { existsSync } from 'fs';
+import path from 'path';
 
 type AddMediaRequestHandler = RequestHandler<{ body: { file: FileLocationType } }>;
 
@@ -104,6 +106,7 @@ export const getMedia: RequestHandler = async (req, res) => {
 
   const hlsPath = getResourcePath('_hls/' + id);
 
+  deleteDirectory(hlsPath);
   makeDirectory(hlsPath);
 
   generateManifest(id, Number(data?.format?.duration));
@@ -135,26 +138,35 @@ export const streamMedia: RequestHandler = async (req, res) => {
   }
 
   const mediaId = fileId.split(MPEGTS_FILE_NO_SEPERATOR)[0];
-  const { data, error } = await getMediaDataDB<MediaTypeJSONDB>(`/${mediaId}`);
 
-  if (error) {
-    handleJSONDBDataError(error, mediaId);
+  const tsPath = getResourcePath(`_hls/${mediaId}`);
+  const tsFilePath = path.join(tsPath, file);
+  makeDirectory(tsPath);
+
+  const exists = existsSync(tsFilePath);
+  if (exists) {
+    return res.download(tsFilePath);
+  } else {
+    const { data, error } = await getMediaDataDB<MediaTypeJSONDB>(`/${mediaId}`);
+
+    if (error) {
+      handleJSONDBDataError(error, mediaId);
+    }
+
+    if (!data?.format?.filename) {
+      throw new AppError({ httpCode: HttpCode.BAD_REQUEST, description: 'Media not found' });
+    }
+
+    const segmentNo = Number(fileId.split(MPEGTS_FILE_NO_SEPERATOR).pop());
+    const videoPath = data?.format?.filename;
+
+    const path = await createHLSSegment(videoPath, {
+      mediaId,
+      segmentNo,
+    });
+
+    return res.download(path.replace('%d.ts', '0.ts'));
   }
-
-  if (!data?.format?.filename) {
-    throw new AppError({ httpCode: HttpCode.BAD_REQUEST, description: 'Media not found' });
-  }
-
-  const segmentNo = Number(fileId.split(MPEGTS_FILE_NO_SEPERATOR).pop());
-  const videoPath = data?.format?.filename;
-  const duration = Number(data?.format?.duration);
-
-  const path = await createHLSSegment(videoPath, {
-    mediaId,
-    segmentNo,
-    duration,
-  });
-  return res.download(path);
 };
 
 export const getThumbnail: RequestHandler = async (req, res) => {

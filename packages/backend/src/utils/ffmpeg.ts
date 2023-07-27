@@ -5,6 +5,7 @@ import { deleteFile, getResourcePath, makeDirectory } from './helper';
 import path from 'path';
 import ffmpeg from 'fluent-ffmpeg';
 import { MPEGTS_FILE_NO_SEPERATOR, MPEGTS_TARGET_DURATION } from '@constants/app';
+import { secToTime } from './date-time';
 
 /* eslint-disable @typescript-eslint/no-var-requires */
 export const getffmpeg = () => {
@@ -93,49 +94,88 @@ export const createHLSStream = (pathToFile: string, id: string) =>
 
 export const createHLSSegment = (
   pathToFile: string,
-  options: { mediaId: string; segmentNo: number; duration: number },
+  options: { mediaId: string; segmentNo: number },
 ) =>
   new Promise<string>((resolve, reject) => {
-    const { duration, segmentNo, mediaId } = options;
+    const { segmentNo, mediaId } = options;
 
-    const videoDuration = duration; //microseconds
+    // const videoDuration = duration; //microseconds
 
     const ffmpeg = getffmpeg();
     const segementsDir = `_hls/${mediaId}`;
     const pathToSegments = getResourcePath(segementsDir);
-    const segmentFile = `${mediaId}${MPEGTS_FILE_NO_SEPERATOR}${segmentNo}.ts`;
-    const segmentPath = path.join(pathToSegments, segmentFile);
+    const segmentFile = `${mediaId}${MPEGTS_FILE_NO_SEPERATOR}%d.ts`;
+    const segmentListFile = `${pathToSegments}/${mediaId}.m3u8`;
+    const segmentTempPath = path.join(pathToSegments, segmentFile);
 
-    deleteFile(segmentPath);
     makeDirectory(pathToSegments);
+    deleteFile(segmentTempPath);
 
     // const normalizedtime = (t: number) => (t > videoDuration ? videoDuration : t).toFixed(6);
 
-    let toTime = MPEGTS_TARGET_DURATION * (segmentNo + 1);
-    const startTime = MPEGTS_TARGET_DURATION * segmentNo;
-    // const elapseTime = toTime > videoDuration ? videoDuration - startTime : MPEGTS_TARGET_DURATION;
-    const muxDelay = segmentNo <= 0 ? segmentNo : startTime / 2;
+    // let toTime = MPEGTS_TARGET_DURATION * (segmentNo + 1);
+    // const startTime = MPEGTS_TARGET_DURATION * segmentNo;
+    // // const elapseTime = toTime > videoDuration ? videoDuration - startTime : MPEGTS_TARGET_DURATION;
+    // const muxDelay = segmentNo <= 0 ? segmentNo : startTime / 2;
 
-    toTime = toTime > videoDuration ? videoDuration : toTime;
-    const convertOptions: string[] = [
-      '-y',
-      segmentNo ? `-ss ${startTime.toFixed(6)}` : '',
-      `-to ${toTime.toFixed(6)}`,
-      '-map 0',
-      '-c copy',
-      '-c:a aac',
-      segmentNo ? `-muxdelay ${muxDelay}` : '',
-      segmentNo ? `-muxpreload ${muxDelay}` : '',
-    ].filter(Boolean);
+    // toTime = toTime > videoDuration ? videoDuration : toTime;
+    // const convertOptions: string[] = [
+    //   '-y',
+    //   segmentNo ? `-ss ${startTime.toFixed(6)}` : '',
+    //   `-to ${toTime.toFixed(6)}`,
+    //   '-map 0',
+    //   '-c copy',
+    //   '-c:a aac',
+    //   segmentNo ? `-muxdelay ${muxDelay}` : '',
+    //   segmentNo ? `-muxpreload ${muxDelay}` : '',
+    // ].filter(Boolean);
+
+    // ffmpeg(pathToFile, { timeout: 432000 })
+    //   .addOptions(convertOptions)
+    //   .output(segmentPath)
+    //   .on('start', function (commandLine) {
+    //     console.log('Spawned FFmpeg with command: ' + commandLine);
+    //   })
+    //   .on('end', () => {
+    //     resolve(segmentPath);
+    //   })
+    //   .on('error', (err: any) => {
+    //     return reject(new Error(err));
+    //   })
+    //   .on('error', function (err, stdout, stderr) {
+    //     console.log('stderr:\n' + stderr);
+    //   })
+    //   .run();
 
     ffmpeg(pathToFile, { timeout: 432000 })
-      .addOptions(convertOptions)
-      .output(segmentPath)
+      .addOptions([
+        '-y',
+        '-copyts',
+        '-start_at_zero',
+        `-ss ${secToTime(segmentNo * MPEGTS_TARGET_DURATION)}`,
+        '-map 0',
+        '-c copy',
+        '-c:a aac',
+        '-preset:v:0 veryfast',
+        '-max_delay 5000000',
+        '-avoid_negative_ts disabled',
+        '-f segment',
+        '-map_metadata -1',
+        '-map_chapters -1',
+        '-segment_format mpegts',
+        `-segment_list ${segmentListFile}`,
+        '-segment_list_type m3u8',
+        `-segment_time ${secToTime(MPEGTS_TARGET_DURATION)}`,
+        `-segment_start_number ${segmentNo}`,
+        '-individual_header_trailer 0',
+        '-write_header_trailer 0',
+      ])
+      .output(segmentTempPath)
       .on('start', function (commandLine) {
         console.log('Spawned FFmpeg with command: ' + commandLine);
       })
       .on('end', () => {
-        resolve(segmentPath);
+        resolve(segmentTempPath);
       })
       .on('error', (err: any) => {
         return reject(new Error(err));
