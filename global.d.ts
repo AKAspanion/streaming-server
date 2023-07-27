@@ -83,7 +83,10 @@ declare type MediaTypeJSONDB = MediaType & {
     name: string;
   };
 };
-declare type MediaTypeFull = MediaTypeJSONDB;
+
+declare type MediaTypeFull = MediaTypeJSONDB & {
+  src: string;
+};
 
 declare type MediaType = {
   id: string;

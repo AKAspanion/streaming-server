@@ -1,15 +1,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { MPEGTS_FILE_NO_SEPERATOR } from '@constants/app';
 import { getMediaDataDB, pushMediaDB } from '@database/json';
 import { handleJSONDBDataError } from '@utils/error';
 import { AppError, HttpCode } from '@utils/exceptions';
-import { createHLS, createVideoThumbnail, getffmpeg, readVideoMetaData } from '@utils/ffmpeg';
+import {
+  createHLSSegment,
+  createHLSStream,
+  createVideoThumbnail,
+  getVideoMetaData,
+} from '@utils/ffmpeg';
 import { getFileType } from '@utils/file';
-import logger from '@utils/logger';
+import { getResourcePath, makeDirectory } from '@utils/helper';
+import { generateManifest } from '@utils/hls';
 import { randomUUID } from 'crypto';
 import { RequestHandler } from 'express';
-import fs from 'fs';
 
 type AddMediaRequestHandler = RequestHandler<{ body: { file: FileLocationType } }>;
+
+// let ffmpegProcess: FfmpegCommand;
 
 export const addMedia: AddMediaRequestHandler = async (req, res) => {
   const { file } = req.body;
@@ -30,9 +38,9 @@ export const addMedia: AddMediaRequestHandler = async (req, res) => {
     });
   }
 
-  const metadata: MediaTypeJSONDB = await readVideoMetaData(file.path);
+  const metadata: MediaTypeJSONDB = await getVideoMetaData(file.path);
   const thumbnail = await createVideoThumbnail(file.path, metadata.originalName);
-  await createHLS(file.path, metadata.originalName);
+  // await createHLS(file.path, metadata.originalName);
 
   const id = randomUUID();
 
@@ -84,13 +92,69 @@ export const getMedia: RequestHandler = async (req, res) => {
     handleJSONDBDataError(error, id);
   }
 
-  console.log(data);
-
   if (!data) {
     throw new AppError({ httpCode: HttpCode.BAD_REQUEST, description: 'Media not found' });
   }
 
-  return res.status(HttpCode.OK).send({ data: { ...data, id } });
+  if (!data?.format?.filename) {
+    throw new AppError({ httpCode: HttpCode.NOT_FOUND, description: 'VIdeo path not found' });
+  }
+
+  const manifestFile = `${id}.m3u8`;
+
+  const hlsPath = getResourcePath('_hls/' + id);
+
+  makeDirectory(hlsPath);
+
+  generateManifest(id, Number(data?.format?.duration));
+
+  return res
+    .status(HttpCode.OK)
+    .send({ data: { ...data, id, src: `/media/stream/hls/${manifestFile}` } });
+};
+
+export const streamMedia: RequestHandler = async (req, res) => {
+  const file = req.url.split('/stream/hls/').pop();
+
+  if (!file) {
+    throw new AppError({ httpCode: HttpCode.BAD_REQUEST, description: 'Not a HLS request' });
+  }
+
+  const ext = file.split('.').pop();
+  const fileId = file.split('.')[0];
+
+  if (ext !== 'm3u8' && ext !== 'ts') {
+    throw new AppError({ httpCode: HttpCode.BAD_REQUEST, description: 'Not a HLS request' });
+  }
+
+  const hlsPath = getResourcePath('_hls/' + fileId);
+  const urlFilePath = `${hlsPath}/${file}`;
+
+  if (ext === 'm3u8') {
+    return res.download(urlFilePath);
+  }
+
+  const mediaId = fileId.split(MPEGTS_FILE_NO_SEPERATOR)[0];
+  const { data, error } = await getMediaDataDB<MediaTypeJSONDB>(`/${mediaId}`);
+
+  if (error) {
+    handleJSONDBDataError(error, mediaId);
+  }
+
+  if (!data?.format?.filename) {
+    throw new AppError({ httpCode: HttpCode.BAD_REQUEST, description: 'Media not found' });
+  }
+
+  const segmentNo = Number(fileId.split(MPEGTS_FILE_NO_SEPERATOR).pop());
+  const videoPath = data?.format?.filename;
+  const duration = Number(data?.format?.duration);
+
+  const path = await createHLSSegment(videoPath, {
+    mediaId,
+    segmentNo,
+    duration,
+  });
+  return res.download(path);
 };
 
 export const getThumbnail: RequestHandler = async (req, res) => {
@@ -112,62 +176,35 @@ export const getThumbnail: RequestHandler = async (req, res) => {
   }
 };
 
-export const streamMedia: RequestHandler = async (req, res) => {
-  const id = req.params.mediaId || '';
-  const range = req.headers.range;
-  const { data: result, error } = await getMediaDataDB<MediaTypeJSONDB>(`/${id}`);
+export const generateStream: RequestHandler = async (req, res) => {
+  const mediaId = req.params.mediaId || '';
+  const { data, error } = await getMediaDataDB<MediaTypeJSONDB>(`/${mediaId}`);
 
   if (error) {
-    handleJSONDBDataError(error, id);
-  }
-  if (!result) {
-    throw new AppError({ httpCode: HttpCode.BAD_REQUEST, description: 'Video not found' });
+    handleJSONDBDataError(error, mediaId);
   }
 
-  if (!range) {
-    throw new AppError({ httpCode: HttpCode.BAD_REQUEST, description: 'Requires Range header' });
+  if (!data?.format?.filename) {
+    throw new AppError({ httpCode: HttpCode.BAD_REQUEST, description: 'Media not found' });
   }
 
-  const videoSize = fs.statSync(result?.path).size;
+  const path = await createHLSStream(data?.format?.filename, mediaId);
 
-  const CHUNK_SIZE = 10 ** 6; // 1MB
-  const start = Number(range.replace(/\D/g, ''));
-  const end = Math.min(start + CHUNK_SIZE, videoSize - 1);
+  return res.status(HttpCode.OK).send({ data: { path } });
+};
 
-  // Create headers
-  const contentLength = end - start + 1;
-  const headers = {
-    'Content-Range': `bytes ${start}-${end}/${videoSize}`,
-    'Accept-Ranges': 'bytes',
-    'Content-Length': contentLength,
-    'Content-Type': 'video/mp4',
-  };
+export const probeFile: RequestHandler = async (req, res) => {
+  const { file } = req.body;
 
-  // HTTP Status 206 for Partial Content
-  res.writeHead(206, headers);
+  const data = await getVideoMetaData(file);
 
-  // create video read stream for this particular chunk
-  // const videoStream = fs.createReadStream(result.path, { start, end });
+  return res.status(HttpCode.OK).send({ data });
+};
 
-  // Stream the video chunk to the client
-  // videoStream.pipe(res);
+export const testStuff: RequestHandler = async (req, res) => {
+  const { file } = req.body;
 
-  // convert and stream video chunk to client
-  const ffmpeg = getffmpeg();
-  logger.info('Streaming', result.path);
-  ffmpeg(result.path, { timeout: 432000 })
-    .addOptions([
-      '-profile:v baseline',
-      '-level 3.0',
-      '-start_number 0',
-      '-hls_time 10',
-      '-hls_list_size 0',
-      '-f hls',
-    ])
-    .on('error', function (err, stdout, stderr) {
-      console.log(err.message); //this will likely return "code=1" not really useful
-      console.log('stdout:\n' + stdout);
-      console.log('stderr:\n' + stderr); //this will contain more detailed debugging info
-    })
-    .pipe(res);
+  // const data = await createHLSSegment(file, { mediaId: string; segmentNo: number; duration: number });
+
+  return res.status(HttpCode.OK).send({ file });
 };

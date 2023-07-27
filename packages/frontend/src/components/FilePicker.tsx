@@ -11,7 +11,7 @@ type FilePickerProps = {
   onSubmit?: (files: FileLocationType[]) => void;
 };
 
-const allowedFiles = ['.mkv', '.mp4'];
+const allowedFiles = ['.mkv', '.mp4', '.avi', '.mov'];
 
 const FilePicker: React.FC<FilePickerProps> = (props) => {
   const { onSubmit } = props;

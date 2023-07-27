@@ -6,10 +6,9 @@ import fs from 'fs';
 import os from 'os';
 import uniqBy from 'lodash.uniqby';
 import { getFileType } from '@utils/file';
+import { ALLOWED_VIDEO_FILES } from '@constants/app';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const drivelist = require('drivelist');
-
-const allowedFiles = ['.mkv', '.mp4'];
 
 export const getFilesInPath: RequestHandler = async (req, res) => {
   const { dir } = req.body;
@@ -60,7 +59,7 @@ export const getFilesInPath: RequestHandler = async (req, res) => {
           const filepath = path.resolve(dir, filename);
           const { type, isFile } = getFileType(filepath);
 
-          if (isFile && allowedFiles.includes(ext)) {
+          if (isFile && ALLOWED_VIDEO_FILES.includes(ext)) {
             files.push({ path: filepath, name, ext, type, isFile });
           } else if (!isFile) {
             files.push({ path: filepath, name, ext, type, isFile });

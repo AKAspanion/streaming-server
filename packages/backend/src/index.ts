@@ -9,7 +9,7 @@ import express, { Express } from 'express';
 import { requestLogger, appErrorHandler, notFoundHandler } from '@middleware';
 import { routes } from '@modules';
 import { getIPv4Address } from '@utils/ip';
-import { staticFiles } from '@static';
+import { hlsFiles, webFiles } from '@static';
 import '@utils/process';
 // import { hlsInit } from '@config/hls';
 
@@ -25,9 +25,9 @@ Object.keys(routes).forEach((key) => {
   app.use(key, routes[key]);
 });
 
-// hlsInit(app);
+app.use('/stream-static', hlsFiles);
 
-app.use(staticFiles);
+app.use(webFiles);
 app.use(notFoundHandler);
 app.use(appErrorHandler);
 

@@ -27,6 +27,8 @@
       "@database": ["src/database"],
       "@modules/*": ["src/modules/*"],
       "@modules": ["src/modules"],
+      "@constants/*": ["src/constants/*"],
+      "@constants": ["src/constants"],
       "@config/*": ["src/config/*"],
       "@config": ["src/config"],
       "@static/*": ["src/static/*"],
