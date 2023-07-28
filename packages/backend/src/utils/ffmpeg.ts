@@ -7,7 +7,7 @@ import path from 'path';
 import ffmpeg from 'fluent-ffmpeg';
 import { MPEGTS_FILE_NO_SEPERATOR, MPEGTS_TARGET_DURATION } from '@constants/app';
 import { secToTime } from './date-time';
-import logger from './logger';
+import { ffmpegLogger } from './logger';
 
 /* eslint-disable @typescript-eslint/no-var-requires */
 export const getffmpeg = () => {
@@ -80,13 +80,13 @@ export const createHLSStream = (pathToFile: string, id: string) =>
         `-hls_segment_filename ${pathToManifest}/${id}${MPEGTS_FILE_NO_SEPERATOR}%01d.ts`,
       ])
       .on('start', function (commandLine) {
-        logger.info('Spawned FFmpeg with command: ' + commandLine);
+        ffmpegLogger.info('Spawned FFmpeg with command: ' + commandLine);
       })
       .on('error', (err: any) => {
         return reject(new Error(err));
       })
       .on('error', function (err, stdout, stderr) {
-        logger.info('stderr:\n' + stderr);
+        ffmpegLogger.info('stderr:\n' + stderr);
       })
       .on('end', () => {
         resolve(outputFile);
@@ -139,7 +139,7 @@ export const createHLSSegment = (
       )
       .output(segmentTempPath)
       .on('start', function (commandLine) {
-        logger.info('Spawned FFmpeg with command: ' + commandLine);
+        ffmpegLogger.info('Spawned FFmpeg with command: ' + commandLine);
       })
       .on('codecData', async function () {
         await sleep(1000);
@@ -149,7 +149,7 @@ export const createHLSSegment = (
         return reject(new Error(err));
       })
       .on('error', function (err, stdout, stderr) {
-        logger.info('stderr:\n' + stderr);
+        ffmpegLogger.info('stderr:\n' + stderr);
       })
       .run();
   });
@@ -201,10 +201,10 @@ export const testFFMPEG = (pathToFile: string) =>
         '-hls_playlist_type vod',
       ])
       .saveToFile('_hls/AE6D23.m3u8')
-      .on('end', () => logger.info('end'))
-      .on('start', (commandLine: any) => logger.info('start', commandLine))
+      .on('end', () => ffmpegLogger.info('end'))
+      .on('start', (commandLine: any) => ffmpegLogger.info('start', commandLine))
       .on('codecData', (codecData: any) => resolve(codecData))
-      .on('error', (error: any) => logger.info('error', error))
+      .on('error', (error: any) => ffmpegLogger.info('error', error))
       .on('error', (error: any) => reject(error))
       .run();
   });

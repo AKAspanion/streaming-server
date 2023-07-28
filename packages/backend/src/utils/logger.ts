@@ -1,4 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import winston, { format, transports } from 'winston';
+import { getResourcePath, makeDirectory } from './helper';
+
+const getDate = () => new Date().toISOString();
+
+const logDir = getResourcePath(`_logs`);
+makeDirectory(logDir);
+
+console.log(logDir);
+
+const beLogPath = `_logs/be.txt`;
+const ffmpegLogPath = `_logs/ffmpeg.txt`;
+const pocessLogPath = `_logs/process.txt`;
+
 export const info = (message?: any, ...optionalParams: any[]): void => {
   if (typeof message === 'string') {
     console.log(`[${getDate()}] [INFO] ${message}`, ...optionalParams);
@@ -23,6 +37,25 @@ export const warn = (message?: any, ...optionalParams: any[]): void => {
   }
 };
 
-const getDate = () => new Date().toISOString();
+export const logger = winston.createLogger({
+  level: 'info',
+  format: format.combine(format.timestamp(), format.json()),
+  defaultMeta: { service: 'ffmpeg' },
+  transports: [new transports.Console(), new winston.transports.File({ filename: beLogPath })],
+});
 
-export default { info, error, warn };
+export const ffmpegLogger = winston.createLogger({
+  level: 'info',
+  format: format.combine(format.timestamp(), format.json()),
+  defaultMeta: { service: 'ffmpeg' },
+  transports: [new transports.Console(), new winston.transports.File({ filename: ffmpegLogPath })],
+});
+
+export const processLogger = winston.createLogger({
+  level: 'info',
+  format: format.combine(format.timestamp(), format.json()),
+  defaultMeta: { service: 'process' },
+  transports: [new transports.Console(), new winston.transports.File({ filename: pocessLogPath })],
+});
+
+export default logger;
