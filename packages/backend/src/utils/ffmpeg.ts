@@ -5,9 +5,9 @@ import mime from 'mime';
 import { deleteFile, getResourcePath, makeDirectory, sleep } from './helper';
 import path from 'path';
 import ffmpeg from 'fluent-ffmpeg';
-import { MPEGTS_FILE_NO_SEPERATOR, MPEGTS_TARGET_DURATION } from '@constants/app';
 import { secToTime } from './date-time';
 import { ffmpegLogger } from './logger';
+import { SEGMENT_FILE_NO_SEPERATOR, SEGMENT_TARGET_DURATION } from '@constants/hls';
 
 /* eslint-disable @typescript-eslint/no-var-requires */
 export const getffmpeg = () => {
@@ -73,11 +73,11 @@ export const createHLSStream = (pathToFile: string, id: string) =>
     ffmpeg(pathToFile, { timeout: 432000 })
       .addOptions([
         '-f hls',
-        `-hls_time ${MPEGTS_TARGET_DURATION}`,
+        `-hls_time ${SEGMENT_TARGET_DURATION}`,
         '-hls_playlist_type vod',
         '-hls_flags independent_segments',
         '-hls_segment_type mpegts',
-        `-hls_segment_filename ${pathToManifest}/${id}${MPEGTS_FILE_NO_SEPERATOR}%01d.ts`,
+        `-hls_segment_filename ${pathToManifest}/${id}${SEGMENT_FILE_NO_SEPERATOR}%01d.ts`,
       ])
       .on('start', function (commandLine) {
         ffmpegLogger.info('Spawned FFmpeg with command: ' + commandLine);
@@ -106,7 +106,7 @@ export const createHLSSegment = (
     const ffmpeg = getffmpeg();
     const segementsDir = `_hls/${mediaId}`;
     const pathToSegments = getResourcePath(segementsDir);
-    const segmentFile = `${mediaId}${MPEGTS_FILE_NO_SEPERATOR}%d.ts`;
+    const segmentFile = `${mediaId}${SEGMENT_FILE_NO_SEPERATOR}%d.ts`;
     const pathToTemp = path.join(pathToSegments, 'temp');
     const segmentListFile = path.join(pathToTemp, `${mediaId}.m3u8`);
     const segmentTempPath = path.join(pathToTemp, segmentFile);
@@ -120,7 +120,7 @@ export const createHLSSegment = (
           '-y',
           '-copyts',
           '-start_at_zero',
-          segmentNo ? '' : `-ss ${secToTime(segmentNo * MPEGTS_TARGET_DURATION)}`,
+          segmentNo ? '' : `-ss ${secToTime(segmentNo * SEGMENT_TARGET_DURATION)}`,
           '-map 0',
           '-c copy',
           '-c:a aac',
@@ -133,7 +133,7 @@ export const createHLSSegment = (
           '-segment_format mpegts',
           `-segment_list ${segmentListFile}`,
           '-segment_list_type m3u8',
-          `-segment_time ${secToTime(MPEGTS_TARGET_DURATION)}`,
+          `-segment_time ${secToTime(SEGMENT_TARGET_DURATION)}`,
           `-segment_start_number ${segmentNo}`,
         ].filter(Boolean),
       )

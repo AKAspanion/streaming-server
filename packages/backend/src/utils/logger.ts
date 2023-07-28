@@ -7,9 +7,8 @@ const getDate = () => new Date().toISOString();
 const logDir = getResourcePath(`_logs`);
 makeDirectory(logDir);
 
-console.log(logDir);
-
 const beLogPath = `_logs/be.txt`;
+const accessLogPath = `_logs/access.txt`;
 const ffmpegLogPath = `_logs/ffmpeg.txt`;
 const pocessLogPath = `_logs/process.txt`;
 
@@ -44,6 +43,13 @@ export const logger = winston.createLogger({
   transports: [new transports.Console(), new winston.transports.File({ filename: beLogPath })],
 });
 
+export const accessLoggger = winston.createLogger({
+  level: 'info',
+  format: format.combine(format.timestamp(), format.json()),
+  defaultMeta: { service: 'ffmpeg' },
+  transports: [new winston.transports.File({ filename: accessLogPath })],
+});
+
 export const ffmpegLogger = winston.createLogger({
   level: 'info',
   format: format.combine(format.timestamp(), format.json()),
@@ -55,7 +61,7 @@ export const processLogger = winston.createLogger({
   level: 'info',
   format: format.combine(format.timestamp(), format.json()),
   defaultMeta: { service: 'process' },
-  transports: [new transports.Console(), new winston.transports.File({ filename: pocessLogPath })],
+  transports: [new winston.transports.File({ filename: pocessLogPath })],
 });
 
 export default logger;

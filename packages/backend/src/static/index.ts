@@ -7,4 +7,4 @@ export const webFiles = IS_DEV
   ? express.static(path.join(__dirname, '../../../frontend/public'))
   : express.static(path.join(__dirname, '../../frontend/dist'));
 
-export const hlsFiles = express.static(getResourcePath('_hls'));
+export const hlsFiles = express.static(getResourcePath('_temp'));

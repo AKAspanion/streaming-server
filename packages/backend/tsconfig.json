@@ -33,6 +33,8 @@
       "@config": ["src/config"],
       "@static/*": ["src/static/*"],
       "@static": ["src/static"],
+      "@lib/*": ["src/lib/*"],
+      "@lib": ["src/lib"],
       "@utils/*": ["src/utils/*"],
       "@utils": ["src/utils"]
     },

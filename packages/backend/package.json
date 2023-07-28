@@ -6,7 +6,7 @@
   "scripts": {
     "start": "cross-env NODE_ENV=production node dist/index.js",
     "build": "ttsc && yarn build:es",
-    "build:es": "cross-env NODE_ENV=production esbuild build/src/index.js --platform=node --bundle --minify --outfile=dist/index.js",
+    "build:es": "cross-env NODE_ENV=production node esbuild.config.js",
     "prestart": "yarn build",
     "lint": "eslint . --fix",
     "dev": "cross-env NODE_ENV=development nodemon -r tsconfig-paths/register src/index.ts",
@@ -38,6 +38,7 @@
     "mime": "^3.0.0",
     "mkdirp": "^3.0.1",
     "multer": "^1.4.5-lts.1",
+    "node-async-locks": "^2.1.2",
     "node-json-db": "^2.2.0",
     "winston": "^3.10.0"
   },

@@ -15,3 +15,15 @@ export const getFileType = (filepath: string) => {
 
   return { type: isFile ? 'file' : ('directory' as PathLocationType), isFile };
 };
+
+export const checkIfFileExists = (filePath: string) => {
+  return new Promise((resolve) => {
+    fs.access(filePath, fs.constants.F_OK, (err) => {
+      if (!err) {
+        resolve(true);
+      } else {
+        resolve(false);
+      }
+    });
+  });
+};

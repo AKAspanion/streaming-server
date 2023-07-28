@@ -10,12 +10,13 @@ import { requestLogger, appErrorHandler, notFoundHandler } from '@middleware';
 import { routes } from '@modules';
 import { getIPv4Address } from '@utils/ip';
 import { hlsFiles, webFiles } from '@static';
+import { hlsInit } from '@config/hls';
 import '@utils/process';
-// import { hlsInit } from '@config/hls';
 
 const app: Express = express();
 const port = process.env.NODE_APP_PORT || 5708;
 
+hlsInit();
 app.use(cors());
 app.use(requestLogger);
 app.use(express.urlencoded({ extended: false }));
