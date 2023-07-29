@@ -55,8 +55,8 @@ const MediaStreamDetails: FC<MediaStreamDetailsProps> = ({ streams }) => {
   return (
     <div className="pt-4 flex gap-3 overflow-x-auto">
       {allStreams.map(({ title, icon, list }) => {
-        return (
-          <div className="flex flex-col gap-3">
+        return list.length ? (
+          <div className="flex flex-col gap-3 pt-4">
             <div className="flex items-center gap-3">
               <div className="w-5">{icon}</div>
               <div>{title}</div>
@@ -65,7 +65,7 @@ const MediaStreamDetails: FC<MediaStreamDetailsProps> = ({ streams }) => {
               return <StreamItem stream={s} />;
             })}
           </div>
-        );
+        ) : null;
       })}
     </div>
   );
@@ -81,7 +81,7 @@ const StreamItem = ({ stream }: { stream: MediaStreamType }) => {
   return (
     <div className="max-w-fit rounded-lg shadow-md dark:bg-slate-800 bg-slate-200 p-3">
       <div
-        style={{ gridTemplateColumns: 'auto 150px' }}
+        style={{ gridTemplateColumns: 'auto 200px' }}
         className={'text-xs grid gap-x-3 gap-y-1 transition-all'}
       >
         {streamValues.map(({ name, value }) => (

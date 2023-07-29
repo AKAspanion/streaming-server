@@ -5,9 +5,13 @@ import useToastStatus from '@hooks/useToastStatus';
 import { useGetMediaByIdQuery } from '@services/media';
 import React from 'react';
 import { FC, useMemo } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import MediaStreamDetails from './MediaStreamDetails';
-import { formatBytes, formatSeconds } from '@utils/helpers';
+import { cs, formatBytes, formatHumanSeconds, formatSeconds, titleCase } from '@utils/helpers';
+import { FilmIcon, PlayIcon } from '@heroicons/react/24/solid';
+import { TagIcon } from '@heroicons/react/20/solid';
+import Button from '@components/atoms/button/Button';
+import IconButton from '@components/atoms/icon-button/IconButton';
 
 interface MediaDetailsProps {}
 
@@ -37,42 +41,109 @@ const MediaDetails: FC<MediaDetailsProps> = () => {
     ];
   }, [media?.format, media?.id, media?.mimeType, media.originalName]);
 
+  const tags = useMemo(() => {
+    const tagRecord = media?.format?.tags || {};
+    return Object.keys(tagRecord).map((key) => ({
+      name: titleCase(key),
+      value: tagRecord[key] || '',
+    }));
+  }, [media?.format?.tags]);
+
+  const mediaTitle = media?.format?.tags?.title || media.originalName || '-';
+
   return (
     <div>
-      {loading && <Spinner full />}
-      <div className="p-3">
-        <div className="h-96 flex gap-3">
-          <div className="w-64  bg-slate-300 rounded-lg overflow-hidden">
-            {media.id && (
-              <img
-                src={`${baseUrl}/media/${media.id}/thumbnail`}
-                className="w-full h-full object-cover"
-              />
-            )}
+      {loading ? (
+        <Spinner full />
+      ) : (
+        <div className="p-3">
+          <div className="min-h-[400px] flex gap-3">
+            <div className="w-96 bg-slate-300 rounded-lg overflow-hidden relative">
+              {media.id && (
+                <img
+                  src={`${baseUrl}/media/${media.id}/thumbnail`}
+                  className="w-full h-full object-cover"
+                />
+              )}
+              <div
+                className={cs(
+                  'w-full h-full dark:bg-slate-800 bg-slate-500  absolute top-0 flex items-center justify-center',
+                  'opacity-0 hover:opacity-50 transition-opacity',
+                )}
+              >
+                <Link to={`/media-play/${media.id}`}>
+                  <IconButton>
+                    <PlayIcon />
+                  </IconButton>
+                </Link>
+              </div>
+            </div>
+            <div className="flex flex-col gap-2 w-full">
+              <div className="font-semibold text-2xl">
+                <div>{mediaTitle}</div>
+              </div>
+              <div className="flex gap-2 text-sm">
+                {[
+                  formatBytes(media?.format?.size || 0),
+                  formatHumanSeconds(media?.format?.duration),
+                ]
+                  .filter(Boolean)
+                  .join(' ｜ ')}
+              </div>
+              <div className="flex">
+                <Link to={`/media-play/${media.id}`}>
+                  <Button>
+                    <div className="flex gap-2 items-center">
+                      Play
+                      <div className="w-4">
+                        <PlayIcon />
+                      </div>
+                    </div>
+                  </Button>
+                </Link>
+              </div>
+              <div className="pt-4 flex flex-col lg:flex-row gap-3 h-full items-stretch">
+                <MediaDetailsGrid title="Media Details" list={details} icon={<FilmIcon />} />
+                <MediaDetailsGrid title="Tag Details" list={tags} icon={<TagIcon />} />
+              </div>
+            </div>
           </div>
-        </div>
 
-        <div className="pb-2 pt-4 text-lg">Media Details</div>
-        <div className="dark:bg-slate-800 bg-slate-200 py-2 h-full flex flex-1 rounded-md">
-          <div
-            style={{ gridTemplateColumns: 'auto 1fr' }}
-            className={' px-3 text-sm grid transition-all'}
-          >
-            {details.map(({ name, value }) => (
-              <React.Fragment key={name}>
-                <div className="whitespace-nowrap pr-4 pb-1 font-semibold">{name}</div>
-                <div title={value} className="break-all pb-1">
-                  {value}
-                </div>
-              </React.Fragment>
-            ))}
-          </div>
+          <MediaStreamDetails streams={media?.streams} />
         </div>
-
-        <MediaStreamDetails streams={media?.streams} />
-      </div>
+      )}
     </div>
   );
+};
+
+const MediaDetailsGrid = (props: {
+  list: { name: string; value: string }[];
+  icon: React.ReactNode;
+  title: React.ReactNode;
+}) => {
+  const { list, icon, title } = props;
+
+  return list.length ? (
+    <div className="dark:bg-slate-800 bg-slate-200 py-2 flex flex-col flex-1 rounded-md">
+      <div className="flex items-center gap-3 pb-3 pl-3">
+        <div className="w-5">{icon}</div>
+        <div className="">{title}</div>
+      </div>
+      <div
+        style={{ gridTemplateColumns: 'auto 1fr' }}
+        className={' px-3 text-sm grid transition-all'}
+      >
+        {list.map(({ name, value }) => (
+          <React.Fragment key={name}>
+            <div className="whitespace-nowrap pr-4 pb-1 font-semibold">{name}</div>
+            <div title={value} className="break-all pb-1">
+              {value}
+            </div>
+          </React.Fragment>
+        ))}
+      </div>
+    </div>
+  ) : null;
 };
 
 export default MediaDetails;

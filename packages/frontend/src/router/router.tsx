@@ -107,6 +107,7 @@ export const routes: RouteObject[] = [
               hide: true,
               name: 'Media Details',
               crumb: [
+                () => ({ to: '/manage-media', label: 'Media List' }),
                 (p: Params<string>) => ({
                   to: `/manage-media/${p.mediaId}`,
                   label: 'Media Details',

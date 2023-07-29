@@ -1,10 +1,13 @@
 import cs from 'classnames';
 import React, { useEffect } from 'react';
 import { useMemo } from 'react';
-import { Link, useMatches } from 'react-router-dom';
+import { Link, useMatches, useNavigate } from 'react-router-dom';
 import { ChevronRightIcon } from '@heroicons/react/24/outline';
+import IconButton from './atoms/icon-button/IconButton';
+import { ArrowLeftIcon } from '@heroicons/react/20/solid';
 
 function Breadcrumbs() {
+  const navigate = useNavigate();
   const matches = useMatches();
 
   const crumbs = useMemo(() => {
@@ -20,6 +23,10 @@ function Breadcrumbs() {
 
     return crumbList;
   }, [matches]);
+
+  const goBack = () => {
+    navigate(-1);
+  };
 
   const crumbsLength = crumbs.length;
 
@@ -37,17 +44,12 @@ function Breadcrumbs() {
         'h-[var(--breadcrumbs-height)]',
       )}
     >
-      {/* <IconButton onClick={goBack}>
+      <IconButton onClick={goBack}>
         <div className="w-4">
           <ArrowLeftIcon />
         </div>
-      </IconButton> */}
+      </IconButton>
       <ol className="items-center text-sm flex gap-2">
-        {/* <Link to="/">
-          <div className="w-4">
-            <HomeIcon />
-          </div>
-        </Link> */}
         {crumbs.map((crumb, index) => {
           const isLast = index === crumbsLength - 1;
           return (
