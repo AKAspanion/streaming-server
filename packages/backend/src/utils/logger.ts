@@ -61,7 +61,7 @@ export const processLogger = winston.createLogger({
   level: 'info',
   format: format.combine(format.timestamp(), format.json()),
   defaultMeta: { service: 'process' },
-  transports: [new winston.transports.File({ filename: pocessLogPath })],
+  transports: [new transports.Console(), new winston.transports.File({ filename: pocessLogPath })],
 });
 
 export default logger;
