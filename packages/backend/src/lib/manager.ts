@@ -32,7 +32,7 @@ export default class HLSManager {
     return global.transcoders.some((transcoding) => transcoding.group === group);
   }
 
-  stopOtherVideotranscoders(group: string) {
+  static stopOtherVideotranscoders(group: string) {
     let i = global.transcoders.length;
     let anythingStopped = false;
     while (i--) {

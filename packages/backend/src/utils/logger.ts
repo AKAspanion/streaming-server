@@ -7,10 +7,19 @@ const getDate = () => new Date().toISOString();
 const logDir = getResourcePath(`_appdata/_logs`);
 makeDirectory(logDir);
 
-const beLogPath = `_appdata/_logs/be.txt`;
-const accessLogPath = `_appdata/_logs/access.txt`;
-const ffmpegLogPath = `_appdata/_logs/ffmpeg.txt`;
-const pocessLogPath = `_appdata/_logs/process.txt`;
+const timestamp = new Date().getTime();
+
+const beLogPath = `_appdata/_logs/be-${timestamp}.txt`;
+const accessLogPath = `_appdata/_logs/access-${timestamp}.txt`;
+const ffmpegLogPath = `_appdata/_logs/ffmpeg-${timestamp}.txt`;
+const pocessLogPath = `_appdata/_logs/process-${timestamp}.txt`;
+
+const logFormat = format.combine(
+  format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss.SSS' }),
+  format.printf((info) => {
+    return JSON.stringify({ timestamp: info.timestamp, level: info.level, message: info.message });
+  }),
+);
 
 export const info = (message?: any, ...optionalParams: any[]): void => {
   if (typeof message === 'string') {
@@ -38,28 +47,28 @@ export const warn = (message?: any, ...optionalParams: any[]): void => {
 
 export const logger = winston.createLogger({
   level: 'info',
-  format: format.combine(format.timestamp(), format.json()),
+  format: logFormat,
   defaultMeta: { service: 'ffmpeg' },
   transports: [new transports.Console(), new winston.transports.File({ filename: beLogPath })],
 });
 
 export const accessLoggger = winston.createLogger({
   level: 'info',
-  format: format.combine(format.timestamp(), format.json()),
+  format: logFormat,
   defaultMeta: { service: 'ffmpeg' },
   transports: [new winston.transports.File({ filename: accessLogPath })],
 });
 
 export const ffmpegLogger = winston.createLogger({
   level: 'info',
-  format: format.combine(format.timestamp(), format.json()),
+  format: logFormat,
   defaultMeta: { service: 'ffmpeg' },
   transports: [new transports.Console(), new winston.transports.File({ filename: ffmpegLogPath })],
 });
 
 export const processLogger = winston.createLogger({
   level: 'info',
-  format: format.combine(format.timestamp(), format.json()),
+  format: logFormat,
   defaultMeta: { service: 'process' },
   transports: [new transports.Console(), new winston.transports.File({ filename: pocessLogPath })],
 });
