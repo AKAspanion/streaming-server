@@ -6,6 +6,8 @@ import {
   SEGMENT_TARGET_DURATION,
   SEGMENT_TEMP_FOLDER,
 } from '@constants/hls';
+import HLSManager from '@lib/hls-manager';
+import { processLogger } from './logger';
 
 export const generateManifest = (id: string, duration: number) => {
   const manifestFile = `${id}.m3u8`;
@@ -78,4 +80,50 @@ export const extractHLSFileInfo = (filename: string) => {
 
 export const sortHLSFiles = (filenames: string[]) => {
   return filenames.sort();
+};
+
+export const waitUntilFileExists = (
+  filePath: string,
+  requestedSegment: number,
+  hlsManager: HLSManager,
+  group: string,
+) => {
+  return new Promise((resolve, reject) => {
+    const interval = setInterval(() => {
+      // Stop checking if the transcoding stopped
+      if (!hlsManager.isAnyVideoTranscodingActive(group)) {
+        processLogger.info('Stop checking if the transcoding stopped');
+        clearInterval(interval);
+        reject();
+      }
+      fs.access(filePath, fs.constants.F_OK, (err) => {
+        // If isSegmentFinished returned false because the transcoding isn't running we will
+        // stop the loop at the next interval (isAnyVideoTranscodingActive will be false)
+        if (!err && isSegmentFinished(requestedSegment, hlsManager, group)) {
+          processLogger.info('Found file, returning to server' + filePath);
+          clearInterval(interval);
+          resolve(true);
+        } else if (err) {
+          processLogger.info("Couldn't access " + filePath) + ', waiting for it to be ready...';
+        }
+      });
+    }, 500);
+  });
+};
+
+const isSegmentFinished = (requested: number, hlsManager: HLSManager, group: string) => {
+  if (hlsManager.isTranscodingFinished(group)) {
+    processLogger.info('Transcoding finished', group);
+    return true;
+  }
+  const start = hlsManager.getTranscodingStartSegment(group);
+  const current = hlsManager.getVideoTranscodingSegment(group);
+  processLogger.info(`Segment Finished check: `);
+  processLogger.info(`Start#${start} Current#${current} Requested#${requested}`);
+  if (start == -1) {
+    start;
+    // No transcoding was found, return false
+    return false;
+  }
+  return requested >= start && requested < current + 2;
 };

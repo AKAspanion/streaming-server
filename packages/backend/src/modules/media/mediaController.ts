@@ -1,18 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { FAST_START_SEGMENTS, SEGMENT_TEMP_FOLDER } from '@constants/hls';
+import { SEGMENT_TEMP_FOLDER } from '@constants/hls';
 import { getMediaDataDB, pushMediaDB } from '@database/json';
-import HLSManager from '@lib/manager';
+import HLSManager from '@lib/hls-manager';
+import { processHLSStream } from '@services/hls';
 import { handleJSONDBDataError } from '@utils/error';
 import { AppError, HttpCode } from '@utils/exceptions';
-import { createHLSStream, createVideoThumbnail, getVideoMetaData, testFFMPEG } from '@utils/ffmpeg';
-import { checkIfFileExists, getFileType } from '@utils/file';
+import { createHLSStream, createVideoThumbnail, getVideoMetaData } from '@utils/ffmpeg';
+import { getFileType } from '@utils/file';
 import { deleteDirectory, getResourcePath, makeDirectory } from '@utils/helper';
-import { extractHLSFileInfo, generateManifest, getTotalSegments } from '@utils/hls';
-import { processLogger } from '@utils/logger';
+import { extractHLSFileInfo, generateManifest } from '@utils/hls';
 import { randomUUID } from 'crypto';
 import { RequestHandler } from 'express';
-import fs from 'fs';
-import pathLib from 'path';
 
 type AddMediaRequestHandler = RequestHandler<{ body: { file: FileLocationType } }>;
 
@@ -154,133 +152,23 @@ export const streamMedia: RequestHandler = async (req, res) => {
   const startSegment = Math.max(segment - 1, 0);
 
   // Should be lock per group somehow
-  HLSManager.lock.enter(async function (token) {
-    const promises = [];
-    let restartTranscoding = false;
-
-    const filePath = pathLib.join(hlsManager.getVideoTranscodingOutputPath(group), file);
-    processLogger.info(`Started processing of segment no ${segment}`);
-
-    if (!hlsManager.isAnyVideoTranscodingActive(group)) {
-      restartTranscoding = true;
-    } else {
-      if (hlsManager.stopOtherVideoTranscodings(group)) {
-        // Stop other transcodings (other qualities) if they are running
-        processLogger.info(`Stop other transcodings if they are running`);
-        restartTranscoding = true;
-      } else {
-        const path = pathLib.join(hlsManager.getVideoTranscodingOutputPath(group), file);
-        const segmentExists = await checkIfFileExists(path);
-
-        const latestSegment = hlsManager.getVideoTranscodingSegment(group);
-        const totalSegments = getTotalSegments(duration);
-        // Increase the threshold to avoid the situation where the transcoding is being stopped too early because of slow transcodings
-        if (segment > latestSegment + 10) {
-          // Restart transcoding since seektime is too far away
-          processLogger.info(`[HLS] Too long seek`);
-          restartTranscoding = true;
-        } else if (segment < hlsManager.getTranscodingStartSegment(group) && !segmentExists) {
-          // Restart transcoding since seektime is in the past, and that segment does not exist
-          processLogger.info(`[HLS] Seeking in the past for a segment that doesn't exist `);
-          restartTranscoding = true;
-        } else if (
-          segment + FAST_START_SEGMENTS / 4 > latestSegment &&
-          !hlsManager.isFastSeekingRunning(group) &&
-          !hlsManager.isTranscodingFinished(group)
-        ) {
-          // If we are seeking inside the fast seeking range and fast seek is not running, restart transcoding
-          processLogger.info(`[HLS] Seeking inside the fast seeking range `);
-          restartTranscoding = true;
-        } else if (hlsManager.isTranscodingFinished(group)) {
-          try {
-            fs.accessSync(filePath, fs.constants.F_OK);
-            processLogger.info(`[HLS] Process finished and segment`);
-          } catch (err) {
-            processLogger.info(`[HLS] Process finished but segment not found, restarting`);
-            restartTranscoding = true;
-          }
-        }
-        processLogger.info(
-          `Segments (total: ${totalSegments}, current ${latestSegment}, requested: ${segment}). Restarting at ${startSegment}`,
-        );
-
-        // If restartTranscoding is true in here, we need to stop the other transcodings
-        // Since we are either seeking far in the future, in the past or inside the fast seeking range
-        if (restartTranscoding) {
-          hlsManager.stopAllVideoTranscodings(group);
-        }
-      }
-    }
-
-    if (restartTranscoding) {
-      promises.push(hlsManager.startTranscoding(videoPath, startSegment, audioStream, group));
-    }
-
-    const startedNewTranscoding = promises.length > 0;
-    Promise.all(promises).then((data) => {
-      processLogger.info('promises done ' + data);
-      processLogger.info('Checking for path ' + filePath);
-      const waitForSegment = startedNewTranscoding ? segment + 2 : segment;
-      waitUntilFileExists(filePath, waitForSegment, hlsManager, group)
-        .then(() => {
-          res.setHeader('Access-Control-Allow-Origin', '*');
-          res.setHeader('Access-Control-Allow-Headers', '*');
-          res.status(HttpCode.OK).download(filePath);
-        })
-        .catch(() => {
-          const message = `[HLS] Transcoding was stopped for group ${group}`;
-          processLogger.info(message);
-          throw new AppError({ httpCode: HttpCode.NOT_FOUND, description: message });
-        });
-      HLSManager.lock.leave(token);
+  try {
+    const filePath = await processHLSStream({
+      audioStream,
+      videoPath,
+      hlsManager,
+      group,
+      startSegment,
+      segment,
+      file,
+      duration,
     });
-  });
-};
-
-const waitUntilFileExists = (
-  filePath: string,
-  requestedSegment: number,
-  hlsManager: HLSManager,
-  group: string,
-) => {
-  return new Promise((resolve, reject) => {
-    const interval = setInterval(() => {
-      // Stop checking if the transcoding stopped
-      if (!hlsManager.isAnyVideoTranscodingActive(group)) {
-        processLogger.info('Stop checking if the transcoding stopped');
-        clearInterval(interval);
-        reject();
-      }
-      fs.access(filePath, fs.constants.F_OK, (err) => {
-        // If isSegmentFinished returned false because the transcoding isn't running we will
-        // stop the loop at the next interval (isAnyVideoTranscodingActive will be false)
-        if (!err && isSegmentFinished(requestedSegment, hlsManager, group)) {
-          processLogger.info('Found file, returning to server' + filePath);
-          clearInterval(interval);
-          resolve(true);
-        } else if (err) {
-          processLogger.info("Couldn't access " + filePath) + ', waiting for it to be ready...';
-        }
-      });
-    }, 500);
-  });
-};
-
-const isSegmentFinished = (requested: number, hlsManager: HLSManager, group: string) => {
-  if (hlsManager.isTranscodingFinished(group)) {
-    processLogger.info('Transcoding finished', group);
-    return true;
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Headers', '*');
+    res.status(HttpCode.OK).download(filePath);
+  } catch (error) {
+    throw new AppError({ httpCode: HttpCode.NOT_FOUND, description: 'File not found' });
   }
-  const start = hlsManager.getTranscodingStartSegment(group);
-  const current = hlsManager.getVideoTranscodingSegment(group);
-  processLogger.info(`Segment Finished check: `);
-  processLogger.info(`Start#${start} Current#${current} Requested#${requested}`);
-  if (start == -1) {
-    start;
-    // No transcoding was found, return false
-    return false;
-  }
-  return requested >= start && requested < current + 2;
 };
 
 export const getThumbnail: RequestHandler = async (req, res) => {
@@ -330,7 +218,5 @@ export const probeFile: RequestHandler = async (req, res) => {
 export const testStuff: RequestHandler = async (req, res) => {
   const { file } = req.body;
 
-  const data = await testFFMPEG(file);
-
-  return res.status(HttpCode.OK).send({ data });
+  return res.status(HttpCode.OK).send({ file });
 };

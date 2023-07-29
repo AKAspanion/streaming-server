@@ -6,7 +6,6 @@ import TranscoderGroup from './transcoder-group';
 import { AsyncLock } from 'node-async-locks';
 import Transcoder from './transcoder';
 import { SEGMENT_TEMP_FOLDER } from '@constants/hls';
-// import { FAST_START_TIME, SEGMENT_TARGET_DURATION } from '@constants/hls';
 
 declare global {
   var transcoders: TranscoderGroup[] | undefined;
