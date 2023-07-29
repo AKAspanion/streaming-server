@@ -22,7 +22,7 @@ export const getffmpeg = () => {
 export const createVideoThumbnail = (pathToFile: string, filename: string) =>
   new Promise((resolve, reject) => {
     const ffmpeg = getffmpeg();
-    const pathToSnapshot = getResourcePath('_screenshots');
+    const pathToSnapshot = getResourcePath('_appdata/_screenshots');
     const thumbnailFile = `thumb_${filename}.png`;
     const thumbnailPath = path.join(pathToSnapshot, thumbnailFile);
 

@@ -1,11 +1,15 @@
 import fs from 'fs';
 import { deleteFile, getResourcePath, makeDirectory } from './helper';
 import path from 'path';
-import { SEGMENT_FILE_NO_SEPERATOR, SEGMENT_TARGET_DURATION } from '@constants/hls';
+import {
+  SEGMENT_FILE_NO_SEPERATOR,
+  SEGMENT_TARGET_DURATION,
+  SEGMENT_TEMP_FOLDER,
+} from '@constants/hls';
 
 export const generateManifest = (id: string, duration: number) => {
   const manifestFile = `${id}.m3u8`;
-  const manifestDir = `_temp/${id}/`;
+  const manifestDir = `${SEGMENT_TEMP_FOLDER}${id}/`;
   const pathToManifest = getResourcePath(manifestDir);
   const outputFile = path.join(pathToManifest, manifestFile);
 

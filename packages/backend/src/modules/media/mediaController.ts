@@ -1,5 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { FAST_START_SEGMENTS, SEGMENT_FILE_NO_SEPERATOR } from '@constants/hls';
+import {
+  FAST_START_SEGMENTS,
+  SEGMENT_FILE_NO_SEPERATOR,
+  SEGMENT_TEMP_FOLDER,
+} from '@constants/hls';
 import { getMediaDataDB, pushMediaDB } from '@database/json';
 import HLSManager from '@lib/manager';
 import { handleJSONDBDataError } from '@utils/error';
@@ -102,7 +106,7 @@ export const getMedia: RequestHandler = async (req, res) => {
 
   const manifestFile = `${id}.m3u8`;
 
-  const hlsPath = getResourcePath('_temp/' + id);
+  const hlsPath = getResourcePath(SEGMENT_TEMP_FOLDER + id);
 
   deleteDirectory(hlsPath);
   makeDirectory(hlsPath);
@@ -128,7 +132,7 @@ export const streamMedia: RequestHandler = async (req, res) => {
     throw new AppError({ httpCode: HttpCode.BAD_REQUEST, description: 'Not a HLS request' });
   }
 
-  const hlsPath = getResourcePath('_temp/' + fileId);
+  const hlsPath = getResourcePath(SEGMENT_TEMP_FOLDER + fileId);
   const urlFilePath = `${hlsPath}/${file}`;
 
   if (ext === 'm3u8') {

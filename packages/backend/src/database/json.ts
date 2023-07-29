@@ -2,8 +2,8 @@ import { IS_DEV } from '@config/app';
 import { getResourcePath } from '@utils/helper';
 import { JsonDB, Config } from 'node-json-db';
 
-const videoDBPath = getResourcePath('/_db/StreamingServerVideoDB');
-const mediaDBPath = getResourcePath('/_db/StreamingServerMediaDB');
+const videoDBPath = getResourcePath('/_appdata/_db/StreamingServerVideoDB');
+const mediaDBPath = getResourcePath('/_appdata/_db/StreamingServerMediaDB');
 
 export const vidoesDB = new JsonDB(new Config(videoDBPath, true, IS_DEV, '/'));
 export const mediaDB = new JsonDB(new Config(mediaDBPath, true, IS_DEV, '/'));

@@ -4,13 +4,13 @@ import { getResourcePath, makeDirectory } from './helper';
 
 const getDate = () => new Date().toISOString();
 
-const logDir = getResourcePath(`_logs`);
+const logDir = getResourcePath(`_appdata/_logs`);
 makeDirectory(logDir);
 
-const beLogPath = `_logs/be.txt`;
-const accessLogPath = `_logs/access.txt`;
-const ffmpegLogPath = `_logs/ffmpeg.txt`;
-const pocessLogPath = `_logs/process.txt`;
+const beLogPath = `_appdata/_logs/be.txt`;
+const accessLogPath = `_appdata/_logs/access.txt`;
+const ffmpegLogPath = `_appdata/_logs/ffmpeg.txt`;
+const pocessLogPath = `_appdata/_logs/process.txt`;
 
 export const info = (message?: any, ...optionalParams: any[]): void => {
   if (typeof message === 'string') {
