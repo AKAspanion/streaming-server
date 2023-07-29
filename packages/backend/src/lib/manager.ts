@@ -32,7 +32,7 @@ export default class HLSManager {
 
   isAnyVideoTranscodingActive(group: string) {
     if (!global.transcoders || !global.transcoders.length) return;
-    return global.transcoders.some((transcoding) => transcoding.group === group);
+    return global.transcoders.some((t) => t.group === group && !t.isTranscodingFinished());
   }
 
   static stopOtherVideotranscoders(group: string) {
@@ -111,6 +111,20 @@ export default class HLSManager {
         }
       }
     }
+  }
+
+  static stopVideotranscoders(group: string) {
+    if (!global.transcoders || !global.transcoders.length) return;
+    let i = global.transcoders.length;
+    let anythingStopped = false;
+    while (i--) {
+      if (global.transcoders[i].group === group) {
+        global.transcoders[i].stop();
+        global.transcoders.splice(i, 1);
+        anythingStopped = true;
+      }
+    }
+    return anythingStopped;
   }
 
   static stopGlobalTranscodings() {

@@ -234,10 +234,9 @@ export const streamMedia: RequestHandler = async (req, res) => {
         })
         .catch(() => {
           // Transcoding was stopped
-          processLogger.info(
-            `[HLS] Transcoding was stopped for group ${group}, not waiting for segment anymore`,
-          );
-          throw new AppError({ httpCode: HttpCode.NOT_FOUND, description: 'Media not found' });
+          const message = `[HLS] Transcoding was stopped for group ${group}, not waiting for segment anymore`;
+          processLogger.info(message);
+          throw new AppError({ httpCode: HttpCode.NOT_FOUND, description: message });
         });
       HLSManager.lock.leave(token);
     });
@@ -277,7 +276,7 @@ const waitUntilFileExists = (
 const isSegmentFinished = (requestedSegment: number, hlsManager: HLSManager, group: string) => {
   if (hlsManager.isTranscodingFinished(group)) {
     processLogger.info('Transcoding finished', group);
-    return true;
+    return false;
   }
   const startSegment = hlsManager.getTranscodingStartSegment(group);
   const currentSegment = hlsManager.getVideoTranscodingSegment(group);

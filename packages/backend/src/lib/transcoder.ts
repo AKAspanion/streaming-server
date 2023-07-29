@@ -12,6 +12,7 @@ import { ffmpegLogger, processLogger } from '@utils/logger';
 import { FfmpegCommand } from 'fluent-ffmpeg';
 import fs from 'fs';
 import path from 'path';
+import HLSManager from './manager';
 
 export default class Transcoder {
   filePath: string;
@@ -141,11 +142,12 @@ export default class Transcoder {
 
       const ffmpeg = getffmpeg();
 
-      this.ffmpegProc = ffmpeg(this.filePath)
+      this.ffmpegProc = ffmpeg(this.filePath, { timeout: 432000 })
         .inputOptions(inputOptions)
         .outputOptions(outputOptions)
         .on('end', () => {
           this.finished = true;
+          HLSManager.stopVideotranscoders(this.group);
         })
         .on('progress', (progress) => {
           // this.addSeekTimeToSeconds(this.timestampToSeconds(progress.timemark)); <- This is needed on other versions of ffmpeg. TODO: How do we know if this is needed?
@@ -168,6 +170,7 @@ export default class Transcoder {
           resolve(true);
         })
         .on('error', (err, stdout, stderr) => {
+          HLSManager.stopVideotranscoders(this.group);
           if (
             err.message != 'Output stream closed' &&
             err.message != 'ffmpeg was killed with signal SIGKILL'
