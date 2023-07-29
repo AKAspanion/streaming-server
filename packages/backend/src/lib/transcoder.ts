@@ -154,6 +154,7 @@ export default class Transcoder {
             ffmpegLogger.error(`Cannot process video: ${err.message}`);
           }
           ffmpegLogger.error(stderr);
+          console.log(err);
         })
         .output(this.output);
       this.ffmpegProc.run();
