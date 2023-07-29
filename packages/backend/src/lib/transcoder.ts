@@ -103,7 +103,13 @@ export default class Transcoder {
   }
 
   getInputOptions(threads: number) {
-    const options = ['-y', '-loglevel verbose', '-copyts', this.getSeekParameter()];
+    const options = [
+      '-y',
+      '-loglevel verbose',
+      '-copyts',
+      this.getSeekParameter(),
+      '-hwaccel auto',
+    ];
 
     options.concat(this.getCpuInputOptions(threads));
 

@@ -2,5 +2,6 @@
   "execMap": {
     "ts": "ts-node"
   },
-  "ignore": ["README", "_temp", "_subs", "_screenshots", "_db", "_videos"]
+  "verbose": true,
+  "ignore": ["README", "build", "dist", "_temp", "_subs", "_logs", "_screenshots", "_db", "_videos"]
 }
