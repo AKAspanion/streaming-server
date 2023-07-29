@@ -8,6 +8,7 @@ import {
   generateStream,
   probeFile,
   testStuff,
+  deleteMedia,
 } from './mediaController';
 
 const router = Router();
@@ -20,6 +21,7 @@ router.post('/', addMedia);
 router.get('/probe', probeFile);
 router.get('/', getAllMedia);
 router.get('/:id', getMedia);
+router.delete('/:id', deleteMedia);
 
 router.get('/test/stuff', testStuff);
 

@@ -5,22 +5,27 @@ import useToastStatus from '@hooks/useToastStatus';
 import { useGetMediaByIdQuery } from '@services/media';
 import React from 'react';
 import { FC, useMemo } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import MediaStreamDetails from './MediaStreamDetails';
 import { cs, formatBytes, formatHumanSeconds, formatSeconds, titleCase } from '@utils/helpers';
-import { FilmIcon, PlayIcon } from '@heroicons/react/24/solid';
+import { FilmIcon, PlayIcon, TrashIcon } from '@heroicons/react/24/solid';
 import { TagIcon } from '@heroicons/react/20/solid';
 import Button from '@components/atoms/button/Button';
 import IconButton from '@components/atoms/icon-button/IconButton';
+import useMedia from '@hooks/useMedia';
 
 interface MediaDetailsProps {}
 
 const MediaDetails: FC<MediaDetailsProps> = () => {
+  const navigate = useNavigate();
   const { mediaId = '' } = useParams();
+  const { handleDelete, isDeleteLoading } = useMedia({
+    onDelete: () => navigate('/manage-media'),
+  });
 
   const { data: mediaData, isFetching, status } = useGetMediaByIdQuery(mediaId);
 
-  const loading = isFetching;
+  const loading = isFetching || isDeleteLoading;
 
   const media = useMemo(() => mediaData?.data || ({} as MediaTypeFull), [mediaData?.data]);
 
@@ -90,7 +95,7 @@ const MediaDetails: FC<MediaDetailsProps> = () => {
                   .filter(Boolean)
                   .join(' ｜ ')}
               </div>
-              <div className="flex">
+              <div className="flex gap-3">
                 <Link to={`/media-play/${media.id}`}>
                   <Button>
                     <div className="flex gap-2 items-center">
@@ -101,6 +106,14 @@ const MediaDetails: FC<MediaDetailsProps> = () => {
                     </div>
                   </Button>
                 </Link>
+                <Button onClick={() => handleDelete(media.id)}>
+                  <div className="flex gap-2 items-center text-red-500">
+                    Delete
+                    <div className="w-4">
+                      <TrashIcon />
+                    </div>
+                  </div>
+                </Button>
               </div>
               <div className="pt-4 flex flex-col lg:flex-row gap-3 h-full items-stretch">
                 <MediaDetailsGrid title="Media Details" list={details} icon={<FilmIcon />} />

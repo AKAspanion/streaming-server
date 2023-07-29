@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { SEGMENT_TEMP_FOLDER } from '@constants/hls';
-import { getMediaDataDB, pushMediaDB } from '@database/json';
+import { deleteMediaDB, getMediaDataDB, pushMediaDB } from '@database/json';
 import HLSManager from '@lib/hls-manager';
 import { processHLSStream } from '@services/hls';
 import { handleJSONDBDataError } from '@utils/error';
@@ -46,7 +46,7 @@ export const addMedia: AddMediaRequestHandler = async (req, res) => {
     handleJSONDBDataError(error, id);
   }
 
-  return res.status(HttpCode.OK).send({ data: 'Video added successfully' });
+  return res.status(HttpCode.OK).send({ data: { message: 'Video added successfully' } });
 };
 
 export const getAllMedia: AddMediaRequestHandler = async (req, res) => {
@@ -78,6 +78,27 @@ export const getAllMedia: AddMediaRequestHandler = async (req, res) => {
   });
 
   return res.status(HttpCode.OK).send({ data });
+};
+
+export const deleteMedia: RequestHandler = async (req, res) => {
+  const id = req.params.id || '';
+  const { data, error } = await getMediaDataDB<MediaTypeJSONDB>(`/${id}`);
+
+  if (error) {
+    handleJSONDBDataError(error, id);
+  }
+
+  if (!data) {
+    throw new AppError({ httpCode: HttpCode.BAD_REQUEST, description: 'Media not found' });
+  }
+
+  const { error: deleteError } = await deleteMediaDB(`/${id}`);
+
+  if (deleteError) {
+    handleJSONDBDataError(deleteError, id);
+  }
+
+  return res.status(HttpCode.OK).send({ data: { message: 'Video deleted successfully' } });
 };
 
 export const getMedia: RequestHandler = async (req, res) => {

@@ -6,17 +6,24 @@ import { toast } from 'react-hot-toast/headless';
 import { FC } from 'react';
 import { InformationCircleIcon } from '@heroicons/react/24/outline';
 import { Link } from 'react-router-dom';
+import useMedia from '@hooks/useMedia';
+import Spinner from '@components/atoms/spinner/Spinner';
+import React from 'react';
 
 interface MediaCardProps {
   media: MediaType;
 }
 
 const MediaCard: FC<MediaCardProps> = ({ media }) => {
+  const { handleDelete, isDeleteLoading } = useMedia();
+
   const copyLink = async (txt: string) => {
     const res = await copyTextToClipboard(baseUrl + '/#' + txt);
     if (res) toast.success('Network link copied');
     else toast.error('Failed to copy link');
   };
+
+  const loading = isDeleteLoading;
 
   return (
     <div className="p-1 h-full ">
@@ -42,25 +49,32 @@ const MediaCard: FC<MediaCardProps> = ({ media }) => {
           </div>
         )}
         <div className="flex-1"></div>
+
         <div className="p-3 flex justify-end w-full gap-3">
-          <Link to={`/manage-media/${media.id}`}>
-            <IconButton>
-              <InformationCircleIcon />
-            </IconButton>
-          </Link>
-          <IconButton onClick={() => copyLink(`/video-play/${media.id}`)}>
-            <div className="w-3.5 mt-0.5 ml-0.5">
-              <LinkIcon />
-            </div>
-          </IconButton>
-          <Link to={`/media-play/${media.id}`}>
-            <IconButton>
-              <PlayIcon />
-            </IconButton>
-          </Link>
-          <IconButton>
-            <TrashIcon />
-          </IconButton>
+          {loading ? (
+            <Spinner />
+          ) : (
+            <React.Fragment>
+              <Link to={`/manage-media/${media.id}`}>
+                <IconButton>
+                  <InformationCircleIcon />
+                </IconButton>
+              </Link>
+              <IconButton onClick={() => copyLink(`/video-play/${media.id}`)}>
+                <div className="w-3.5 mt-0.5 ml-0.5">
+                  <LinkIcon />
+                </div>
+              </IconButton>
+              <Link to={`/media-play/${media.id}`}>
+                <IconButton>
+                  <PlayIcon />
+                </IconButton>
+              </Link>
+              <IconButton onClick={() => handleDelete(media.id)}>
+                <TrashIcon />
+              </IconButton>
+            </React.Fragment>
+          )}
         </div>
       </div>
     </div>

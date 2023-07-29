@@ -57,3 +57,13 @@ export const getMediaDataDB = async <T>(path: string) => {
     return { error, data: undefined };
   }
 };
+
+export const deleteMediaDB = async (path: string) => {
+  try {
+    await mediaDB.delete(path);
+
+    return { error: undefined };
+  } catch (error) {
+    return { error };
+  }
+};
