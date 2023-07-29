@@ -142,10 +142,6 @@ export const streamMedia: RequestHandler = async (req, res) => {
   const mediaId = fileId.split(SEGMENT_FILE_NO_SEPERATOR)[0];
   const segment = Number(fileId.split(SEGMENT_FILE_NO_SEPERATOR).pop());
 
-  if (segment === 0) {
-    HLSManager.stopOtherVideotranscoders(mediaId);
-  }
-
   const { data, error } = await getMediaDataDB<MediaTypeJSONDB>(`/${mediaId}`);
 
   if (error) {
