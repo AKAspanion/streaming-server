@@ -25,30 +25,32 @@ const ManageMedia = () => {
   const loading = isFetching || isLoading;
 
   return (
-    <div className="p-3">
+    <div className="relative h-full">
       {loading ? <Spinner full /> : null}
-      <div className="flex justify-end">
-        <Button onClick={() => setOpen(true)}>
-          <div className="flex gap-2 items-center">
-            Add Media
-            <div className="w-4">
-              <PlusIcon />
+      <div className="p-3">
+        <div className="flex justify-end">
+          <Button onClick={() => setOpen(true)}>
+            <div className="flex gap-2 items-center">
+              Add Media
+              <div className="w-4">
+                <PlusIcon />
+              </div>
             </div>
-          </div>
-        </Button>
+          </Button>
+        </div>
+        <div className="grid xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-2 gap-3 py-3">
+          {mediaList?.map((m) => {
+            return (
+              <div key={m.id}>
+                <MediaCard media={m} />
+              </div>
+            );
+          })}
+        </div>
+        <Modal title={'Select Video Files'} open={open} onClose={() => setOpen(false)}>
+          <FilePicker onSubmit={handleFileSubmit} />
+        </Modal>
       </div>
-      <div className="grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2 gap-3 py-3">
-        {mediaList?.map((m) => {
-          return (
-            <div key={m.id}>
-              <MediaCard media={m} />
-            </div>
-          );
-        })}
-      </div>
-      <Modal title={'Select Video Files'} open={open} onClose={() => setOpen(false)}>
-        <FilePicker onSubmit={handleFileSubmit} />
-      </Modal>
     </div>
   );
 };

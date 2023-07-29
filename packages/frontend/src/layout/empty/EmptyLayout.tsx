@@ -3,7 +3,7 @@ import { Outlet } from 'react-router-dom';
 
 const Empty: FC = () => {
   return (
-    <div>
+    <div className="h-full">
       <Outlet />
     </div>
   );
