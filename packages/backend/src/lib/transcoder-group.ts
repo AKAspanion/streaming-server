@@ -46,13 +46,13 @@ export default class TranscoderGroup {
   getLatestSegment() {
     if (
       this.slowTranscoder &&
-      this.slowTranscoder.latestSegment > this.fastTranscoder.latestSegment
+      this.slowTranscoder.getLatestSegment() > this.fastTranscoder.getLatestSegment()
     ) {
-      processLogger.info('Latest Segment is from slow ' + this.slowTranscoder.latestSegment);
-      return this.slowTranscoder.latestSegment;
+      processLogger.info('Latest Segment is from slow ' + this.slowTranscoder.getLatestSegment());
+      return this.slowTranscoder.getLatestSegment();
     }
-    processLogger.info('Latest Segment is from fast ' + this.fastTranscoder.latestSegment);
-    return this.fastTranscoder.latestSegment;
+    processLogger.info('Latest Segment is from fast ' + this.fastTranscoder.getLatestSegment());
+    return this.fastTranscoder.getLatestSegment();
   }
 
   getStartSegment() {

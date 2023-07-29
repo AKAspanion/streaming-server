@@ -42,3 +42,40 @@ ${segments.join('\n')}
 
   fs.writeFileSync(outputFile, manifestfile);
 };
+
+export const getTotalSegments = (duration: number) => {
+  const targetDuration = SEGMENT_TARGET_DURATION;
+  let index = 0;
+  do {
+    duration -= targetDuration;
+    index++;
+  } while (duration > 0);
+
+  return index - 1;
+};
+
+export const extractHLSFileInfo = (filename: string) => {
+  const ext = filename.split('.').pop();
+  const fileId = filename.split('.')[0];
+  let mediaId = '';
+  let segment = 0;
+
+  const isTS = ext === 'ts';
+  const ism3u8 = ext === 'm3u8';
+  const isInvalid = ext !== 'm3u8' && ext !== 'ts';
+
+  if (isTS) {
+    mediaId = fileId.split(SEGMENT_FILE_NO_SEPERATOR)[0];
+    segment = Number(fileId.split(SEGMENT_FILE_NO_SEPERATOR).pop());
+  }
+
+  if (ism3u8) {
+    mediaId = fileId;
+  }
+
+  return { ext, mediaId, segment, isTS, ism3u8, isInvalid };
+};
+
+export const sortHLSFiles = (filenames: string[]) => {
+  return filenames.sort();
+};

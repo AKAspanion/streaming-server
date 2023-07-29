@@ -8,11 +8,11 @@ import {
 import { timestampToSeconds } from '@utils/date-time';
 import { getffmpeg } from '@utils/ffmpeg';
 import { getResourcePath, makeDirectory } from '@utils/helper';
+import { extractHLSFileInfo } from '@utils/hls';
 import { ffmpegLogger, processLogger } from '@utils/logger';
 import { FfmpegCommand } from 'fluent-ffmpeg';
 import fs from 'fs';
 import path from 'path';
-import HLSManager from './manager';
 
 export default class Transcoder {
   filePath: string;
@@ -51,6 +51,24 @@ export default class Transcoder {
     }
   }
 
+  getLatestSegment() {
+    return this.latestSegment;
+  }
+
+  getFileLatestSegment() {
+    return new Promise((resolve) => {
+      fs.readdir(this.output, (err, files) => {
+        if (!err && files && files.length) {
+          const latestFile = files[files.length - 1];
+          const { segment } = extractHLSFileInfo(latestFile);
+          processLogger.info(`Latest Segment from file is ${segment}`);
+
+          resolve(segment);
+        }
+      });
+    });
+  }
+
   getOutputOptions() {
     const options = [
       '-copyts',
@@ -81,6 +99,7 @@ export default class Transcoder {
       `-hls_time ${SEGMENT_TARGET_DURATION}`,
       '-force_key_frames expr:gte(t,n_forced*2)',
       '-hls_playlist_type vod',
+      '-hls_flags +temp_file+split_by_time',
       `-start_number ${this.startSegment}`,
       `-segment_list ${this.output}/${this.group}${SEGMENT_FILE_NO_SEPERATOR}_temp.m3u8`,
       `-hls_segment_filename ${this.output}/${this.group}${SEGMENT_FILE_NO_SEPERATOR}%01d.ts`,
@@ -132,11 +151,9 @@ export default class Transcoder {
 
       const inputOptions = this.getInputOptions(8);
 
-      // GPU Transcoding only uses fast-start, so we need to transcode the whole file
       if (this.fastStart) {
         outputOptions.push(`-to ${this.startSegment * SEGMENT_TARGET_DURATION + FAST_START_TIME}`); // Quickly transcode the first segments
       } else if (!this.fastStart) {
-        // TODO: We shouldn't run slow transcoding on GPU
         inputOptions.push('-re'); // Process the file slowly to save CPU
       }
 
@@ -147,19 +164,16 @@ export default class Transcoder {
         .outputOptions(outputOptions)
         .on('end', () => {
           this.finished = true;
-          HLSManager.stopVideotranscoders(this.group);
         })
         .on('progress', (progress) => {
-          // this.addSeekTimeToSeconds(this.timestampToSeconds(progress.timemark)); <- This is needed on other versions of ffmpeg. TODO: How do we know if this is needed?
           const seconds = timestampToSeconds(progress.timemark);
-          // Sometimes ffmpeg reports timemark as negative if using nvenc
           if (seconds > 0) {
             const latestSegment = Math.max(Math.floor(seconds / SEGMENT_TARGET_DURATION) - 1); // - 1 because the first segment is 0
             this.latestSegment = latestSegment;
           }
+          processLogger.info('Progress for video: ' + this.group);
           processLogger.info(
-            'Progress: ' + this.group + ' Segment:' + this.latestSegment + ' Time:',
-            seconds,
+            `Latest Segment:${this.latestSegment} Start Segement:${this.startSegment} Time:${seconds}`,
           );
         })
         .on('start', (commandLine) => {
@@ -170,7 +184,6 @@ export default class Transcoder {
           resolve(true);
         })
         .on('error', (err, stdout, stderr) => {
-          HLSManager.stopVideotranscoders(this.group);
           if (
             err.message != 'Output stream closed' &&
             err.message != 'ffmpeg was killed with signal SIGKILL'

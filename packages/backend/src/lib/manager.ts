@@ -32,7 +32,7 @@ export default class HLSManager {
 
   isAnyVideoTranscodingActive(group: string) {
     if (!global.transcoders || !global.transcoders.length) return;
-    return global.transcoders.some((t) => t.group === group && !t.isTranscodingFinished());
+    return global.transcoders.some((t) => t.group === group);
   }
 
   static stopOtherVideotranscoders(group: string) {
