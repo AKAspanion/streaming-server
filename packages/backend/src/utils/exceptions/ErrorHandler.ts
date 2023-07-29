@@ -21,7 +21,7 @@ class ErrorHandler {
       response.status(HttpCode.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
     }
 
-    console.error({ error });
+    console.error(error);
 
     logger.error('Application encountered a critical error.');
   }

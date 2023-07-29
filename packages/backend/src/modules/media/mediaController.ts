@@ -263,7 +263,7 @@ const waitUntilFileExists = (
           clearInterval(interval);
           resolve(true);
         } else if (err) {
-          console.log(err);
+          processLogger.info("Couldn't access " + filePath) + ', waiting for it to be ready...';
         }
       });
     }, 500);
