@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { SEGMENT_TEMP_FOLDER } from '@constants/hls';
-import { deleteMediaDB, getMediaDataDB, pushMediaDB } from '@database/json';
+import { deleteMediaDB, pushMediaDB } from '@database/json';
 import HLSManager from '@lib/hls-manager';
 import { processHLSStream } from '@services/hls';
 import { handleJSONDBDataError } from '@utils/error';
@@ -11,8 +11,22 @@ import { deleteDirectory, getResourcePath, makeDirectory } from '@utils/helper';
 import { extractHLSFileInfo, generateManifest } from '@utils/hls';
 import { randomUUID } from 'crypto';
 import { RequestHandler } from 'express';
+import { getAllMediaData, getOneMediaData } from './mediaData';
 
 type AddMediaRequestHandler = RequestHandler<{ body: { file: FileLocationType } }>;
+
+export const getMedia: RequestHandler = async (req, res) => {
+  const id = req.params.id || '';
+  const { data } = await getOneMediaData(id);
+
+  return res.status(HttpCode.OK).send({ data: { ...data, id } });
+};
+
+export const getAllMedia: AddMediaRequestHandler = async (req, res) => {
+  const { data } = await getAllMediaData();
+
+  return res.status(HttpCode.OK).send({ data });
+};
 
 export const addMedia: AddMediaRequestHandler = async (req, res) => {
   const { file } = req.body;
@@ -57,48 +71,10 @@ export const addMedia: AddMediaRequestHandler = async (req, res) => {
   return res.status(HttpCode.OK).send({ data: { message: 'Video added successfully' } });
 };
 
-export const getAllMedia: AddMediaRequestHandler = async (req, res) => {
-  HLSManager.stopGlobalTranscodings();
-  const { data: result, error } = await getMediaDataDB<Record<string, MediaTypeJSONDB>>(`/`);
-  if (error) {
-    handleJSONDBDataError(error);
-  }
-
-  if (!result) {
-    throw new AppError({ httpCode: HttpCode.BAD_REQUEST, description: 'Video not found' });
-  }
-
-  const data: MediaType[] = (
-    result
-      ? Object.keys(result || {}).map((id) => ({
-          ...(result[id] || {}),
-          id,
-        }))
-      : []
-  ).map((d) => {
-    return {
-      id: d.id,
-      path: d.path,
-      format: d.format,
-      originalName: d.originalName,
-      mimeType: d.mimeType,
-    };
-  });
-
-  return res.status(HttpCode.OK).send({ data });
-};
-
 export const deleteMedia: RequestHandler = async (req, res) => {
   const id = req.params.id || '';
-  const { data, error } = await getMediaDataDB<MediaTypeJSONDB>(`/${id}`);
 
-  if (error) {
-    handleJSONDBDataError(error, id);
-  }
-
-  if (!data) {
-    throw new AppError({ httpCode: HttpCode.BAD_REQUEST, description: 'Media not found' });
-  }
+  await getOneMediaData(id);
 
   const { error: deleteError } = await deleteMediaDB(`/${id}`);
 
@@ -109,32 +85,16 @@ export const deleteMedia: RequestHandler = async (req, res) => {
   return res.status(HttpCode.OK).send({ data: { message: 'Video deleted successfully' } });
 };
 
-export const getMedia: RequestHandler = async (req, res) => {
+export const updatePlayData: RequestHandler = async (req, res) => {
   const id = req.params.id || '';
-  const { data, error } = await getMediaDataDB<MediaTypeJSONDB>(`/${id}`);
-
-  if (error) {
-    handleJSONDBDataError(error, id);
-  }
-
-  if (!data) {
-    throw new AppError({ httpCode: HttpCode.BAD_REQUEST, description: 'Media not found' });
-  }
+  const { data } = await getOneMediaData(id);
 
   return res.status(HttpCode.OK).send({ data: { ...data, id } });
 };
 
 export const markFavourite: RequestHandler = async (req, res) => {
   const id = req.params.id || '';
-  const { data, error } = await getMediaDataDB<MediaTypeJSONDB>(`/${id}`);
-
-  if (error) {
-    handleJSONDBDataError(error, id);
-  }
-
-  if (!data) {
-    throw new AppError({ httpCode: HttpCode.BAD_REQUEST, description: 'Media not found' });
-  }
+  const { data } = await getOneMediaData(id);
 
   const body = { ...data, isFavourite: !data?.isFavourite };
 
@@ -152,15 +112,7 @@ export const markFavourite: RequestHandler = async (req, res) => {
 
 export const markWatched: RequestHandler = async (req, res) => {
   const id = req.params.id || '';
-  const { data, error } = await getMediaDataDB<MediaTypeJSONDB>(`/${id}`);
-
-  if (error) {
-    handleJSONDBDataError(error, id);
-  }
-
-  if (!data) {
-    throw new AppError({ httpCode: HttpCode.BAD_REQUEST, description: 'Media not found' });
-  }
+  const { data } = await getOneMediaData(id);
 
   const body = { ...data, watched: !data?.watched };
 
@@ -178,18 +130,10 @@ export const markWatched: RequestHandler = async (req, res) => {
 
 export const playMedia: RequestHandler = async (req, res) => {
   const id = req.params.id || '';
-  const { data, error } = await getMediaDataDB<MediaTypeJSONDB>(`/${id}`);
-
-  if (error) {
-    handleJSONDBDataError(error, id);
-  }
-
-  if (!data) {
-    throw new AppError({ httpCode: HttpCode.BAD_REQUEST, description: 'Media not found' });
-  }
+  const { data } = await getOneMediaData(id);
 
   if (!data?.format?.filename) {
-    throw new AppError({ httpCode: HttpCode.NOT_FOUND, description: 'VIdeo path not found' });
+    throw new AppError({ httpCode: HttpCode.NOT_FOUND, description: 'Video path not found' });
   }
 
   const manifestFile = `${id}.m3u8`;
@@ -226,16 +170,11 @@ export const streamMedia: RequestHandler = async (req, res) => {
     return res.download(urlFilePath);
   }
 
-  const { data, error } = await getMediaDataDB<MediaTypeJSONDB>(`/${mediaId}`);
   const audioStream = 1;
 
-  if (error) {
-    handleJSONDBDataError(error, mediaId);
-  }
+  const id = req.params.id || '';
+  const { data } = await getOneMediaData(id);
 
-  if (!data?.format?.filename) {
-    throw new AppError({ httpCode: HttpCode.BAD_REQUEST, description: 'Media not found' });
-  }
   const duration = Number(data?.format?.duration);
   const hlsManager = new HLSManager();
   const group = mediaId;
@@ -268,16 +207,8 @@ export const streamMedia: RequestHandler = async (req, res) => {
 };
 
 export const getThumbnail: RequestHandler = async (req, res) => {
-  const mediaId = req.params.mediaId || '';
-  const { data, error } = await getMediaDataDB<MediaTypeJSONDB>(`/${mediaId}`);
-
-  if (error) {
-    handleJSONDBDataError(error, mediaId);
-  }
-
-  if (!data) {
-    throw new AppError({ httpCode: HttpCode.BAD_REQUEST, description: 'Media not found' });
-  }
+  const id = req.params.id || '';
+  const { data } = await getOneMediaData(id);
 
   if (data?.thumbnail && data?.thumbnail?.path) {
     res.download(data?.thumbnail?.path, data?.thumbnail.name || 'thumbnail.png');
@@ -287,18 +218,10 @@ export const getThumbnail: RequestHandler = async (req, res) => {
 };
 
 export const generateStream: RequestHandler = async (req, res) => {
-  const mediaId = req.params.mediaId || '';
-  const { data, error } = await getMediaDataDB<MediaTypeJSONDB>(`/${mediaId}`);
+  const id = req.params.id || '';
+  const { data } = await getOneMediaData(id);
 
-  if (error) {
-    handleJSONDBDataError(error, mediaId);
-  }
-
-  if (!data?.format?.filename) {
-    throw new AppError({ httpCode: HttpCode.BAD_REQUEST, description: 'Media not found' });
-  }
-
-  const path = await createHLSStream(data?.format?.filename, mediaId);
+  const path = await createHLSStream(data?.format?.filename, id);
 
   return res.status(HttpCode.OK).send({ data: { path } });
 };

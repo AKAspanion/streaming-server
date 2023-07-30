@@ -56,7 +56,7 @@ const MediaStreamDetails: FC<MediaStreamDetailsProps> = ({ streams }) => {
     <div className="pt-4 flex gap-3 overflow-x-auto">
       {allStreams.map(({ title, icon, list }) => {
         return list.length ? (
-          <div className="flex flex-col gap-3 pt-4">
+          <div key={title} className="flex flex-col gap-3 pt-4">
             <div className="flex items-center gap-3">
               <div className="w-5">{icon}</div>
               <div>{title}</div>
@@ -84,8 +84,8 @@ const StreamItem = ({ stream }: { stream: MediaStreamType }) => {
         style={{ gridTemplateColumns: 'auto 200px' }}
         className={'text-xs grid gap-x-3 gap-y-1 transition-all'}
       >
-        {streamValues.map(({ name, value }) => (
-          <React.Fragment key={name}>
+        {streamValues.map(({ name, value }, index) => (
+          <React.Fragment key={name + index}>
             <div className="whitespace-nowrap font-semibold">{name}</div>
             <div title={value} className="break-all">
               {value}
