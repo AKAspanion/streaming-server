@@ -7,12 +7,13 @@ import React from 'react';
 import { FC, useMemo } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import MediaStreamDetails from './MediaStreamDetails';
-import { cs, formatBytes, formatHumanSeconds, formatSeconds, titleCase } from '@utils/helpers';
-import { FilmIcon, PlayIcon, TrashIcon } from '@heroicons/react/24/solid';
+import { cs, formatBytes, formatHumanSeconds, titleCase } from '@utils/helpers';
+import { EyeIcon, FilmIcon, HeartIcon, PlayIcon, TrashIcon } from '@heroicons/react/24/solid';
 import { TagIcon } from '@heroicons/react/20/solid';
 import Button from '@components/atoms/button/Button';
 import IconButton from '@components/atoms/icon-button/IconButton';
 import useMedia from '@hooks/useMedia';
+import Progress from '@components/atoms/progress/Progress';
 
 interface MediaDetailsProps {}
 
@@ -35,12 +36,12 @@ const MediaDetails: FC<MediaDetailsProps> = () => {
 
   const details = useMemo(() => {
     return [
-      { name: 'Original Name', value: media.originalName || '' },
+      { name: 'File Name', value: media.originalName || '' },
       { name: 'ID', value: media.id || '' },
-      { name: 'Duration', value: formatSeconds(media?.format?.duration || 0) },
+      { name: 'Duration', value: formatHumanSeconds(media?.format?.duration || 0) },
       { name: 'File Size', value: formatBytes(media?.format?.size || 0) },
-      { name: 'Format Name', value: media?.format?.format_long_name || '' },
-      { name: 'Mime Type', value: media?.mimeType || '' },
+      { name: 'Format', value: media?.format?.format_long_name || '' },
+      { name: 'Mime', value: media?.mimeType || '' },
       { name: 'Bit Rate', value: media?.format?.bit_rate || '' },
       { name: 'Location', value: media?.format?.filename || '' },
     ];
@@ -87,14 +88,14 @@ const MediaDetails: FC<MediaDetailsProps> = () => {
               <div className="font-semibold text-2xl">
                 <div>{mediaTitle}</div>
               </div>
-              <div className="flex gap-2 text-sm">
+              {/* <div className="flex gap-2 text-sm">
                 {[
                   formatBytes(media?.format?.size || 0),
                   formatHumanSeconds(media?.format?.duration),
                 ]
                   .filter(Boolean)
                   .join(' ｜ ')}
-              </div>
+              </div> */}
               <div className="flex gap-3">
                 <Link to={`/media-play/${media.id}`}>
                   <Button>
@@ -106,6 +107,16 @@ const MediaDetails: FC<MediaDetailsProps> = () => {
                     </div>
                   </Button>
                 </Link>
+                <Button>
+                  <div className="w-5">
+                    <HeartIcon />
+                  </div>
+                </Button>
+                <Button>
+                  <div className="w-5">
+                    <EyeIcon />
+                  </div>
+                </Button>
                 <Button onClick={() => handleDelete(media.id)}>
                   <div className="flex gap-2 items-center text-red-500">
                     Delete
@@ -115,7 +126,8 @@ const MediaDetails: FC<MediaDetailsProps> = () => {
                   </div>
                 </Button>
               </div>
-              <div className="pt-4 flex flex-col lg:flex-row gap-3 h-full items-stretch">
+              <Progress rounded value={50} />
+              <div className="pt-1 flex flex-col lg:flex-row gap-3 h-full items-stretch">
                 <MediaDetailsGrid title="Media Details" list={details} icon={<FilmIcon />} />
                 <MediaDetailsGrid title="Tag Details" list={tags} icon={<TagIcon />} />
               </div>

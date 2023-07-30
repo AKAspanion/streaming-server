@@ -3,14 +3,16 @@ import cs from 'classnames';
 type ProgressProps = {
   value: number;
   full?: boolean;
+  rounded?: boolean;
 };
 
 function Progress(props: ProgressProps) {
-  const { value, full } = props;
+  const { value, full, rounded } = props;
   return (
     <div
-      className={cs('h-1 w-full bg-slate-100 dark:bg-slate-950 transition-all', {
+      className={cs('h-1 w-full bg-slate-200 dark:bg-slate-950 transition-all', {
         'absolute w-full h-full flex items-center justify-center': full,
+        'rounded-md overflow-hidden': rounded,
       })}
     >
       <div
