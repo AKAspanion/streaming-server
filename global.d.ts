@@ -79,6 +79,10 @@ declare type MediaTypeJSONDB = MediaType & {
   streams: MediaStreamType[];
   format: MediaFormatType;
   chapters: MediaChapterType[];
+  addDate: number;
+  lastPlayedDate?: number;
+  isFavourite?: boolean;
+  watched?: boolean;
   thumbnail: {
     path: string;
     name: string;

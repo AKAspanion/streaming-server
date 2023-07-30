@@ -6,7 +6,7 @@ import { toast } from 'react-hot-toast/headless';
 import { FC } from 'react';
 import { InformationCircleIcon } from '@heroicons/react/24/outline';
 import { Link } from 'react-router-dom';
-import useMedia from '@hooks/useMedia';
+import useMediaMutation from '@/hooks/useMediaMutation';
 import Spinner from '@components/atoms/spinner/Spinner';
 import React from 'react';
 
@@ -15,7 +15,7 @@ interface MediaCardProps {
 }
 
 const MediaCard: FC<MediaCardProps> = ({ media }) => {
-  const { handleDelete, isDeleteLoading } = useMedia();
+  const { handleDelete, isDeleteLoading } = useMediaMutation();
 
   const copyLink = async (txt: string) => {
     const res = await copyTextToClipboard(baseUrl + '/#' + txt);

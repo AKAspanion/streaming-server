@@ -1,11 +1,19 @@
-import { useDeleteMediaByIdMutation } from '@services/media';
+import {
+  useDeleteMediaByIdMutation,
+  useMarkMediaFavouriteMutation,
+  useMarkMediaWatchedMutation,
+} from '@services/media';
 import { useCallback, useEffect } from 'react';
 import useToastStatus from './useToastStatus';
 
-const useMedia = (options?: { onDelete?: () => void }) => {
+const useMediaMutation = (options?: { onDelete?: () => void }) => {
   const { onDelete } = options || {};
   const [deleteMedia, { isLoading: isDeleteLoading, status: deleteStatus, data: deleteData }] =
     useDeleteMediaByIdMutation();
+
+  const [markMediaFavourite, { isLoading: isMarkFavouriteLoading }] =
+    useMarkMediaFavouriteMutation();
+  const [markMediaWatched, { isLoading: isMarkWatchedLoading }] = useMarkMediaWatchedMutation();
 
   const handleDelete = useCallback(
     async (id: string) => {
@@ -26,7 +34,15 @@ const useMedia = (options?: { onDelete?: () => void }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deleteStatus]);
 
-  return { handleDelete, deleteData, isDeleteLoading };
+  return {
+    handleDelete,
+    deleteData,
+    isDeleteLoading,
+    markMediaFavourite,
+    isMarkFavouriteLoading,
+    markMediaWatched,
+    isMarkWatchedLoading,
+  };
 };
 
-export default useMedia;
+export default useMediaMutation;

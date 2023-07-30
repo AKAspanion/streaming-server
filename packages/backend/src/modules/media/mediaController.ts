@@ -35,15 +35,23 @@ export const addMedia: AddMediaRequestHandler = async (req, res) => {
 
   const metadata: MediaTypeJSONDB = await getVideoMetaData(file.path);
   const thumbnail = await createVideoThumbnail(file.path, metadata.originalName);
-  // await createHLS(file.path, metadata.originalName);
 
   const id = randomUUID();
 
-  const body = { ...metadata, thumbnail, path: file.path };
+  const body = {
+    ...metadata,
+    thumbnail,
+    path: file.path,
+    addDate: new Date().getTime(),
+  };
+
   const { error } = await pushMediaDB(`/${id}`, body);
 
   if (error) {
-    handleJSONDBDataError(error, id);
+    throw new AppError({
+      httpCode: HttpCode.INTERNAL_SERVER_ERROR,
+      description: 'Problem adding Video',
+    });
   }
 
   return res.status(HttpCode.OK).send({ data: { message: 'Video added successfully' } });
@@ -102,6 +110,73 @@ export const deleteMedia: RequestHandler = async (req, res) => {
 };
 
 export const getMedia: RequestHandler = async (req, res) => {
+  const id = req.params.id || '';
+  const { data, error } = await getMediaDataDB<MediaTypeJSONDB>(`/${id}`);
+
+  if (error) {
+    handleJSONDBDataError(error, id);
+  }
+
+  if (!data) {
+    throw new AppError({ httpCode: HttpCode.BAD_REQUEST, description: 'Media not found' });
+  }
+
+  return res.status(HttpCode.OK).send({ data: { ...data, id } });
+};
+
+export const markFavourite: RequestHandler = async (req, res) => {
+  const id = req.params.id || '';
+  const { data, error } = await getMediaDataDB<MediaTypeJSONDB>(`/${id}`);
+
+  if (error) {
+    handleJSONDBDataError(error, id);
+  }
+
+  if (!data) {
+    throw new AppError({ httpCode: HttpCode.BAD_REQUEST, description: 'Media not found' });
+  }
+
+  const body = { ...data, isFavourite: !data?.isFavourite };
+
+  const { error: pushError } = await pushMediaDB(`/${id}`, body);
+
+  if (pushError) {
+    throw new AppError({
+      httpCode: HttpCode.INTERNAL_SERVER_ERROR,
+      description: 'Problem updating Video',
+    });
+  }
+
+  return res.status(HttpCode.OK).send({ data: { message: 'Video marked as favourite' } });
+};
+
+export const markWatched: RequestHandler = async (req, res) => {
+  const id = req.params.id || '';
+  const { data, error } = await getMediaDataDB<MediaTypeJSONDB>(`/${id}`);
+
+  if (error) {
+    handleJSONDBDataError(error, id);
+  }
+
+  if (!data) {
+    throw new AppError({ httpCode: HttpCode.BAD_REQUEST, description: 'Media not found' });
+  }
+
+  const body = { ...data, watched: !data?.watched };
+
+  const { error: pushError } = await pushMediaDB(`/${id}`, body);
+
+  if (pushError) {
+    throw new AppError({
+      httpCode: HttpCode.INTERNAL_SERVER_ERROR,
+      description: 'Problem updating Video',
+    });
+  }
+
+  return res.status(HttpCode.OK).send({ data: { message: 'Video marked as favourite' } });
+};
+
+export const playMedia: RequestHandler = async (req, res) => {
   const id = req.params.id || '';
   const { data, error } = await getMediaDataDB<MediaTypeJSONDB>(`/${id}`);
 

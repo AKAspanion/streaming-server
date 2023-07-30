@@ -12,21 +12,30 @@ import { EyeIcon, FilmIcon, HeartIcon, PlayIcon, TrashIcon } from '@heroicons/re
 import { TagIcon } from '@heroicons/react/20/solid';
 import Button from '@components/atoms/button/Button';
 import IconButton from '@components/atoms/icon-button/IconButton';
-import useMedia from '@hooks/useMedia';
+import useMediaMutation from '@hooks/useMediaMutation';
 import Progress from '@components/atoms/progress/Progress';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface MediaDetailsProps {}
 
 const MediaDetails: FC<MediaDetailsProps> = () => {
   const navigate = useNavigate();
   const { mediaId = '' } = useParams();
-  const { handleDelete, isDeleteLoading } = useMedia({
+  const {
+    handleDelete,
+    isDeleteLoading,
+    markMediaFavourite,
+    isMarkFavouriteLoading,
+    markMediaWatched,
+    isMarkWatchedLoading,
+  } = useMediaMutation({
     onDelete: () => navigate('/manage-media'),
   });
 
-  const { data: mediaData, isFetching, status } = useGetMediaByIdQuery(mediaId);
+  const { data: mediaData, isLoading, status } = useGetMediaByIdQuery(mediaId);
 
-  const loading = isFetching || isDeleteLoading;
+  const loading = isLoading || isDeleteLoading;
+  const mutationLoading = isMarkFavouriteLoading || isMarkWatchedLoading;
 
   const media = useMemo(() => mediaData?.data || ({} as MediaTypeFull), [mediaData?.data]);
 
@@ -63,7 +72,7 @@ const MediaDetails: FC<MediaDetailsProps> = () => {
         <Spinner full />
       ) : (
         <div className="p-3">
-          <div className="min-h-[400px] flex gap-3">
+          <div className="min-h-[336px] flex gap-3">
             <div className="w-96 bg-slate-300 rounded-lg overflow-hidden relative">
               {media.id && (
                 <img
@@ -96,36 +105,45 @@ const MediaDetails: FC<MediaDetailsProps> = () => {
                   .filter(Boolean)
                   .join(' ｜ ')}
               </div> */}
-              <div className="flex gap-3">
-                <Link to={`/media-play/${media.id}`}>
-                  <Button>
+              {mutationLoading ? (
+                <div className="flex gap-3">
+                  <Skeleton className="h-9 w-16" />
+                  <Skeleton className="h-9 w-10" />
+                  <Skeleton className="h-9 w-10" />
+                  <Skeleton className="h-9 w-10" />
+                </div>
+              ) : (
+                <div className="flex gap-3">
+                  <Link to={`/media-play/${media.id}`}>
+                    <Button>
+                      <div className="flex gap-2 items-center">
+                        Play
+                        <div className="w-4">
+                          <PlayIcon />
+                        </div>
+                      </div>
+                    </Button>
+                  </Link>
+                  <Button onClick={() => markMediaFavourite(media.id)}>
+                    <div className={cs('w-5', { 'text-red-500': media?.isFavourite })}>
+                      <HeartIcon />
+                    </div>
+                  </Button>
+                  <Button onClick={() => markMediaWatched(media.id)}>
+                    <div className={cs('w-5', { 'text-green-500': media?.watched })}>
+                      <EyeIcon />
+                    </div>
+                  </Button>
+                  <Button onClick={() => handleDelete(media.id)}>
                     <div className="flex gap-2 items-center">
-                      Play
+                      Delete
                       <div className="w-4">
-                        <PlayIcon />
+                        <TrashIcon />
                       </div>
                     </div>
                   </Button>
-                </Link>
-                <Button>
-                  <div className="w-5">
-                    <HeartIcon />
-                  </div>
-                </Button>
-                <Button>
-                  <div className="w-5">
-                    <EyeIcon />
-                  </div>
-                </Button>
-                <Button onClick={() => handleDelete(media.id)}>
-                  <div className="flex gap-2 items-center text-red-500">
-                    Delete
-                    <div className="w-4">
-                      <TrashIcon />
-                    </div>
-                  </div>
-                </Button>
-              </div>
+                </div>
+              )}
               <Progress rounded value={50} />
               <div className="pt-1 flex flex-col lg:flex-row gap-3 h-full items-stretch">
                 <MediaDetailsGrid title="Media Details" list={details} icon={<FilmIcon />} />

@@ -9,6 +9,9 @@ import {
   probeFile,
   testStuff,
   deleteMedia,
+  playMedia,
+  markFavourite,
+  markWatched,
 } from './mediaController';
 
 const router = Router();
@@ -21,6 +24,9 @@ router.post('/', addMedia);
 router.get('/probe', probeFile);
 router.get('/', getAllMedia);
 router.get('/:id', getMedia);
+router.get('/:id/play', playMedia);
+router.post('/:id/favourite', markFavourite);
+router.post('/:id/watched', markWatched);
 router.delete('/:id', deleteMedia);
 
 router.get('/test/stuff', testStuff);

@@ -6,13 +6,30 @@ export const mediaApi = createApi({
   baseQuery: fetchBaseQuery({ baseUrl }),
   tagTypes: ['Media', 'MediaDetails'],
   endpoints: (builder) => ({
-    getMediaById: builder.query<{ data: MediaTypeFull }, string>({
+    getMediaById: builder.query<{ data: MediaTypeJSONDB }, string>({
       query: (id) => `media/${id}`,
       providesTags: ['MediaDetails'],
     }),
+    playMediaById: builder.query<{ data: MediaTypeFull }, string>({
+      query: (id) => `media/${id}/play`,
+    }),
     getMedia: builder.query<{ data: MediaType[] }, string>({
       query: () => `media`,
-      providesTags: ['Media'],
+      providesTags: ['Media', 'MediaDetails'],
+    }),
+    markMediaFavourite: builder.mutation<{ data: { message: string } }, string>({
+      query: (id) => ({
+        url: `media/${id}/favourite`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['MediaDetails'],
+    }),
+    markMediaWatched: builder.mutation<{ data: { message: string } }, string>({
+      query: (id) => ({
+        url: `media/${id}/watched`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['MediaDetails'],
     }),
     deleteMediaById: builder.mutation<{ data: { message: string } }, string>({
       query: (id) => ({
@@ -37,4 +54,7 @@ export const {
   useGetMediaQuery,
   useGetMediaByIdQuery,
   useDeleteMediaByIdMutation,
+  usePlayMediaByIdQuery,
+  useMarkMediaFavouriteMutation,
+  useMarkMediaWatchedMutation,
 } = mediaApi;

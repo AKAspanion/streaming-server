@@ -6,14 +6,14 @@ import LazyHeader from '@components/LazyHeader';
 // import { useGetSubtitleByIdQuery } from '@services/subtitle';
 import Spinner from '@components/atoms/spinner/Spinner';
 import useToastStatus from '@hooks/useToastStatus';
-import { useGetMediaByIdQuery } from '@services/media';
+import { usePlayMediaByIdQuery } from '@services/media';
 import './MediaPlay.css';
 
 function VIdeoPlay() {
   const ref = useRef<HTMLVideoElement>(null);
   const { mediaId = '' } = useParams();
 
-  const { data: mediaData, isFetching, status } = useGetMediaByIdQuery(mediaId);
+  const { data: mediaData, isFetching, status } = usePlayMediaByIdQuery(mediaId);
 
   const handleSourceLoad = (videoResult: { data: MediaTypeFull }) => {
     try {
