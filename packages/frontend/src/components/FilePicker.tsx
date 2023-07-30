@@ -4,7 +4,7 @@ import useToastStatus from '@hooks/useToastStatus';
 import { useGetFileSystemQuery } from '@services/file-system';
 import { cs } from '@utils/helpers';
 import { useMemo, useState } from 'react';
-import Checkbox from './atoms/checkbox/Checkbox';
+import { Checkbox } from './ui/checkbox';
 import Button from './atoms/button/Button';
 
 type FilePickerProps = {
@@ -28,8 +28,8 @@ const FilePicker: React.FC<FilePickerProps> = (props) => {
     }
   };
 
-  const handleFileSelect = (v: boolean, f: FileLocationType) => {
-    setSelectedFiles((d) => ({ ...d, [f.path]: v }));
+  const handleFileSelect = (v: boolean | 'indeterminate', f: FileLocationType) => {
+    setSelectedFiles((d) => ({ ...d, [f.path]: !!v }));
   };
 
   const handleClear = () => {
@@ -98,8 +98,8 @@ const FilePicker: React.FC<FilePickerProps> = (props) => {
                   <div>
                     {allowedFiles.includes(f.ext || '') && (
                       <Checkbox
-                        value={selectedFiles[f.path]}
-                        onChange={(v) => handleFileSelect(v, f)}
+                        checked={selectedFiles[f.path]}
+                        onCheckedChange={(v) => handleFileSelect(v, f)}
                       />
                     )}
                   </div>
