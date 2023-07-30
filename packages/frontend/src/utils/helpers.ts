@@ -46,3 +46,8 @@ export const formatHumanSeconds = (secs: string) => {
   }
   return `${seconds}s`;
 };
+
+export const formatPercentage = (partialValue: number, totalValue: number) => {
+  if (!totalValue) return 0;
+  return (100 * partialValue) / totalValue;
+};

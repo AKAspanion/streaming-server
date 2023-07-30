@@ -2,6 +2,7 @@ import {
   useDeleteMediaByIdMutation,
   useMarkMediaFavouriteMutation,
   useMarkMediaWatchedMutation,
+  useUpdateMediaStatusMutation,
 } from '@services/media';
 import { useCallback, useEffect } from 'react';
 import useToastStatus from './useToastStatus';
@@ -14,6 +15,7 @@ const useMediaMutation = (options?: { onDelete?: () => void }) => {
   const [markMediaFavourite, { isLoading: isMarkFavouriteLoading }] =
     useMarkMediaFavouriteMutation();
   const [markMediaWatched, { isLoading: isMarkWatchedLoading }] = useMarkMediaWatchedMutation();
+  const [updateMediaStatus, { isLoading: isMediaStatusUpdating }] = useUpdateMediaStatusMutation();
 
   const handleDelete = useCallback(
     async (id: string) => {
@@ -42,6 +44,8 @@ const useMediaMutation = (options?: { onDelete?: () => void }) => {
     isMarkFavouriteLoading,
     markMediaWatched,
     isMarkWatchedLoading,
+    updateMediaStatus,
+    isMediaStatusUpdating,
   };
 };
 

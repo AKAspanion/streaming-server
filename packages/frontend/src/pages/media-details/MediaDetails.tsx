@@ -7,7 +7,7 @@ import React from 'react';
 import { FC, useMemo } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import MediaStreamDetails from './MediaStreamDetails';
-import { cs, formatBytes, formatHumanSeconds, titleCase } from '@utils/helpers';
+import { cs, formatBytes, formatHumanSeconds, formatPercentage, titleCase } from '@utils/helpers';
 import { EyeIcon, FilmIcon, HeartIcon, PlayIcon, TrashIcon } from '@heroicons/react/24/solid';
 import { TagIcon } from '@heroicons/react/20/solid';
 import Button from '@components/atoms/button/Button';
@@ -66,6 +66,11 @@ const MediaDetails: FC<MediaDetailsProps> = () => {
 
   const mediaTitle = media?.format?.tags?.title || media.originalName || '-';
 
+  const totalDuration = media?.format?.duration || 0;
+  const currentDuration = media?.currentTime || 0;
+
+  const progressValue = totalDuration ? formatPercentage(currentDuration, totalDuration) : 0;
+
   return (
     <div>
       {loading ? (
@@ -114,10 +119,22 @@ const MediaDetails: FC<MediaDetailsProps> = () => {
                 </div>
               ) : (
                 <div className="flex gap-3">
+                  {progressValue ? (
+                    <Link to={`/media-play/${media.id}?resume=${currentDuration}`}>
+                      <Button>
+                        <div className="flex gap-2 items-center">
+                          Resume
+                          <div className="w-4">
+                            <PlayIcon />
+                          </div>
+                        </div>
+                      </Button>
+                    </Link>
+                  ) : null}
                   <Link to={`/media-play/${media.id}`}>
                     <Button>
                       <div className="flex gap-2 items-center">
-                        Play
+                        {progressValue ? 'Play From Start' : 'Play'}
                         <div className="w-4">
                           <PlayIcon />
                         </div>
@@ -144,7 +161,7 @@ const MediaDetails: FC<MediaDetailsProps> = () => {
                   </Button>
                 </div>
               )}
-              <Progress rounded value={50} />
+              {progressValue ? <Progress rounded value={progressValue} /> : null}
               <div className="pt-1 flex flex-col lg:flex-row gap-3 h-full items-stretch">
                 <MediaDetailsGrid title="Media Details" list={details} icon={<FilmIcon />} />
                 <MediaDetailsGrid title="Tag Details" list={tags} icon={<TagIcon />} />

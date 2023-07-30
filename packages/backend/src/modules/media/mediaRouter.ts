@@ -12,7 +12,7 @@ import {
   playMedia,
   markFavourite,
   markWatched,
-  updatePlayData,
+  updatePlayStatus,
 } from './mediaController';
 
 const router = Router();
@@ -26,7 +26,7 @@ router.get('/probe', probeFile);
 router.get('/', getAllMedia);
 router.get('/:id', getMedia);
 router.get('/:id/play', playMedia);
-router.post('/:id/play-data', updatePlayData);
+router.put('/:id/status', updatePlayStatus);
 router.post('/:id/favourite', markFavourite);
 router.post('/:id/watched', markWatched);
 router.delete('/:id', deleteMedia);

@@ -31,6 +31,17 @@ export const mediaApi = createApi({
       }),
       invalidatesTags: ['MediaDetails'],
     }),
+    updateMediaStatus: builder.mutation<
+      { data: { message: string } },
+      { id: string; paused: boolean; currentTime: number }
+    >({
+      query: (body) => ({
+        url: `media/${body.id}/status`,
+        method: 'PUT',
+        body,
+      }),
+      invalidatesTags: ['MediaDetails'],
+    }),
     deleteMediaById: builder.mutation<{ data: { message: string } }, string>({
       query: (id) => ({
         url: `media/${id}`,
@@ -57,4 +68,5 @@ export const {
   usePlayMediaByIdQuery,
   useMarkMediaFavouriteMutation,
   useMarkMediaWatchedMutation,
+  useUpdateMediaStatusMutation,
 } = mediaApi;

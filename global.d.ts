@@ -83,6 +83,8 @@ declare type MediaTypeJSONDB = MediaType & {
   lastPlayedDate?: number;
   isFavourite?: boolean;
   watched?: boolean;
+  paused: ?boolean;
+  currentTime: ?number;
   thumbnail: {
     path: string;
     name: string;

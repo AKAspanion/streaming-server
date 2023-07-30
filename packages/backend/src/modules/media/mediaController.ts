@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { SEGMENT_TEMP_FOLDER } from '@constants/hls';
 import { deleteMediaDB, pushMediaDB } from '@database/json';
 import HLSManager from '@lib/hls-manager';
@@ -13,8 +12,6 @@ import { randomUUID } from 'crypto';
 import { RequestHandler } from 'express';
 import { getAllMediaData, getOneMediaData } from './mediaData';
 
-type AddMediaRequestHandler = RequestHandler<{ body: { file: FileLocationType } }>;
-
 export const getMedia: RequestHandler = async (req, res) => {
   const id = req.params.id || '';
   const { data } = await getOneMediaData(id);
@@ -22,13 +19,13 @@ export const getMedia: RequestHandler = async (req, res) => {
   return res.status(HttpCode.OK).send({ data: { ...data, id } });
 };
 
-export const getAllMedia: AddMediaRequestHandler = async (req, res) => {
+export const getAllMedia: RequestHandler = async (req, res) => {
   const { data } = await getAllMediaData();
 
   return res.status(HttpCode.OK).send({ data });
 };
 
-export const addMedia: AddMediaRequestHandler = async (req, res) => {
+export const addMedia: RequestHandler = async (req, res) => {
   const { file } = req.body;
 
   if (!file?.path) {
@@ -85,11 +82,23 @@ export const deleteMedia: RequestHandler = async (req, res) => {
   return res.status(HttpCode.OK).send({ data: { message: 'Video deleted successfully' } });
 };
 
-export const updatePlayData: RequestHandler = async (req, res) => {
+export const updatePlayStatus: RequestHandler = async (req, res) => {
   const id = req.params.id || '';
+  const b = req.body;
   const { data } = await getOneMediaData(id);
 
-  return res.status(HttpCode.OK).send({ data: { ...data, id } });
+  const body = { ...data, ...b };
+
+  const { error: pushError } = await pushMediaDB(`/${id}`, body);
+
+  if (pushError) {
+    throw new AppError({
+      httpCode: HttpCode.INTERNAL_SERVER_ERROR,
+      description: 'Problem updating play status',
+    });
+  }
+
+  return res.status(HttpCode.OK).send({ data: { message: 'Play status updated successfully' } });
 };
 
 export const markFavourite: RequestHandler = async (req, res) => {
@@ -170,11 +179,12 @@ export const streamMedia: RequestHandler = async (req, res) => {
     return res.download(urlFilePath);
   }
 
+  const { data } = await getOneMediaData(mediaId);
   const audioStream = 1;
 
-  const id = req.params.id || '';
-  const { data } = await getOneMediaData(id);
-
+  if (!data?.format?.filename) {
+    throw new AppError({ httpCode: HttpCode.BAD_REQUEST, description: 'Media not found' });
+  }
   const duration = Number(data?.format?.duration);
   const hlsManager = new HLSManager();
   const group = mediaId;
