@@ -61,6 +61,13 @@ export default class HLSManager {
     return transcoder.isTranscoderFinished();
   }
 
+  isSameAudioStream(group: string, audioIndex: number) {
+    if (!global.transcoders || !global.transcoders.length) return;
+    const transcoder = global.transcoders.find((transcoder) => transcoder.group === group);
+    if (transcoder == undefined) return false;
+    return transcoder.getAudioStreamIndex() === audioIndex;
+  }
+
   getTranscoderStartSegment(group: string) {
     if (!global.transcoders || !global.transcoders.length) return -1;
     const transcoder = global.transcoders.find((transcoder) => transcoder.group === group);
@@ -154,10 +161,6 @@ export default class HLSManager {
 
     const fastTranscoder = new Transcoder(filePath, startSegment, groupHash, true); // Fast transcoder
     const transcoderGroup = new TranscoderGroup(groupHash, fastTranscoder);
-
-    // const slowTranscoderStartSegment = startSegment + FAST_START_TIME / SEGMENT_TARGET_DURATION;
-    // const slowTranscoder = new Transcoder(filePath, slowTranscoderStartSegment, groupHash, false); // Slow transcoder
-    // transcoderGroup.addSlowTranscoder(slowTranscoder);
 
     if (!global.transcoders) {
       global.transcoders = [];

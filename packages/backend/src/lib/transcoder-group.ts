@@ -9,6 +9,7 @@ export default class TranscoderGroup {
   watchProgress: number;
   slowTranscoder: Transcoder;
   fastTranscoder: Transcoder;
+  audioStreamIndex: number;
 
   output: string;
 
@@ -30,6 +31,10 @@ export default class TranscoderGroup {
 
   getOutputFolder() {
     return this.output;
+  }
+
+  getAudioStreamIndex() {
+    return this.audioStreamIndex;
   }
 
   stop() {
@@ -80,6 +85,8 @@ export default class TranscoderGroup {
 
   async start(output: string, audioStreamIndex: number) {
     this.output = output;
+    this.audioStreamIndex = audioStreamIndex;
+
     const promises = [];
     promises.push(this.fastTranscoder.start(output, audioStreamIndex));
     if (this.slowTranscoder) {

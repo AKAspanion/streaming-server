@@ -31,7 +31,11 @@ export const processHLSStream = (options: ProcessStreamOptions) => {
       if (!hlsManager.isAnyVideoTranscoderActive(group)) {
         restartTranscoder = true;
       } else {
-        if (hlsManager.stopOtherVideoTranscoders(group)) {
+        if (!hlsManager.isSameAudioStream(group, audioStream)) {
+          // Stop other transcoders (other qualities) if they are running
+          processLogger.info(`Stop other transcoders if they are running`);
+          restartTranscoder = true;
+        } else if (hlsManager.stopOtherVideoTranscoders(group)) {
           // Stop other transcoders (other qualities) if they are running
           processLogger.info(`Stop other transcoders if they are running`);
           restartTranscoder = true;

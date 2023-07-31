@@ -84,13 +84,6 @@ declare type MediaTypeJSONDB = MediaType & {
   audioStreams: MediaStreamType[];
   format: MediaFormatType;
   chapters: MediaChapterType[];
-  addDate: number;
-  lastPlayedDate?: number;
-  isFavourite?: boolean;
-  watched?: boolean;
-  paused?: boolean;
-  currentTime?: number;
-  selectedAudio: string;
   thumbnail: MediaThumbnailType;
 };
 
@@ -104,4 +97,11 @@ declare type MediaType = {
   originalName: string;
   mimeType: string;
   path: string;
+  addDate: number;
+  lastPlayedDate?: number;
+  isFavourite?: boolean;
+  watched?: boolean;
+  paused?: boolean;
+  currentTime?: number;
+  selectedAudio: string;
 };

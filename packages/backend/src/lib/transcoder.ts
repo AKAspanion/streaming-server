@@ -7,7 +7,7 @@ import {
 } from '@constants/hls';
 import { timestampToSeconds } from '@utils/date-time';
 import { getffmpeg } from '@utils/ffmpeg';
-import { getResourcePath, makeDirectory } from '@utils/helper';
+import { deleteDirectory, getResourcePath, makeDirectory } from '@utils/helper';
 import { extractHLSFileInfo } from '@utils/hls';
 import { ffmpegLogger, processLogger } from '@utils/logger';
 import { FfmpegCommand } from 'fluent-ffmpeg';
@@ -43,8 +43,12 @@ export default class Transcoder {
 
   stop() {
     processLogger.info('[HLS] Stopping transcoder');
-    // @ts-ignore
-    this.ffmpegProc.kill();
+    try {
+      // @ts-ignore
+      this.ffmpegProc.kill();
+    } catch (error) {
+      // err
+    }
     // If this process is for a transcoder fast start, we need to keep the temp folder for the slow transcoder process
     if (!this.fastStart) {
       this.removeTempFolder();
@@ -87,7 +91,7 @@ export default class Transcoder {
       '-level:v:0 4.0',
       '-crf:v:0 23',
       '-x264opts:v:0 subme=0:me_range=4:rc_lookahead=10:partitions=none',
-      '-max_delay 5000000',
+      // '-max_delay 5000000',
       '-avoid_negative_ts disabled',
       '-c:a:0 libmp3lame',
       '-ab:a:0 192000',
@@ -99,7 +103,8 @@ export default class Transcoder {
       `-hls_time ${SEGMENT_TARGET_DURATION}`,
       '-force_key_frames expr:gte(t,n_forced*2)',
       '-hls_playlist_type vod',
-      '-hls_flags +temp_file+split_by_time',
+      '-hls_list_size 100',
+      // '-hls_flags +temp_file+split_by_time',
       `-start_number ${this.startSegment}`,
       `-segment_list ${this.output}/${this.group}${SEGMENT_FILE_NO_SEPERATOR}_temp.m3u8`,
       `-hls_segment_filename ${this.output}/${this.group}${SEGMENT_FILE_NO_SEPERATOR}%01d.ts`,
@@ -158,52 +163,50 @@ export default class Transcoder {
       }
 
       const ffmpeg = getffmpeg();
-
-      this.ffmpegProc = ffmpeg(this.filePath, { timeout: 432000 })
-        .inputOptions(inputOptions)
-        .outputOptions(outputOptions)
-        .on('end', () => {
-          this.finished = true;
-        })
-        .on('progress', (progress) => {
-          const seconds = timestampToSeconds(progress.timemark);
-          if (seconds > 0) {
-            const latestSegment = Math.max(Math.floor(seconds / SEGMENT_TARGET_DURATION) - 1); // - 1 because the first segment is 0
-            this.latestSegment = latestSegment;
-          }
-          processLogger.info('Progress for video: ' + this.group);
-          processLogger.info(
-            `Latest Segment:${this.latestSegment} Start Segement:${this.startSegment} Time:${seconds}`,
-          );
-        })
-        .on('start', (commandLine) => {
-          ffmpegLogger.info(
-            `[HLS] Spawned Ffmpeg (startSegment: ${this.startSegment}) with command: ${commandLine}`,
-          );
-          processLogger.info(commandLine);
-          resolve(true);
-        })
-        .on('error', (err, stdout, stderr) => {
-          if (
-            err.message != 'Output stream closed' &&
-            err.message != 'ffmpeg was killed with signal SIGKILL'
-          ) {
-            ffmpegLogger.error(`Cannot process video: ${err.message}`);
-          }
-          ffmpegLogger.error(stderr);
-          console.error(err);
-        })
-        .output(this.output);
+      try {
+        this.ffmpegProc = ffmpeg(this.filePath, { timeout: 432000 })
+          .inputOptions(inputOptions)
+          .outputOptions(outputOptions)
+          .on('end', () => {
+            this.finished = true;
+          })
+          .on('progress', (progress) => {
+            const seconds = timestampToSeconds(progress.timemark);
+            if (seconds > 0) {
+              const latestSegment = Math.max(Math.floor(seconds / SEGMENT_TARGET_DURATION) - 1); // - 1 because the first segment is 0
+              this.latestSegment = latestSegment;
+            }
+            processLogger.info('Progress for video: ' + this.group);
+            processLogger.info(
+              `Latest Segment:${this.latestSegment} Start Segement:${this.startSegment} Time:${seconds}`,
+            );
+          })
+          .on('start', (commandLine) => {
+            ffmpegLogger.info(
+              `[HLS] Spawned Ffmpeg (startSegment: ${this.startSegment}) with command: ${commandLine}`,
+            );
+            processLogger.info(commandLine);
+            resolve(true);
+          })
+          .on('error', (err, stdout, stderr) => {
+            if (
+              err.message != 'Output stream closed' &&
+              err.message != 'ffmpeg was killed with signal SIGKILL'
+            ) {
+              ffmpegLogger.error(`Cannot process video: ${err.message}`);
+            }
+            ffmpegLogger.error(stderr);
+            console.error(err);
+          })
+          .output(this.output);
+      } catch (error) {
+        // err
+      }
       this.ffmpegProc.run();
     });
   }
 
   removeTempFolder() {
-    fs.rm(this.output, { recursive: true, force: true }, (err) => {
-      if (err) {
-        processLogger.error(`Error removing transcoder temp output`);
-        processLogger.error(err);
-      }
-    });
+    deleteDirectory(this.output);
   }
 }

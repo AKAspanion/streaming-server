@@ -34,13 +34,9 @@ export const getAllMediaData = async () => {
         }))
       : []
   ).map((d) => {
-    return {
-      id: d.id,
-      path: d.path,
-      format: d.format,
-      originalName: d.originalName,
-      mimeType: d.mimeType,
-    };
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { chapters, streams, audioStreams, ...rest } = d;
+    return { ...rest };
   });
 
   return { data };

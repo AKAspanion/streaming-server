@@ -9,6 +9,8 @@ import { Link } from 'react-router-dom';
 import useMediaMutation from '@/hooks/useMediaMutation';
 import Spinner from '@components/atoms/spinner/Spinner';
 import React from 'react';
+import Progress from '@/components/atoms/progress/Progress';
+import { formatPercentage } from '@/utils/helpers';
 
 interface MediaCardProps {
   media: MediaType;
@@ -24,6 +26,9 @@ const MediaCard: FC<MediaCardProps> = ({ media }) => {
   };
 
   const loading = isDeleteLoading;
+  const totalDuration = media?.format?.duration || 0;
+  const currentDuration = media?.currentTime || 0;
+  const progressValue = totalDuration ? formatPercentage(currentDuration, totalDuration) : 0;
 
   return (
     <div className="p-1 h-full ">
@@ -31,23 +36,25 @@ const MediaCard: FC<MediaCardProps> = ({ media }) => {
         key={media.id}
         className="transition-all h-full flex flex-col rounded-lg overflow-hidden shadow-md bg-slate-200 dark:bg-slate-800 hover:shadow-lg"
       >
-        <div className="h-40 rounded-lg overflow-hidden">
+        <div className="h-40 rounded-lg overflow-hidden relative">
           <img
             src={`${baseUrl}/media/${media.id}/thumbnail`}
             className="w-full h-full object-cover"
           />
+          {currentDuration ? (
+            <div className="absolute w-full bottom-0">
+              <Progress value={progressValue} />
+            </div>
+          ) : null}
         </div>
-        <div
-          title={media.originalName}
-          className="p-3 pb-0 text-ellipsis whitespace-nowrap overflow-hidden font-semibold"
-        >
+        <div title={media.originalName} className="p-3 pb-0 break-all">
           {media.originalName}
         </div>
-        {media?.format?.filename && (
+        {/* {media?.format?.filename && (
           <div title={media.originalName} className="text-xs p-3 pt-1 pb-0 break-all">
             {media?.format?.filename}
           </div>
-        )}
+        )} */}
         <div className="flex-1"></div>
 
         <div className="p-3 flex justify-end w-full gap-3">
@@ -60,7 +67,7 @@ const MediaCard: FC<MediaCardProps> = ({ media }) => {
                   <InformationCircleIcon />
                 </IconButton>
               </Link>
-              <IconButton onClick={() => copyLink(`/video-play/${media.id}`)}>
+              <IconButton onClick={() => copyLink(`/media-play/${media.id}`)}>
                 <div className="w-3.5 mt-0.5 ml-0.5">
                   <LinkIcon />
                 </div>

@@ -45,7 +45,7 @@ export const addMedia: RequestHandler = async (req, res) => {
   }
 
   const metadata: MediaTypeJSONDB = await getVideoMetaData(file.path);
-  const thumbnail = await createVideoThumbnail(file.path, metadata.originalName);
+  const thumbnail = await createVideoThumbnail(file.path, metadata);
 
   const audioStreams: MediaStreamType[] = [];
   (metadata?.streams || []).forEach((stream: MediaStreamType) => {

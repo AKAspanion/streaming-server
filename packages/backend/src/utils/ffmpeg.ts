@@ -7,6 +7,7 @@ import path from 'path';
 import ffmpeg from 'fluent-ffmpeg';
 import { ffmpegLogger } from './logger';
 import { SEGMENT_FILE_NO_SEPERATOR, SEGMENT_TARGET_DURATION } from '@constants/hls';
+import { secToTime } from './date-time';
 
 /* eslint-disable @typescript-eslint/no-var-requires */
 export const getffmpeg = () => {
@@ -18,19 +19,21 @@ export const getffmpeg = () => {
   return ffmpeg;
 };
 
-export const createVideoThumbnail = (pathToFile: string, filename: string) =>
+export const createVideoThumbnail = (pathToFile: string, metadata: MediaTypeJSONDB) =>
   new Promise<MediaThumbnailType>((resolve, reject) => {
     const ffmpeg = getffmpeg();
     const pathToSnapshot = getResourcePath('_appdata/_screenshots');
-    const thumbnailFile = `thumb_${filename}.png`;
+    const thumbnailFile = `thumb_${metadata?.originalName}.png`;
     const thumbnailPath = path.join(pathToSnapshot, thumbnailFile);
+
+    const time = secToTime(metadata?.format?.duration ? Number(metadata?.format?.duration) / 2 : 2);
 
     ffmpeg(pathToFile)
       .on('error', (err: any) => {
         return reject(new Error(err));
       })
       .takeScreenshots(
-        { count: 1, filename: thumbnailFile, timemarks: ['00:0:1.000'], size: '250x?' },
+        { count: 1, filename: thumbnailFile, timemarks: [time], size: '250x?' },
         pathToSnapshot,
       )
       .on('end', () => {
