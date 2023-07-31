@@ -229,6 +229,7 @@ export const streamMedia: RequestHandler = async (req, res) => {
   hlsManager.setLastRequestedTime(group);
 
   const videoPath = data?.format?.filename;
+  const duration = Number(data?.format?.duration);
 
   // return new Promise<boolean>((resolve) => {
   const startSegment = Math.max(segment - 1, 0);
@@ -243,6 +244,7 @@ export const streamMedia: RequestHandler = async (req, res) => {
       startSegment,
       segment,
       file,
+      duration,
     });
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Headers', '*');

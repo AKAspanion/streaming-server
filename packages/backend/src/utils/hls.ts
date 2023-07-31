@@ -99,7 +99,7 @@ export const waitUntilFileExists = (
     const interval = setInterval(() => {
       // Stop checking if the transcoder stopped
       if (!hlsManager.isAnyVideoTranscoderActive(group)) {
-        processLogger.info('[HLS]Stop checking if the transcoder stopped');
+        processLogger.info('[HLS]Stop checking segemnts, transcoder stopped');
         clearInterval(interval);
         reject();
       }
@@ -107,15 +107,14 @@ export const waitUntilFileExists = (
         // If isSegmentFinished returned false because the transcoder isn't running we will
         // stop the loop at the next interval (isAnyVideoTranscoderActive will be false)
         if (!err && isSegmentFinished(requestedSegment, hlsManager, group)) {
-          processLogger.info('[HLS]Found file, returning to server' + filePath);
+          processLogger.info(`[HLS]Found segment ${requestedSegment}, returning to server`);
           clearInterval(interval);
           resolve(true);
         } else if (err) {
-          processLogger.info("[HLS]Couldn't access " + filePath) +
-            ', waiting for it to be ready...';
+          processLogger.info(`[HLS]Couldn't find segment ${requestedSegment}... waiting`);
         }
       });
-    }, 500);
+    }, 1000);
   });
 };
 

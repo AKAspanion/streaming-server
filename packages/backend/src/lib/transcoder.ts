@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import {
   SEGMENT_FILE_NO_SEPERATOR,
   SEGMENT_TARGET_DURATION,
@@ -6,37 +8,49 @@ import {
 } from '@constants/hls';
 import { timestampToSeconds } from '@utils/date-time';
 import { getffmpeg } from '@utils/ffmpeg';
-import { deleteDirectory, getResourcePath, makeDirectory } from '@utils/helper';
-import { extractHLSFileInfo } from '@utils/hls';
+import { getResourcePath, makeDirectory } from '@utils/helper';
+import { getTotalSegments } from '@utils/hls';
 import { ffmpegLogger, processLogger } from '@utils/logger';
 import { FfmpegCommand } from 'fluent-ffmpeg';
-import fs from 'fs';
+import { waitForFileAccess } from '@utils/file';
 import path from 'path';
 
 export default class Transcoder {
-  filePath: string;
-  output: string;
   group: string;
-  latestSegment: number;
+  filePath: string;
+  duration: number;
+  lastRequestedTime: number;
   startSegment: number;
+  latestSegment: number;
+  watchProgress: number;
+  audioStreamIndex: number;
   finished: boolean;
-  fastStart: boolean;
   ffmpegProc: FfmpegCommand;
 
-  constructor(filePath: string, startSegment: number, group: string, fastStart = false) {
+  output: string;
+
+  constructor(group: string, filePath: string, startSegment: number, duration: number) {
+    this.group = group;
+    this.lastRequestedTime = Date.now();
     this.filePath = filePath;
     this.startSegment = startSegment;
     this.latestSegment = startSegment;
-    this.finished = false;
-    this.fastStart = fastStart;
-    this.group = group;
+    this.watchProgress = 0; // In procentage, 0-100
     this.output = '';
+    this.finished = false;
+    this.duration = duration;
   }
 
-  static createTempDir(groupHash: string) {
-    const dir = getResourcePath(path.join(SEGMENT_TEMP_FOLDER, groupHash));
-    makeDirectory(dir);
-    return dir;
+  updateProgress(watchTime: number) {
+    this.watchProgress = watchTime;
+  }
+
+  getOutputFolder() {
+    return this.output;
+  }
+
+  getAudioStreamIndex() {
+    return this.audioStreamIndex;
   }
 
   stop() {
@@ -47,27 +61,114 @@ export default class Transcoder {
     } catch (error) {
       // err
     }
-    // If this process is for a transcoder fast start, we need to keep the temp folder for the slow transcoder process
-    if (!this.fastStart) {
-      this.removeTempFolder();
-    }
+    // this.removeTempFolder();
   }
 
   getLatestSegment() {
     return this.latestSegment;
   }
 
-  getFileLatestSegment() {
-    return new Promise((resolve) => {
-      fs.readdir(this.output, (err, files) => {
-        if (!err && files && files.length) {
-          const latestFile = files[files.length - 1];
-          const { segment } = extractHLSFileInfo(latestFile);
+  getStartSegment() {
+    return this.startSegment;
+  }
 
-          resolve(segment);
-        }
-      });
+  updateLastRequestedTime() {
+    this.lastRequestedTime = Date.now();
+  }
+
+  isTranscoderFinished() {
+    return this.finished;
+  }
+
+  async start(output: string, audioStreamIndex: number) {
+    this.output = output;
+    this.audioStreamIndex = audioStreamIndex;
+
+    const promises = [];
+    promises.push(this.startProcessing());
+    return promises;
+  }
+
+  startProcessing() {
+    return new Promise((resolve) => {
+      const outputOptions = this.getOutputOptions();
+
+      outputOptions.push('-map -a');
+      outputOptions.push(`-map 0:${this.audioStreamIndex}`);
+
+      const inputOptions = this.getInputOptions();
+
+      const ffmpeg = getffmpeg();
+      try {
+        this.ffmpegProc = ffmpeg(this.filePath, { timeout: 432000 })
+          .inputOptions(inputOptions)
+          .outputOptions(outputOptions)
+          .on('end', () => {
+            this.finished = true;
+          })
+          .on('progress', (progress) => {
+            const seconds = timestampToSeconds(progress.timemark);
+            if (seconds > 0) {
+              const latestSegment = Math.max(Math.floor(seconds / SEGMENT_TARGET_DURATION) - 1); // - 1 because the first segment is 0
+              this.latestSegment = latestSegment;
+            }
+          })
+          .on('start', async (commandLine) => {
+            processLogger.info(
+              `[HLS] Spawned Ffmpeg (startSegment: ${this.startSegment} with command: ${commandLine})`,
+            );
+            ffmpegLogger.info(commandLine);
+            const totalSegment = getTotalSegments(this.duration);
+            const lookaheadSegment =
+              this.startSegment + 5 > totalSegment ? totalSegment : this.startSegment + 5;
+            const filePath = path.join(
+              this.output,
+              `${this.group}${SEGMENT_FILE_NO_SEPERATOR}${lookaheadSegment}.ts`,
+            );
+            processLogger.info(`[HLS]Waiting for Segment ${lookaheadSegment}`);
+            waitForFileAccess(
+              { filePath },
+              () => {
+                resolve(true);
+                processLogger.info(`[HLS]Found Segment ${lookaheadSegment}`);
+              },
+              () => resolve(false),
+            );
+
+            resolve(true);
+          })
+          .on('error', (err, stdout, stderr) => {
+            if (
+              err.message != 'Output stream closed' &&
+              err.message != 'ffmpeg was killed with signal SIGKILL'
+            ) {
+              ffmpegLogger.error(`Cannot process video: ${err.message}`);
+            }
+            ffmpegLogger.error(stderr);
+            console.error(err);
+          })
+          .output(this.output);
+      } catch (error) {
+        // err
+      }
+      this.ffmpegProc.run();
     });
+  }
+
+  getInputOptions() {
+    const options = [
+      '-y',
+      '-loglevel verbose',
+      '-copyts',
+      this.getSeekParameter(),
+      '-hwaccel auto',
+    ];
+
+    return options;
+  }
+
+  getSeekParameter() {
+    return `-ss ${this.startSegment * SEGMENT_TARGET_DURATION}`;
   }
 
   getOutputOptions() {
@@ -111,89 +212,14 @@ export default class Transcoder {
       '-muxdelay 0',
     ];
 
-    options.concat(this.getCpuOutputOptions());
-
     return options;
   }
 
-  getCpuOutputOptions() {
-    return ['-deadline realtime'];
-  }
-
-  getCpuInputOptions(threads: number) {
-    return [`-threads ${threads}`];
-  }
-
-  getInputOptions(threads: number) {
-    const options = [
-      '-y',
-      '-loglevel verbose',
-      '-copyts',
-      this.getSeekParameter(),
-      '-hwaccel auto',
-    ];
-
-    options.concat(this.getCpuInputOptions(threads));
-
-    return options;
-  }
-
-  getSeekParameter() {
-    return `-ss ${this.startSegment * SEGMENT_TARGET_DURATION}`;
-  }
-
-  start(output: string, audioStreamIndex: number) {
-    return new Promise((resolve) => {
-      this.output = output;
-
-      const outputOptions = this.getOutputOptions();
-
-      outputOptions.push('-map -a');
-      outputOptions.push(`-map 0:${audioStreamIndex}`);
-
-      const inputOptions = this.getInputOptions(8);
-
-      const ffmpeg = getffmpeg();
-      try {
-        this.ffmpegProc = ffmpeg(this.filePath, { timeout: 432000 })
-          .inputOptions(inputOptions)
-          .outputOptions(outputOptions)
-          .on('end', () => {
-            this.finished = true;
-          })
-          .on('progress', (progress) => {
-            const seconds = timestampToSeconds(progress.timemark);
-            if (seconds > 0) {
-              const latestSegment = Math.max(Math.floor(seconds / SEGMENT_TARGET_DURATION) - 1); // - 1 because the first segment is 0
-              this.latestSegment = latestSegment;
-            }
-          })
-          .on('start', (commandLine) => {
-            processLogger.info(
-              `[HLS] Spawned Ffmpeg (startSegment: ${this.startSegment} with command: ${commandLine})`,
-            );
-            ffmpegLogger.info(commandLine);
-            resolve(true);
-          })
-          .on('error', (err, stdout, stderr) => {
-            if (
-              err.message != 'Output stream closed' &&
-              err.message != 'ffmpeg was killed with signal SIGKILL'
-            ) {
-              ffmpegLogger.error(`Cannot process video: ${err.message}`);
-            }
-            ffmpegLogger.error(stderr);
-            console.error(err);
-          })
-          .output(this.output);
-      } catch (error) {
-        // err
-      }
-      this.ffmpegProc.run();
-    });
-  }
-
-  removeTempFolder() {
-    deleteDirectory(this.output);
+  static createTempDir(groupHash: string) {
+    const dir = getResourcePath(path.join(SEGMENT_TEMP_FOLDER, groupHash));
+    makeDirectory(dir);
+    return dir;
   }
 }
+
+module.exports = Transcoder;

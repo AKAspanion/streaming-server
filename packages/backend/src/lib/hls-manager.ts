@@ -2,21 +2,20 @@
 /* eslint-disable no-var */
 
 import { ffmpegLogger } from '@utils/logger';
-import TranscoderGroup from './transcoder-group';
-import { AsyncLock } from 'node-async-locks';
 import Transcoder from './transcoder';
+import { AsyncLock } from 'node-async-locks';
 import { SEGMENT_TEMP_FOLDER } from '@constants/hls';
 
 declare global {
-  var transcoders: TranscoderGroup[] | undefined;
+  var transcoders: Transcoder[] | undefined;
 }
 
 export default class HLSManager {
   static lock = new AsyncLock();
 
   constructor() {
-    if (!globalThis.transcoders) {
-      globalThis.transcoders = [];
+    if (!global.transcoders) {
+      global.transcoders = [];
     }
   }
 
@@ -96,13 +95,6 @@ export default class HLSManager {
     return anythingStopped;
   }
 
-  isFastSeekingRunning(group: string) {
-    if (!global.transcoders || !global.transcoders.length) return;
-    return global.transcoders.some(
-      (transcoder) => transcoder.group === group && transcoder.isFastStartRunning(),
-    );
-  }
-
   stopAllVideoTranscoders(group: string) {
     if (!global.transcoders || !global.transcoders.length) return;
     let i = global.transcoders.length;
@@ -155,11 +147,11 @@ export default class HLSManager {
     startSegment: number,
     audioStreamIndex: number,
     groupHash: string,
+    duration: number,
   ) {
     const output = Transcoder.createTempDir(groupHash);
 
-    const fastTranscoder = new Transcoder(filePath, startSegment, groupHash, true); // Fast transcoder
-    const transcoderGroup = new TranscoderGroup(groupHash, fastTranscoder);
+    const transcoderGroup = new Transcoder(groupHash, filePath, startSegment, duration);
 
     if (!global.transcoders) {
       global.transcoders = [];

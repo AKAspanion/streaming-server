@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { buttonVariant } from './atoms/button';
 import { ArrowLeftIcon } from '@heroicons/react/20/solid';
 
 let lazyTimeout: NodeJS.Timeout;
@@ -41,9 +40,6 @@ export default function LazyHeader(props: { name?: string; backTo?: string }) {
           </Link>
           <div className="text-md overflow-hidden overflow-ellipsis whitespace-nowrap">{name}</div>
         </div>
-        <Link to="/video-upload" {...buttonVariant()}>
-          Upload
-        </Link>
       </div>
       <div className="h-5" />
     </div>

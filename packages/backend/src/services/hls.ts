@@ -13,10 +13,12 @@ type ProcessStreamOptions = {
   segment: number;
   file: string;
   audioStream: number;
+  duration: number;
 };
 
 export const processHLSStream = (options: ProcessStreamOptions) => {
-  const { audioStream, videoPath, hlsManager, group, startSegment, segment, file } = options;
+  const { audioStream, videoPath, hlsManager, group, startSegment, segment, file, duration } =
+    options;
   return new Promise<string>((resolve, reject) => {
     HLSManager.lock.enter(async function (token) {
       const promises = [];
@@ -49,14 +51,6 @@ export const processHLSStream = (options: ProcessStreamOptions) => {
             // Restart transcoder since seektime is in the past, and that segment does not exist
             processLogger.info(`[HLS] Seeking in the past for a segment that doesn't exist `);
             restartTranscoder = true;
-            // } else if (
-            //   segment + FAST_START_SEGMENTS / 4 > latestSegment &&
-            //   !hlsManager.isFastSeekingRunning(group) &&
-            //   !hlsManager.isTranscoderFinished(group)
-            // ) {
-            //   // If we are seeking inside the fast seeking range and fast seek is not running, restart transcoder
-            //   processLogger.info(`[HLS] Seeking inside the fast seeking range `);
-            //   restartTranscoder = true;
           } else if (hlsManager.isTranscoderFinished(group)) {
             try {
               fsLib.accessSync(filePath, fsLib.constants.F_OK);
@@ -75,7 +69,9 @@ export const processHLSStream = (options: ProcessStreamOptions) => {
       }
 
       if (restartTranscoder) {
-        promises.push(hlsManager.startTranscoder(videoPath, startSegment, audioStream, group));
+        promises.push(
+          hlsManager.startTranscoder(videoPath, startSegment, audioStream, group, duration),
+        );
       }
 
       const startedNewTranscoder = promises.length > 0;
