@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import {
-  FAST_START_TIME,
   SEGMENT_FILE_NO_SEPERATOR,
   SEGMENT_TARGET_DURATION,
   SEGMENT_TEMP_FOLDER,
@@ -37,7 +36,6 @@ export default class Transcoder {
   static createTempDir(groupHash: string) {
     const dir = getResourcePath(path.join(SEGMENT_TEMP_FOLDER, groupHash));
     makeDirectory(dir);
-    processLogger.info('Creating temp folder: ' + dir);
     return dir;
   }
 
@@ -65,7 +63,6 @@ export default class Transcoder {
         if (!err && files && files.length) {
           const latestFile = files[files.length - 1];
           const { segment } = extractHLSFileInfo(latestFile);
-          processLogger.info(`Latest Segment from file is ${segment}`);
 
           resolve(segment);
         }
@@ -156,12 +153,6 @@ export default class Transcoder {
 
       const inputOptions = this.getInputOptions(8);
 
-      if (this.fastStart) {
-        outputOptions.push(`-to ${this.startSegment * SEGMENT_TARGET_DURATION + FAST_START_TIME}`); // Quickly transcode the first segments
-      } else if (!this.fastStart) {
-        inputOptions.push('-re'); // Process the file slowly to save CPU
-      }
-
       const ffmpeg = getffmpeg();
       try {
         this.ffmpegProc = ffmpeg(this.filePath, { timeout: 432000 })
@@ -176,16 +167,12 @@ export default class Transcoder {
               const latestSegment = Math.max(Math.floor(seconds / SEGMENT_TARGET_DURATION) - 1); // - 1 because the first segment is 0
               this.latestSegment = latestSegment;
             }
-            processLogger.info('Progress for video: ' + this.group);
-            processLogger.info(
-              `Latest Segment:${this.latestSegment} Start Segement:${this.startSegment} Time:${seconds}`,
-            );
           })
           .on('start', (commandLine) => {
-            ffmpegLogger.info(
-              `[HLS] Spawned Ffmpeg (startSegment: ${this.startSegment}) with command: ${commandLine}`,
+            processLogger.info(
+              `[HLS] Spawned Ffmpeg (startSegment: ${this.startSegment} with command: ${commandLine})`,
             );
-            processLogger.info(commandLine);
+            ffmpegLogger.info(commandLine);
             resolve(true);
           })
           .on('error', (err, stdout, stderr) => {

@@ -223,7 +223,6 @@ export const streamMedia: RequestHandler = async (req, res) => {
   if (!data?.format?.filename) {
     throw new AppError({ httpCode: HttpCode.BAD_REQUEST, description: 'Media not found' });
   }
-  const duration = Number(data?.format?.duration);
   const hlsManager = new HLSManager();
   const group = mediaId;
 
@@ -244,7 +243,6 @@ export const streamMedia: RequestHandler = async (req, res) => {
       startSegment,
       segment,
       file,
-      duration,
     });
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Headers', '*');

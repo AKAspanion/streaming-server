@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-var */
 
-import { ffmpegLogger, processLogger } from '@utils/logger';
+import { ffmpegLogger } from '@utils/logger';
 import TranscoderGroup from './transcoder-group';
 import { AsyncLock } from 'node-async-locks';
 import Transcoder from './transcoder';
@@ -156,7 +156,6 @@ export default class HLSManager {
     audioStreamIndex: number,
     groupHash: string,
   ) {
-    processLogger.info('Starting trasncoding at segemnt ' + startSegment);
     const output = Transcoder.createTempDir(groupHash);
 
     const fastTranscoder = new Transcoder(filePath, startSegment, groupHash, true); // Fast transcoder
