@@ -4,7 +4,7 @@ import { SEGMENT_TEMP_FOLDER } from '@constants/hls';
 import { deleteDirectory, getResourcePath, makeDirectory } from '@utils/helper';
 
 export const appInit = () => {
-  const tempDir = getResourcePath(SEGMENT_TEMP_FOLDER);
+  const tempDir = getResourcePath(SEGMENT_TEMP_FOLDER + '../');
   deleteDirectory(tempDir);
 
   makeDirectory(getResourcePath('_appdata/_db'));

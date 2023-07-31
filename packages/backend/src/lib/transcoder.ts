@@ -8,7 +8,7 @@ import {
 } from '@constants/hls';
 import { timestampToSeconds } from '@utils/date-time';
 import { getffmpeg } from '@utils/ffmpeg';
-import { getResourcePath, makeDirectory } from '@utils/helper';
+import { deleteDirectory, getResourcePath, makeDirectory } from '@utils/helper';
 import { getTotalSegments } from '@utils/hls';
 import { ffmpegLogger, processLogger } from '@utils/logger';
 import { FfmpegCommand } from 'fluent-ffmpeg';
@@ -61,7 +61,7 @@ export default class Transcoder {
     } catch (error) {
       // err
     }
-    // this.removeTempFolder();
+    this.removeTempFolder();
   }
 
   getLatestSegment() {
@@ -219,6 +219,11 @@ export default class Transcoder {
     const dir = getResourcePath(path.join(SEGMENT_TEMP_FOLDER, groupHash));
     makeDirectory(dir);
     return dir;
+  }
+
+  removeTempFolder() {
+    deleteDirectory(this.output);
+    makeDirectory(this.output);
   }
 }
 

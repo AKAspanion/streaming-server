@@ -4,7 +4,7 @@ import path from 'path';
 import {
   SEGMENT_FILE_NO_SEPERATOR,
   SEGMENT_TARGET_DURATION,
-  SEGMENT_TEMP_FOLDER,
+  MANIFEST_TEMP_FOLDER,
 } from '@constants/hls';
 import HLSManager from '@lib/hls-manager';
 import { processLogger } from './logger';
@@ -12,7 +12,7 @@ import { processLogger } from './logger';
 export const generateManifest = (id: string, duration: number) =>
   new Promise((resolve, reject) => {
     const manifestFile = `${id}.m3u8`;
-    const manifestDir = `${SEGMENT_TEMP_FOLDER}${id}/`;
+    const manifestDir = `${MANIFEST_TEMP_FOLDER}${id}/`;
     const pathToManifest = getResourcePath(manifestDir);
     const outputFile = path.join(pathToManifest, manifestFile);
 

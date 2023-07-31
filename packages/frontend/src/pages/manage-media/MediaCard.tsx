@@ -72,7 +72,7 @@ const MediaCard: FC<MediaCardProps> = ({ media }) => {
                   <LinkIcon />
                 </div>
               </IconButton>
-              <Link to={`/media-play/${media.id}`}>
+              <Link to={`/media-play/${media.id}?resume=${currentDuration}`}>
                 <IconButton>
                   <PlayIcon />
                 </IconButton>

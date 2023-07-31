@@ -1,4 +1,4 @@
-import { SEGMENT_TEMP_FOLDER } from '@constants/hls';
+import { MANIFEST_TEMP_FOLDER } from '@constants/hls';
 import { deleteMediaDB, pushMediaDB } from '@database/json';
 import HLSManager from '@lib/hls-manager';
 import { processHLSStream } from '@services/hls';
@@ -185,7 +185,7 @@ export const playMedia: RequestHandler = async (req, res) => {
 
   const manifestFile = `${id}.m3u8`;
 
-  const hlsPath = getResourcePath(SEGMENT_TEMP_FOLDER + id);
+  const hlsPath = getResourcePath(MANIFEST_TEMP_FOLDER + id);
 
   deleteDirectory(hlsPath);
   makeDirectory(hlsPath);
@@ -210,11 +210,11 @@ export const streamMedia: RequestHandler = async (req, res) => {
     throw new AppError({ httpCode: HttpCode.BAD_REQUEST, description: 'Not a HLS request' });
   }
 
-  const hlsPath = getResourcePath(SEGMENT_TEMP_FOLDER + mediaId);
-  const urlFilePath = `${hlsPath}/${file}`;
+  const manifestPath = getResourcePath(MANIFEST_TEMP_FOLDER + mediaId);
+  const manifestFilePath = `${manifestPath}/${file}`;
 
   if (ism3u8) {
-    return res.download(urlFilePath);
+    return res.download(manifestFilePath);
   }
 
   const { data } = await getOneMediaData(mediaId);
