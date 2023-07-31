@@ -68,7 +68,7 @@ export const processHLSStream = (options: ProcessStreamOptions) => {
             }
           }
           processLogger.info(
-            `Segments (total: ${totalSegments}, current ${latestSegment}, requested: ${segment}). Restarting at ${startSegment}`,
+            `Segments (total: ${totalSegments}, current ${latestSegment}, requested: ${segment}, Restarting at ${startSegment}`,
           );
 
           // If restartTranscoding is true in here, we need to stop the other transcodings

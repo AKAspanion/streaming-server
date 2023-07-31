@@ -53,7 +53,7 @@ const MediaStreamDetails: FC<MediaStreamDetailsProps> = ({ streams }) => {
   }, [streams]);
 
   return (
-    <div className="pt-4 flex gap-3 overflow-x-auto">
+    <div className="flex gap-3 overflow-x-auto">
       {allStreams.map(({ title, icon, list }) => {
         return list.length ? (
           <div key={title} className="flex flex-col gap-3 pt-4">

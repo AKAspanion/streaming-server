@@ -49,7 +49,7 @@ function Breadcrumbs() {
           <ArrowLeftIcon />
         </div>
       </IconButton>
-      <ol className="items-center text-sm flex gap-2">
+      <ol className="items-center text-sm gap-2 hidden sm:flex">
         {crumbs.map((crumb, index) => {
           const isLast = index === crumbsLength - 1;
           return (

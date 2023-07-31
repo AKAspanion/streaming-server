@@ -120,7 +120,6 @@ export const waitUntilFileExists = (
 
 const isSegmentFinished = (requested: number, hlsManager: HLSManager, group: string) => {
   if (hlsManager.isTranscodingFinished(group)) {
-    processLogger.info('Transcoding finished', group);
     return true;
   }
   const start = hlsManager.getTranscodingStartSegment(group);
@@ -129,7 +128,6 @@ const isSegmentFinished = (requested: number, hlsManager: HLSManager, group: str
   processLogger.info(`Start#${start} Current#${current} Requested#${requested}`);
   if (start == -1) {
     start;
-    // No transcoding was found, return false
     return false;
   }
   return requested >= start && requested < current + 2;

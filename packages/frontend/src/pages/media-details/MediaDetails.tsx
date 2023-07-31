@@ -15,6 +15,15 @@ import IconButton from '@components/atoms/icon-button/IconButton';
 import useMediaMutation from '@hooks/useMediaMutation';
 import Progress from '@components/atoms/progress/Progress';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 interface MediaDetailsProps {}
 
@@ -46,15 +55,15 @@ const MediaDetails: FC<MediaDetailsProps> = () => {
   const details = useMemo(() => {
     return [
       { name: 'File Name', value: media.originalName || '' },
-      { name: 'ID', value: media.id || '' },
+      // { name: 'ID', value: media.id || '' },
       { name: 'Duration', value: formatHumanSeconds(media?.format?.duration || 0) },
       { name: 'File Size', value: formatBytes(media?.format?.size || 0) },
       { name: 'Format', value: media?.format?.format_long_name || '' },
-      { name: 'Mime', value: media?.mimeType || '' },
+      // { name: 'Mime', value: media?.mimeType || '' },
       { name: 'Bit Rate', value: media?.format?.bit_rate || '' },
       { name: 'Location', value: media?.format?.filename || '' },
     ];
-  }, [media?.format, media?.id, media?.mimeType, media.originalName]);
+  }, [media?.format, media.originalName]);
 
   const tags = useMemo(() => {
     const tagRecord = media?.format?.tags || {};
@@ -76,40 +85,34 @@ const MediaDetails: FC<MediaDetailsProps> = () => {
       {loading ? (
         <Spinner full />
       ) : (
-        <div className="p-3">
-          <div className="min-h-[336px] flex gap-3">
-            <div className="w-96 bg-slate-300 rounded-lg overflow-hidden relative">
-              {media.id && (
-                <img
-                  src={`${baseUrl}/media/${media.id}/thumbnail`}
-                  className="w-full h-full object-cover"
-                />
-              )}
+        <div className="flex flex-col gap-3 p-3">
+          <div className="flex flex-col md:flex-row gap-3">
+            <div className="bg-slate-300 dark:bg-slate-800 rounded-lg overflow-hidden relative">
+              <div className="h-full md:w-[336px]">
+                {media.id && (
+                  <img
+                    src={`${baseUrl}/media/${media.id}/thumbnail`}
+                    className="w-full h-full object-cover"
+                  />
+                )}
+              </div>
               <div
                 className={cs(
-                  'w-full h-full dark:bg-slate-800 bg-slate-500  absolute top-0 flex items-center justify-center',
+                  'w-full h-full dark:bg-slate-800 bg-slate-500 absolute top-0 flex items-center justify-center',
                   'opacity-0 hover:opacity-50 transition-opacity',
                 )}
               >
                 <Link to={`/media-play/${media.id}`}>
-                  <IconButton>
+                  <IconButton className="text-green-500">
                     <PlayIcon />
                   </IconButton>
                 </Link>
               </div>
             </div>
-            <div className="flex flex-col gap-2 w-full">
-              <div className="font-semibold text-2xl">
-                <div>{mediaTitle}</div>
+            <div className="flex flex-col gap-3 w-full">
+              <div className="font-semibold break-all text-2xl pt-3">
+                <div className="line-clamp-2">{mediaTitle}</div>
               </div>
-              {/* <div className="flex gap-2 text-sm">
-                {[
-                  formatBytes(media?.format?.size || 0),
-                  formatHumanSeconds(media?.format?.duration),
-                ]
-                  .filter(Boolean)
-                  .join(' ｜ ')}
-              </div> */}
               {mutationLoading ? (
                 <div className="flex gap-3">
                   <Skeleton className="h-9 w-16" />
@@ -118,7 +121,7 @@ const MediaDetails: FC<MediaDetailsProps> = () => {
                   <Skeleton className="h-9 w-10" />
                 </div>
               ) : (
-                <div className="flex gap-3">
+                <div className="flex flex-wrap gap-3">
                   {progressValue ? (
                     <Link to={`/media-play/${media.id}?resume=${currentDuration}`}>
                       <Button>
@@ -159,14 +162,28 @@ const MediaDetails: FC<MediaDetailsProps> = () => {
                       </div>
                     </div>
                   </Button>
+
+                  <div className="flex gap-2 items-center">
+                    <Select value="apple">
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select Audio" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectLabel>Select Audio</SelectLabel>
+                          <SelectItem value="apple">Audio: English </SelectItem>
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
               )}
               {progressValue ? <Progress rounded value={progressValue} /> : null}
-              <div className="pt-1 flex flex-col lg:flex-row gap-3 h-full items-stretch">
-                <MediaDetailsGrid title="Media Details" list={details} icon={<FilmIcon />} />
-                <MediaDetailsGrid title="Tag Details" list={tags} icon={<TagIcon />} />
-              </div>
             </div>
+          </div>
+          <div className="pt-1 flex flex-col lg:flex-row gap-3 h-full items-stretch">
+            <MediaDetailsGrid title="Media Details" list={details} icon={<FilmIcon />} />
+            <MediaDetailsGrid title="Tag Details" list={tags} icon={<TagIcon />} />
           </div>
 
           <MediaStreamDetails streams={media?.streams} />

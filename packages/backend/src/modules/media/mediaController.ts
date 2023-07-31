@@ -87,7 +87,7 @@ export const updatePlayStatus: RequestHandler = async (req, res) => {
   const b = req.body;
   const { data } = await getOneMediaData(id);
 
-  const body = { ...data, ...b };
+  const body = { ...data, ...b, lastPlayedDate: new Date().getTime() };
 
   const { error: pushError } = await pushMediaDB(`/${id}`, body);
 
