@@ -13,6 +13,7 @@ import {
   markFavourite,
   markWatched,
   updatePlayStatus,
+  setAudioStream,
 } from './mediaController';
 
 const router = Router();
@@ -29,6 +30,7 @@ router.get('/:id/play', playMedia);
 router.put('/:id/status', updatePlayStatus);
 router.post('/:id/favourite', markFavourite);
 router.post('/:id/watched', markWatched);
+router.post('/:id/audio', setAudioStream);
 router.delete('/:id', deleteMedia);
 
 router.get('/test/stuff', testStuff);

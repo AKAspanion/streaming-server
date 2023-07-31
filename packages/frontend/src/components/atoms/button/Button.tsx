@@ -9,7 +9,10 @@ type ButtonProps = {
 
 function Button({ children, onClick, disabled }: ButtonProps) {
   return (
-    <div onClick={onClick} className={cs(buttonVariant().className, { disabled: disabled })}>
+    <div
+      onClick={onClick}
+      className={cs('h-10', buttonVariant().className, { disabled: disabled })}
+    >
       {children}
     </div>
   );

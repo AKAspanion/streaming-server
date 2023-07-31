@@ -97,15 +97,15 @@ export const waitUntilFileExists = (
 ) => {
   return new Promise((resolve, reject) => {
     const interval = setInterval(() => {
-      // Stop checking if the transcoding stopped
-      if (!hlsManager.isAnyVideoTranscodingActive(group)) {
-        processLogger.info('Stop checking if the transcoding stopped');
+      // Stop checking if the transcoder stopped
+      if (!hlsManager.isAnyVideoTranscoderActive(group)) {
+        processLogger.info('Stop checking if the transcoder stopped');
         clearInterval(interval);
         reject();
       }
       fs.access(filePath, fs.constants.F_OK, (err) => {
-        // If isSegmentFinished returned false because the transcoding isn't running we will
-        // stop the loop at the next interval (isAnyVideoTranscodingActive will be false)
+        // If isSegmentFinished returned false because the transcoder isn't running we will
+        // stop the loop at the next interval (isAnyVideoTranscoderActive will be false)
         if (!err && isSegmentFinished(requestedSegment, hlsManager, group)) {
           processLogger.info('Found file, returning to server' + filePath);
           clearInterval(interval);
@@ -119,11 +119,11 @@ export const waitUntilFileExists = (
 };
 
 const isSegmentFinished = (requested: number, hlsManager: HLSManager, group: string) => {
-  if (hlsManager.isTranscodingFinished(group)) {
+  if (hlsManager.isTranscoderFinished(group)) {
     return true;
   }
-  const start = hlsManager.getTranscodingStartSegment(group);
-  const current = hlsManager.getVideoTranscodingSegment(group);
+  const start = hlsManager.getTranscoderStartSegment(group);
+  const current = hlsManager.getVideoTranscoderSegment(group);
   processLogger.info(`Segment Finished check: `);
   processLogger.info(`Start#${start} Current#${current} Requested#${requested}`);
   if (start == -1) {

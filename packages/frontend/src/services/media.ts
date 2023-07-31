@@ -31,6 +31,14 @@ export const mediaApi = createApi({
       }),
       invalidatesTags: ['MediaDetails'],
     }),
+    setMediaAudio: builder.mutation<{ data: { message: string } }, { id: string; index: string }>({
+      query: (body) => ({
+        url: `media/${body.id}/audio`,
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['MediaDetails'],
+    }),
     updateMediaStatus: builder.mutation<
       { data: { message: string } },
       { id: string; paused: boolean; currentTime: number }
@@ -69,4 +77,5 @@ export const {
   useMarkMediaFavouriteMutation,
   useMarkMediaWatchedMutation,
   useUpdateMediaStatusMutation,
+  useSetMediaAudioMutation,
 } = mediaApi;

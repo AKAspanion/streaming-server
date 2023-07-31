@@ -61,6 +61,10 @@ declare type FileLocationType = {
 
 declare type MediaChapterType = any;
 declare type MediaStreamType = any;
+declare type MediaThumbnailType = {
+  path: string;
+  name: string;
+};
 declare type MediaFormatType = {
   filename?: string;
   nb_streams: number;
@@ -77,18 +81,17 @@ declare type MediaFormatType = {
 
 declare type MediaTypeJSONDB = MediaType & {
   streams: MediaStreamType[];
+  audioStreams: MediaStreamType[];
   format: MediaFormatType;
   chapters: MediaChapterType[];
   addDate: number;
   lastPlayedDate?: number;
   isFavourite?: boolean;
   watched?: boolean;
-  paused: ?boolean;
-  currentTime: ?number;
-  thumbnail: {
-    path: string;
-    name: string;
-  };
+  paused?: boolean;
+  currentTime?: number;
+  selectedAudio: string;
+  thumbnail: MediaThumbnailType;
 };
 
 declare type MediaTypeFull = MediaTypeJSONDB & {

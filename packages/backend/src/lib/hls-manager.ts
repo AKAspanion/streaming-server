@@ -29,7 +29,7 @@ export default class HLSManager {
     }
   }
 
-  isAnyVideoTranscodingActive(group: string) {
+  isAnyVideoTranscoderActive(group: string) {
     if (!global.transcoders || !global.transcoders.length) return;
     return global.transcoders.some((t) => t.group === group);
   }
@@ -48,34 +48,34 @@ export default class HLSManager {
     return anythingStopped;
   }
 
-  getVideoTranscodingOutputPath(group: string) {
+  getVideoTranscoderOutputPath(group: string) {
     if (!global.transcoders || !global.transcoders.length) return `${SEGMENT_TEMP_FOLDER}/${group}`;
-    const transcoder = global.transcoders.find((transcoding) => transcoding.group === group);
+    const transcoder = global.transcoders.find((transcoder) => transcoder.group === group);
     return transcoder ? transcoder.getOutputFolder() : `${SEGMENT_TEMP_FOLDER}/${group}`;
   }
 
-  isTranscodingFinished(group: string) {
+  isTranscoderFinished(group: string) {
     if (!global.transcoders || !global.transcoders.length) return;
-    const transcoding = global.transcoders.find((transcoding) => transcoding.group === group);
-    if (transcoding == undefined) return false;
-    return transcoding.isTranscodingFinished();
+    const transcoder = global.transcoders.find((transcoder) => transcoder.group === group);
+    if (transcoder == undefined) return false;
+    return transcoder.isTranscoderFinished();
   }
 
-  getTranscodingStartSegment(group: string) {
+  getTranscoderStartSegment(group: string) {
     if (!global.transcoders || !global.transcoders.length) return -1;
-    const transcoding = global.transcoders.find((transcoding) => transcoding.group === group);
-    if (transcoding == undefined) return -1;
-    return transcoding.getStartSegment();
+    const transcoder = global.transcoders.find((transcoder) => transcoder.group === group);
+    if (transcoder == undefined) return -1;
+    return transcoder.getStartSegment();
   }
 
-  getVideoTranscodingSegment(group: string) {
+  getVideoTranscoderSegment(group: string) {
     if (!global.transcoders || !global.transcoders.length) return -1;
-    const transcoding = global.transcoders.find((transcoding) => transcoding.group === group);
-    if (transcoding == undefined) return -1;
-    return transcoding.getLatestSegment();
+    const transcoder = global.transcoders.find((transcoder) => transcoder.group === group);
+    if (transcoder == undefined) return -1;
+    return transcoder.getLatestSegment();
   }
 
-  stopOtherVideoTranscodings(group: string) {
+  stopOtherVideoTranscoders(group: string) {
     if (!global.transcoders || !global.transcoders.length) return;
     let i = global.transcoders.length;
     let anythingStopped = false;
@@ -92,11 +92,11 @@ export default class HLSManager {
   isFastSeekingRunning(group: string) {
     if (!global.transcoders || !global.transcoders.length) return;
     return global.transcoders.some(
-      (transcoding) => transcoding.group === group && transcoding.isFastStartRunning(),
+      (transcoder) => transcoder.group === group && transcoder.isFastStartRunning(),
     );
   }
 
-  stopAllVideoTranscodings(group: string) {
+  stopAllVideoTranscoders(group: string) {
     if (!global.transcoders || !global.transcoders.length) return;
     let i = global.transcoders.length;
     let stopped = 0;
@@ -106,7 +106,7 @@ export default class HLSManager {
         global.transcoders.splice(i, 1);
         stopped++;
         if (stopped > 1) {
-          ffmpegLogger.warn(`[HLS] Stopped ${stopped} transcoding groups, should only be 1`);
+          ffmpegLogger.warn(`[HLS] Stopped ${stopped} transcoder groups, should only be 1`);
         }
       }
     }
@@ -126,7 +126,7 @@ export default class HLSManager {
     return anythingStopped;
   }
 
-  static stopGlobalTranscodings() {
+  static stopGlobalTranscoders() {
     if (!global.transcoders || !global.transcoders.length) return;
     let i = global?.transcoders?.length;
 
@@ -138,12 +138,12 @@ export default class HLSManager {
       global.transcoders.splice(i, 1);
       stopped++;
       if (stopped > 1) {
-        ffmpegLogger.warn(`[HLS] Stopped ${stopped} transcoding groups, should only be 1`);
+        ffmpegLogger.warn(`[HLS] Stopped ${stopped} transcoder groups, should only be 1`);
       }
     }
   }
 
-  async startTranscoding(
+  async startTranscoder(
     filePath: string,
     startSegment: number,
     audioStreamIndex: number,
@@ -152,18 +152,18 @@ export default class HLSManager {
     processLogger.info('Starting trasncoding at segemnt ' + startSegment);
     const output = Transcoder.createTempDir(groupHash);
 
-    const fastTranscoding = new Transcoder(filePath, startSegment, groupHash, true); // Fast transcoding
-    const transcodingGroup = new TranscoderGroup(groupHash, fastTranscoding);
+    const fastTranscoder = new Transcoder(filePath, startSegment, groupHash, true); // Fast transcoder
+    const transcoderGroup = new TranscoderGroup(groupHash, fastTranscoder);
 
-    // const slowTranscodingStartSegment = startSegment + FAST_START_TIME / SEGMENT_TARGET_DURATION;
-    // const slowTranscoding = new Transcoder(filePath, slowTranscodingStartSegment, groupHash, false); // Slow transcoding
-    // transcodingGroup.addSlowTranscoding(slowTranscoding);
+    // const slowTranscoderStartSegment = startSegment + FAST_START_TIME / SEGMENT_TARGET_DURATION;
+    // const slowTranscoder = new Transcoder(filePath, slowTranscoderStartSegment, groupHash, false); // Slow transcoder
+    // transcoderGroup.addSlowTranscoder(slowTranscoder);
 
     if (!global.transcoders) {
       global.transcoders = [];
     }
-    global.transcoders.push(transcodingGroup);
-    const promises = await transcodingGroup.start(output, audioStreamIndex);
+    global.transcoders.push(transcoderGroup);
+    const promises = await transcoderGroup.start(output, audioStreamIndex);
 
     await Promise.all(promises);
 

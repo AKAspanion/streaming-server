@@ -2,6 +2,7 @@ import {
   useDeleteMediaByIdMutation,
   useMarkMediaFavouriteMutation,
   useMarkMediaWatchedMutation,
+  useSetMediaAudioMutation,
   useUpdateMediaStatusMutation,
 } from '@services/media';
 import { useCallback, useEffect } from 'react';
@@ -16,6 +17,7 @@ const useMediaMutation = (options?: { onDelete?: () => void }) => {
     useMarkMediaFavouriteMutation();
   const [markMediaWatched, { isLoading: isMarkWatchedLoading }] = useMarkMediaWatchedMutation();
   const [updateMediaStatus, { isLoading: isMediaStatusUpdating }] = useUpdateMediaStatusMutation();
+  const [updateAudio, { isLoading: isAudioUpdating }] = useSetMediaAudioMutation();
 
   const handleDelete = useCallback(
     async (id: string) => {
@@ -46,6 +48,8 @@ const useMediaMutation = (options?: { onDelete?: () => void }) => {
     isMarkWatchedLoading,
     updateMediaStatus,
     isMediaStatusUpdating,
+    updateAudio,
+    isAudioUpdating,
   };
 };
 

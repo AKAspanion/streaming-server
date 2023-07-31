@@ -20,16 +20,12 @@ export default class TranscoderGroup {
     this.output = '';
   }
 
-  addSlowTranscoding(slowTranscoding: Transcoder) {
-    this.slowTranscoder = slowTranscoding;
+  addSlowTranscoder(slowTranscoder: Transcoder) {
+    this.slowTranscoder = slowTranscoder;
   }
 
   updateProgress(watchTime: number) {
     this.watchProgress = watchTime;
-  }
-
-  addSlowTranscoder(slowTranscoder: Transcoder) {
-    this.slowTranscoder = slowTranscoder;
   }
 
   getOutputFolder() {
@@ -90,14 +86,6 @@ export default class TranscoderGroup {
       promises.push(this.slowTranscoder.start(output, audioStreamIndex));
     }
     return promises;
-  }
-
-  isTranscodingFinished() {
-    if (this.slowTranscoder) {
-      return this.slowTranscoder.finished;
-    } else {
-      return this.fastTranscoder.finished;
-    }
   }
 }
 

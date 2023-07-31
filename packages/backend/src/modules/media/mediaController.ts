@@ -47,11 +47,22 @@ export const addMedia: RequestHandler = async (req, res) => {
   const metadata: MediaTypeJSONDB = await getVideoMetaData(file.path);
   const thumbnail = await createVideoThumbnail(file.path, metadata.originalName);
 
+  const audioStreams: MediaStreamType[] = [];
+  (metadata?.streams || []).forEach((stream: MediaStreamType) => {
+    if (stream?.codec_type === 'audio') {
+      audioStreams.push(stream);
+    }
+  });
+
+  const selectedAudio = String(audioStreams[0]?.index || '1');
+
   const id = randomUUID();
 
-  const body = {
+  const body: MediaTypeJSONDB = {
     ...metadata,
+    audioStreams,
     thumbnail,
+    selectedAudio,
     path: file.path,
     addDate: new Date().getTime(),
   };
@@ -137,6 +148,33 @@ export const markWatched: RequestHandler = async (req, res) => {
   return res.status(HttpCode.OK).send({ data: { message: 'Video marked as favourite' } });
 };
 
+export const setAudioStream: RequestHandler = async (req, res) => {
+  const id = req.params.id || '';
+  const { data } = await getOneMediaData(id);
+
+  if (!req?.body?.index) {
+    throw new AppError({
+      httpCode: HttpCode.BAD_REQUEST,
+      description: 'Audio index is required',
+    });
+  }
+
+  const body: MediaTypeJSONDB = { ...data, selectedAudio: req?.body?.index };
+
+  const { error: pushError } = await pushMediaDB(`/${id}`, body);
+
+  if (pushError) {
+    throw new AppError({
+      httpCode: HttpCode.INTERNAL_SERVER_ERROR,
+      description: 'Problem updating Video',
+    });
+  }
+
+  HLSManager.stopVideotranscoders(id);
+
+  return res.status(HttpCode.OK).send({ data: { message: 'Video audio index updated' } });
+};
+
 export const playMedia: RequestHandler = async (req, res) => {
   const id = req.params.id || '';
   const { data } = await getOneMediaData(id);
@@ -180,7 +218,7 @@ export const streamMedia: RequestHandler = async (req, res) => {
   }
 
   const { data } = await getOneMediaData(mediaId);
-  const audioStream = 1;
+  const audioStream = Number(data?.selectedAudio || '1');
 
   if (!data?.format?.filename) {
     throw new AppError({ httpCode: HttpCode.BAD_REQUEST, description: 'Media not found' });

@@ -42,10 +42,10 @@ export default class Transcoder {
   }
 
   stop() {
-    processLogger.info('[HLS] Stopping transcoding');
+    processLogger.info('[HLS] Stopping transcoder');
     // @ts-ignore
     this.ffmpegProc.kill();
-    // If this process is for a transcoding fast start, we need to keep the temp folder for the slow transcoding process
+    // If this process is for a transcoder fast start, we need to keep the temp folder for the slow transcoder process
     if (!this.fastStart) {
       this.removeTempFolder();
     }
@@ -201,7 +201,7 @@ export default class Transcoder {
   removeTempFolder() {
     fs.rm(this.output, { recursive: true, force: true }, (err) => {
       if (err) {
-        processLogger.error(`Error removing transcoding temp output`);
+        processLogger.error(`Error removing transcoder temp output`);
         processLogger.error(err);
       }
     });

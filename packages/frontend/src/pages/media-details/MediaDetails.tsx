@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import Spinner from '@components/atoms/spinner/Spinner';
 import { baseUrl } from '@config/api';
 import useToastStatus from '@hooks/useToastStatus';
@@ -37,6 +36,8 @@ const MediaDetails: FC<MediaDetailsProps> = () => {
     isMarkFavouriteLoading,
     markMediaWatched,
     isMarkWatchedLoading,
+    updateAudio,
+    isAudioUpdating,
   } = useMediaMutation({
     onDelete: () => navigate('/manage-media'),
   });
@@ -44,7 +45,7 @@ const MediaDetails: FC<MediaDetailsProps> = () => {
   const { data: mediaData, isLoading, status } = useGetMediaByIdQuery(mediaId);
 
   const loading = isLoading || isDeleteLoading;
-  const mutationLoading = isMarkFavouriteLoading || isMarkWatchedLoading;
+  const mutationLoading = isMarkFavouriteLoading || isMarkWatchedLoading || isAudioUpdating;
 
   const media = useMemo(() => mediaData?.data || ({} as MediaTypeFull), [mediaData?.data]);
 
@@ -164,14 +165,29 @@ const MediaDetails: FC<MediaDetailsProps> = () => {
                   </Button>
 
                   <div className="flex gap-2 items-center">
-                    <Select value="apple">
+                    <Select
+                      value={media?.selectedAudio}
+                      onValueChange={(v) => updateAudio({ id: media?.id, index: v })}
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="Select Audio" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectGroup>
                           <SelectLabel>Select Audio</SelectLabel>
-                          <SelectItem value="apple">Audio: English </SelectItem>
+                          {(media?.audioStreams || []).map((stream) => {
+                            return (
+                              <SelectItem
+                                key={stream?.index}
+                                value={`${stream?.index}`}
+                              >{`Audio: ${[
+                                stream?.tags?.title || '',
+                                titleCase(stream?.tags?.language || ''),
+                              ]
+                                .filter(Boolean)
+                                .join(' - ')}`}</SelectItem>
+                            );
+                          })}
                         </SelectGroup>
                       </SelectContent>
                     </Select>
