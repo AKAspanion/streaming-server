@@ -9,7 +9,7 @@ export const subtitleApi = createApi({
   endpoints: (builder) => ({
     getSubtitleById: builder.query<string, string>({
       query: (id) => ({
-        url: `video/${id}/subtitle`,
+        url: `subtitle/${id}/video`,
         method: 'GET',
         responseHandler: async (response) => {
           const textTrackUrl = await toWebVTT(await response.blob());
@@ -21,7 +21,7 @@ export const subtitleApi = createApi({
     }),
     addSubtitle: builder.mutation<File, { id: string; body: FormData }>({
       query: ({ id, body }) => ({
-        url: `video/${id}/subtitle`,
+        url: `subtitle/${id}/video`,
         method: 'POST',
         body: body,
       }),
