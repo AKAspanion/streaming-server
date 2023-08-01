@@ -9,7 +9,6 @@ import MediaStreamDetails from './MediaStreamDetails';
 import { cs, formatBytes, formatHumanSeconds, formatPercentage, titleCase } from '@utils/helpers';
 import { EyeIcon, FilmIcon, HeartIcon, PlayIcon, TrashIcon } from '@heroicons/react/24/solid';
 import { TagIcon } from '@heroicons/react/20/solid';
-import Button from '@components/atoms/button/Button';
 import IconButton from '@components/atoms/icon-button/IconButton';
 import useMediaMutation from '@hooks/useMediaMutation';
 import Progress from '@components/atoms/progress/Progress';
@@ -23,6 +22,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import MediaSubtitleDetails from './MediaSubtitleDetails';
+import { Button } from '@/components/ui/button';
 
 interface MediaDetailsProps {}
 
@@ -125,7 +126,7 @@ const MediaDetails: FC<MediaDetailsProps> = () => {
                 <div className="flex flex-wrap gap-3">
                   {progressValue ? (
                     <Link to={`/media-play/${media.id}?resume=${currentDuration}`}>
-                      <Button>
+                      <Button variant={'secondary'}>
                         <div className="flex gap-2 items-center">
                           Resume
                           <div className="w-4">
@@ -136,7 +137,7 @@ const MediaDetails: FC<MediaDetailsProps> = () => {
                     </Link>
                   ) : null}
                   <Link to={`/media-play/${media.id}`}>
-                    <Button>
+                    <Button variant={'secondary'}>
                       <div className="flex gap-2 items-center">
                         {progressValue ? 'Play From Start' : 'Play'}
                         <div className="w-4">
@@ -145,24 +146,17 @@ const MediaDetails: FC<MediaDetailsProps> = () => {
                       </div>
                     </Button>
                   </Link>
-                  <Button onClick={() => markMediaFavourite(media.id)}>
+                  <Button variant={'secondary'} onClick={() => markMediaFavourite(media.id)}>
                     <div className={cs('w-5', { 'text-red-500': media?.isFavourite })}>
                       <HeartIcon />
                     </div>
                   </Button>
-                  <Button onClick={() => markMediaWatched(media.id)}>
+                  <Button variant={'secondary'} onClick={() => markMediaWatched(media.id)}>
                     <div className={cs('w-5', { 'text-green-500': media?.watched })}>
                       <EyeIcon />
                     </div>
                   </Button>
-                  <Button onClick={() => handleDelete(media.id)}>
-                    <div className="flex gap-2 items-center">
-                      Delete
-                      <div className="w-4">
-                        <TrashIcon />
-                      </div>
-                    </div>
-                  </Button>
+                  <MediaSubtitleDetails id={media.id} data={media?.sub} />
 
                   <div className="flex gap-2 items-center">
                     <Select
@@ -192,6 +186,14 @@ const MediaDetails: FC<MediaDetailsProps> = () => {
                       </SelectContent>
                     </Select>
                   </div>
+                  <Button variant={'secondary'} onClick={() => handleDelete(media.id)}>
+                    <div className="flex gap-2 items-center">
+                      Delete
+                      <div className="w-4">
+                        <TrashIcon />
+                      </div>
+                    </div>
+                  </Button>
                 </div>
               )}
               {progressValue ? <Progress rounded value={progressValue} /> : null}

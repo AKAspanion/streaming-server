@@ -25,7 +25,7 @@ export const deleteVideo: RequestHandler = async (req, res) => {
   const id = req.params.id || '';
   const { data } = await getOneVideoData(id);
 
-  const deletePaths = [data?.path, data?.sub?.path];
+  const deletePaths = [data?.path, data?.sub?.path].filter(Boolean);
 
   deletePaths.forEach((fullPath) => {
     if (fullPath) {

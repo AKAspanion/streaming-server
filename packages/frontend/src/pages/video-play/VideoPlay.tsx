@@ -1,9 +1,8 @@
-import { useGetVideoByIdQuery } from '@services/video';
+import { useGetVideoByIdQuery, useGetVideoSubtitleByIdQuery } from '@services/video';
 import { baseUrl } from '@config/api';
 import { useParams } from 'react-router-dom';
 import { useEffect, useRef } from 'react';
 import LazyHeader from '@components/LazyHeader';
-import { useGetSubtitleByIdQuery } from '@services/subtitle';
 import Spinner from '@components/atoms/spinner/Spinner';
 import useToastStatus from '@hooks/useToastStatus';
 import './VideoPlay.css';
@@ -13,7 +12,7 @@ function VIdeoPlay() {
   const { videoId = '' } = useParams();
 
   const { data: videoData, isFetching, status } = useGetVideoByIdQuery(videoId);
-  const { data: subData, isLoading: subLoading } = useGetSubtitleByIdQuery(videoId);
+  const { data: subData, isLoading: subLoading } = useGetVideoSubtitleByIdQuery(videoId);
 
   const handleSubtitleLoad = (trackText: string) => {
     try {

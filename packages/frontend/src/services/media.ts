@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { baseUrl } from '@config/api';
+import toWebVTT from 'srt-webvtt';
 
 export const mediaApi = createApi({
   reducerPath: 'mediaApi',
@@ -72,6 +73,32 @@ export const mediaApi = createApi({
       }),
       invalidatesTags: ['Media'],
     }),
+    getMediaSubtitleById: builder.query<string, string>({
+      query: (id) => ({
+        url: `subtitle/${id}/media`,
+        method: 'GET',
+        responseHandler: async (response) => {
+          const textTrackUrl = await toWebVTT(await response.blob());
+          return textTrackUrl;
+        },
+        cache: 'no-cache',
+      }),
+    }),
+    addMediaSubtitle: builder.mutation<File, { id: string; body: FormData }>({
+      query: ({ id, body }) => ({
+        url: `subtitle/${id}/media`,
+        method: 'POST',
+        body: body,
+      }),
+      invalidatesTags: ['MediaDetails'],
+    }),
+    deleteMediaSubtitle: builder.mutation<{ data: { message: string } }, string>({
+      query: (id) => ({
+        url: `subtitle/${id}/media`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['MediaDetails'],
+    }),
   }),
 });
 
@@ -86,4 +113,7 @@ export const {
   useUpdateMediaStatusMutation,
   useSetMediaAudioMutation,
   useStopMediaByIdMutation,
+  useGetMediaSubtitleByIdQuery,
+  useAddMediaSubtitleMutation,
+  useDeleteMediaSubtitleMutation,
 } = mediaApi;

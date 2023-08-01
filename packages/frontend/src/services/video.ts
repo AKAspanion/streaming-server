@@ -2,6 +2,7 @@ import axios from 'axios';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { baseUrl } from '@config/api';
 import { setVideoUploadProgress } from '@store/globalSlice';
+import toWebVTT from 'srt-webvtt';
 
 export const videoApi = createApi({
   reducerPath: 'videoApi',
@@ -48,6 +49,25 @@ export const videoApi = createApi({
       }),
       invalidatesTags: ['Video'],
     }),
+    getVideoSubtitleById: builder.query<string, string>({
+      query: (id) => ({
+        url: `subtitle/${id}/video`,
+        method: 'GET',
+        responseHandler: async (response) => {
+          const textTrackUrl = await toWebVTT(await response.blob());
+          return textTrackUrl;
+        },
+        cache: 'no-cache',
+      }),
+    }),
+    addVideoSubtitle: builder.mutation<File, { id: string; body: FormData }>({
+      query: ({ id, body }) => ({
+        url: `subtitle/${id}/video`,
+        method: 'POST',
+        body: body,
+      }),
+      invalidatesTags: ['Video'],
+    }),
   }),
 });
 
@@ -56,4 +76,6 @@ export const {
   useGetVideosQuery,
   useAddVideoMutation,
   useDeleteVideoMutation,
+  useAddVideoSubtitleMutation,
+  useGetVideoSubtitleByIdQuery,
 } = videoApi;

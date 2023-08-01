@@ -4,7 +4,6 @@ import storage from 'redux-persist/lib/storage';
 import { persistReducer, persistStore } from 'redux-persist';
 
 import { fileSystemApi } from '@services/file-system';
-import { subtitleApi } from '@services/subtitle';
 import { videoApi } from '@services/video';
 import { mediaApi } from '@services/media';
 import globalReducer from './globalSlice';
@@ -18,14 +17,12 @@ export const store = configureStore({
     globalData: persistReducer(persistConfig, globalReducer),
     [mediaApi.reducerPath]: mediaApi.reducer,
     [videoApi.reducerPath]: videoApi.reducer,
-    [subtitleApi.reducerPath]: subtitleApi.reducer,
     [fileSystemApi.reducerPath]: fileSystemApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
       .concat(mediaApi.middleware)
       .concat(videoApi.middleware)
-      .concat(subtitleApi.middleware)
       .concat(fileSystemApi.middleware),
   devTools: process.env.NODE_ENV !== 'production',
 });

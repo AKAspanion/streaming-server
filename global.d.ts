@@ -33,6 +33,7 @@ declare type VideoType = {
 
 declare type SubsType = {
   id: string;
+  name: string;
   fieldname: string;
   originalname: string;
   encoding: string;
@@ -104,4 +105,5 @@ declare type MediaType = {
   paused?: boolean;
   currentTime?: number;
   selectedAudio: string;
+  sub?: SubsType;
 };
