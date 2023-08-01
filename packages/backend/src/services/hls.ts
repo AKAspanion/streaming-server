@@ -20,7 +20,7 @@ export const processHLSStream = (options: ProcessStreamOptions) => {
   const { audioStream, videoPath, hlsManager, group, startSegment, segment, file, duration } =
     options;
   return new Promise<string>((resolve, reject) => {
-    HLSManager.lock.enter(async function (token) {
+    (async () => {
       const promises = [];
       let restartTranscoder = false;
 
@@ -84,8 +84,7 @@ export const processHLSStream = (options: ProcessStreamOptions) => {
           .catch(() => {
             reject(new Error(`[HLS] Transcoder was stopped for group ${group}`));
           });
-        HLSManager.lock.leave(token);
       });
-    });
+    })();
   });
 };

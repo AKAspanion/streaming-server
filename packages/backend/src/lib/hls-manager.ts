@@ -3,7 +3,6 @@
 
 import { ffmpegLogger } from '@utils/logger';
 import Transcoder from './transcoder';
-import { AsyncLock } from 'node-async-locks';
 import { SEGMENT_TEMP_FOLDER } from '@constants/hls';
 
 declare global {
@@ -11,8 +10,6 @@ declare global {
 }
 
 export default class HLSManager {
-  static lock = new AsyncLock();
-
   constructor() {
     if (!global.transcoders) {
       global.transcoders = [];

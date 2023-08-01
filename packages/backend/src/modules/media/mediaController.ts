@@ -6,7 +6,7 @@ import { handleJSONDBDataError } from '@utils/error';
 import { AppError, HttpCode } from '@utils/exceptions';
 import { createHLSStream, createVideoThumbnail, getVideoMetaData } from '@utils/ffmpeg';
 import { getFileType } from '@utils/file';
-import { deleteDirectory, getResourcePath, makeDirectory } from '@utils/helper';
+import { getResourcePath, makeDirectory } from '@utils/helper';
 import { extractHLSFileInfo, generateManifest } from '@utils/hls';
 import { randomUUID } from 'crypto';
 import { RequestHandler } from 'express';
@@ -187,7 +187,6 @@ export const playMedia: RequestHandler = async (req, res) => {
 
   const hlsPath = getResourcePath(MANIFEST_TEMP_FOLDER + id);
 
-  deleteDirectory(hlsPath);
   makeDirectory(hlsPath);
 
   generateManifest(id, Number(data?.format?.duration));

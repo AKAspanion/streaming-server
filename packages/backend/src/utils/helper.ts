@@ -17,16 +17,21 @@ export const makeDirectory = (folderPath: string) => {
 };
 
 export const deleteDirectory = (directoryPath: string) => {
-  if (fs.existsSync(directoryPath)) {
-    fs.readdirSync(directoryPath).forEach((file) => {
-      const curPath = path.join(directoryPath, file);
-      if (fs.lstatSync(curPath).isDirectory()) {
-        deleteDirectory(curPath);
-      } else {
-        fs.unlinkSync(curPath);
-      }
-    });
-    fs.rmdirSync(directoryPath);
+  try {
+    if (fs.existsSync(directoryPath)) {
+      fs.readdirSync(directoryPath).forEach((file) => {
+        const curPath = path.join(directoryPath, file);
+        if (fs.lstatSync(curPath).isDirectory()) {
+          deleteDirectory(curPath);
+        } else {
+          fs.unlinkSync(curPath);
+        }
+      });
+      fs.rmdirSync(directoryPath);
+    }
+  } catch (error) {
+    // err
+    console.error('Directory not found', directoryPath);
   }
 };
 
