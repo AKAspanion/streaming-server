@@ -31,7 +31,7 @@ const ManageMedia = () => {
         <div className="flex justify-between">
           <div>
             <div className="text-2xl font-semibold">Media Stream</div>
-            <div className="text-sm">Add your media file here to stream.</div>
+            <div className="text-sm">Add any media file here to stream.</div>
           </div>
           <Button onClick={() => setOpen(true)}>
             <div className="flex gap-2 items-center">

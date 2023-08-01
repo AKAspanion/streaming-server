@@ -1,1 +1,18 @@
-export const ALLOWED_VIDEO_FILES = ['.mkv', '.mp4', '.avi', '.mov'];
+export const ALLOWED_VIDEO_FILES = [
+  '.mkv',
+  '.mp4',
+  '.M4P',
+  '.M4V',
+  '.avi',
+  '.WMV',
+  '.FLV',
+  '.SWF',
+  '.mov',
+  '.webm',
+  '.mpg',
+  '.mp2',
+  '.MPEG',
+  '.MPE',
+  '.MPV',
+  '.OGG',
+].map((t) => t.toLowerCase());

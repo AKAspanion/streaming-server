@@ -22,7 +22,10 @@ const Sidebar: FC<SidebarProps> = () => {
 
   useEffect(() => {
     const flag = !!sidebarOpen;
-    document.documentElement.style.setProperty('--sidebar-width', flag ? '220px' : '72px');
+    document.documentElement.style.setProperty(
+      '--sidebar-width',
+      flag ? 'var(--sidebar-width-value)' : 'var(--sidebar-width-value-collapsed)',
+    );
   }, [sidebarOpen]);
 
   const renderRoute = (route: RouteObject, level = 0): React.ReactElement => {

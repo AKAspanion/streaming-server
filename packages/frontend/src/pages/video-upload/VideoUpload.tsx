@@ -112,7 +112,7 @@ function VideoUpload() {
             />
             <div>
               <div className="text-2xl font-semibold">Video Stream</div>
-              <div className="text-sm">Upload a copy your video file here to stream.</div>
+              <div className="text-sm">Upload a copy of .mp4 file here to stream.</div>
             </div>
             <Button onClick={openFile}>
               <div className="flex gap-2 items-center">
