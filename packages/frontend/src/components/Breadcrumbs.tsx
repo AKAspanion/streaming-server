@@ -33,14 +33,14 @@ function Breadcrumbs() {
   useEffect(() => {
     document.documentElement.style.setProperty(
       '--breadcrumbs-height',
-      crumbsLength ? '48px' : '0px',
+      crumbsLength ? 'var(--breadcrumbs-height-value)' : '0px',
     );
   }, [crumbsLength]);
 
   return crumbsLength === 0 ? null : (
     <div
       className={cs(
-        'flex items-center gap-3 p-3 border-b dark:border-slate-700 border-slate-300',
+        'flex items-center gap-4 p-4 border-b dark:border-slate-700 border-slate-300',
         'h-[var(--breadcrumbs-height)]',
       )}
     >

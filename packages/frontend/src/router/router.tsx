@@ -2,7 +2,12 @@ import { Params, RouteObject, createHashRouter } from 'react-router-dom';
 import VideoPlay from '@pages/video-play/VideoPlay';
 import VideoUpload from '@pages/video-upload/VideoUpload';
 import HomeLayout from '@layout/home/HomeLayout';
-import { FolderIcon, HomeIcon, MagnifyingGlassIcon } from '@heroicons/react/24/solid';
+import {
+  FilmIcon,
+  HomeIcon,
+  MagnifyingGlassIcon,
+  VideoCameraIcon,
+} from '@heroicons/react/24/solid';
 import EmptyLayout from '@layout/empty/EmptyLayout';
 import ManageMedia from '@pages/manage-media/ManageMedia';
 import MediaDetails from '@pages/media-details/MediaDetails';
@@ -30,8 +35,8 @@ export const routes: RouteObject[] = [
         path: '/video-upload',
         element: <EmptyLayout />,
         handle: {
-          name: 'Manage Media',
-          icon: <FolderIcon />,
+          name: 'Video',
+          icon: <VideoCameraIcon />,
           crumb: [() => ({ to: '/video-upload', label: 'Video Upload' })],
         },
         children: [
@@ -51,6 +56,7 @@ export const routes: RouteObject[] = [
         path: '/media-search',
         element: <EmptyLayout />,
         handle: {
+          hide: true,
           name: 'Search Media',
           icon: <MagnifyingGlassIcon />,
         },
@@ -85,8 +91,8 @@ export const routes: RouteObject[] = [
         path: '/manage-media',
         element: <EmptyLayout />,
         handle: {
-          name: 'Manage Media',
-          icon: <FolderIcon />,
+          name: 'Media',
+          icon: <FilmIcon />,
           crumb: [() => ({ to: '/manage-media', label: 'Manage Media' })],
         },
         children: [

@@ -4,15 +4,17 @@ type ProgressProps = {
   value: number;
   full?: boolean;
   rounded?: boolean;
+  className?: string;
 };
 
 function Progress(props: ProgressProps) {
-  const { value, full, rounded } = props;
+  const { value, className, full, rounded } = props;
   return (
     <div
       className={cs('h-1 w-full bg-slate-200 dark:bg-slate-800 transition-all', {
         'absolute w-full h-full flex items-center justify-center': full,
         'rounded-md overflow-hidden': rounded,
+        className,
       })}
     >
       <div

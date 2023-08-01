@@ -92,7 +92,7 @@ const MediaSubtitleDetails: FC<MediaSubtitleDetailsProps> = ({ id, data }) => {
               <div
                 style={{ gridTemplateColumns: 'auto 1fr' }}
                 className={
-                  'p-2 px-3 bg-slate-800 rounded-md mb-3 text-sm grid grid-col-2 transition-all'
+                  'p-4 px-4 bg-slate-800 rounded-md mb-4 text-sm grid grid-col-2 transition-all'
                 }
               >
                 {details.map(({ name, value }) => (
@@ -104,22 +104,22 @@ const MediaSubtitleDetails: FC<MediaSubtitleDetailsProps> = ({ id, data }) => {
                   </React.Fragment>
                 ))}
               </div>
-              <div className="flex gap-2 items-center justify-between">
+              <div className="flex gap-4 items-center justify-between">
                 <div className="pb-1">Load subtitle during play</div>
                 <Switch checked />
               </div>
-              <div className="pt-3" />
+              <div className="pt-4" />
             </React.Fragment>
           ) : (
-            <div>No subtitle loaded</div>
+            <div className="text-center p-6">No subtitle loaded</div>
           )}
         </div>
-        <div className="flex w-full justify-between gap-2">
+        <div className="flex w-full justify-between gap-4">
           <Button disabled={!data || loading} variant={'destructive'} onClick={() => deleteFile()}>
-            <div className="flex gap-2 items-center">Delete</div>
+            <div className="flex gap-4 items-center">Delete</div>
           </Button>
           <Button disabled={loading} onClick={() => openFile()}>
-            <div className="flex gap-2 items-center">Add</div>
+            <div className="flex gap-4 items-center">Add</div>
           </Button>
         </div>
         <input

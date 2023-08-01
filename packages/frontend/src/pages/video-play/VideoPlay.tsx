@@ -5,7 +5,7 @@ import { useEffect, useRef } from 'react';
 import LazyHeader from '@components/LazyHeader';
 import Spinner from '@components/atoms/spinner/Spinner';
 import useToastStatus from '@hooks/useToastStatus';
-import './VideoPlay.css';
+import { HLSPLayer } from '@/components/HLSPLayer';
 
 function VIdeoPlay() {
   const ref = useRef<HTMLVideoElement>(null);
@@ -40,28 +40,6 @@ function VIdeoPlay() {
     }
   };
 
-  const handleSourceLoad = (videoResult: { data: VideoType }) => {
-    try {
-      const videoRef = ref.current;
-      if (videoRef && videoResult?.data) {
-        const hasSource = videoRef.getElementsByTagName('source');
-
-        if (hasSource && hasSource.length > 0) {
-          for (const e of hasSource) {
-            videoRef.removeChild(e);
-          }
-        }
-
-        const source = document.createElement('source');
-        source.src = `${baseUrl}/video/stream/${videoResult?.data?.id}`;
-        source.type = videoResult?.data?.mimetype;
-        videoRef.appendChild(source);
-      }
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
   const loading = isFetching || subLoading;
 
   useToastStatus(status, {
@@ -69,23 +47,23 @@ function VIdeoPlay() {
   });
 
   useEffect(() => {
-    if (!loading && videoData) {
-      handleSourceLoad(videoData);
-    }
-  }, [loading, videoData]);
-
-  useEffect(() => {
     if (!loading && subData) {
       handleSubtitleLoad(subData);
     }
   }, [loading, subData]);
+
+  let src = '';
+
+  if (videoData?.data?.id) {
+    src = `${baseUrl}/video/stream/${videoData?.data?.id}`;
+  }
 
   return (
     <div className="fixed w-screen h-screen top-0 left-0">
       {loading && <Spinner full />}
       <div className="bg-black h-screen">
         <LazyHeader name={videoData?.data?.originalname} />
-        <video autoPlay controls ref={ref} id="myVideo" />
+        <HLSPLayer ref={ref} hls={false} src={src} />
       </div>
     </div>
   );

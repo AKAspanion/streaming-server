@@ -2,19 +2,20 @@ import Hls from 'hls.js';
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
 
 type HLSPlayerProps = {
+  hls?: boolean;
   src: string;
   currentTime?: number;
   onUnmount?: () => void;
 };
 
 export const HLSPLayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, outerRef) => {
-  const { src, currentTime = 0, onUnmount } = props;
+  const { src, hls = true, currentTime = 0, onUnmount } = props;
   const ref = useRef<HTMLVideoElement>(null);
   const hlsObj = useRef<Hls>();
 
   useImperativeHandle(outerRef, () => ref.current!);
 
-  const initPlayer = () => {
+  const handleHLSLoad = () => {
     const videoRef = ref.current;
     if (videoRef && src) {
       if (Hls.isSupported()) {
@@ -38,6 +39,37 @@ export const HLSPLayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
           videoRef.play();
         });
       }
+    }
+  };
+
+  const handleSourceLoad = () => {
+    try {
+      const videoRef = ref.current;
+      if (videoRef && src) {
+        const hasSource = videoRef.getElementsByTagName('source');
+
+        if (hasSource && hasSource.length > 0) {
+          for (const e of hasSource) {
+            videoRef.removeChild(e);
+          }
+        }
+
+        const source = document.createElement('source');
+        source.src = src;
+        videoRef.appendChild(source);
+
+        videoRef.play();
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const initPlayer = () => {
+    if (hls) {
+      handleHLSLoad();
+    } else {
+      handleSourceLoad();
     }
   };
 

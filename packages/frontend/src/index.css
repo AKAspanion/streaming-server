@@ -15,8 +15,9 @@
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
 
-  --breadcrumbs-height: 48px;
-  --header-height: 36px;
+  --breadcrumbs-height-value: 56px;
+  --breadcrumbs-height: var(--breadcrumbs-height-value);
+  --header-height: 40px;
 
   --sidebar-width: 220px;
   --sidebar-height: calc(100vh - var(--header-height, 0px));
@@ -30,7 +31,8 @@
   overflow: auto;
 }
 
-body {
+body,
+* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;

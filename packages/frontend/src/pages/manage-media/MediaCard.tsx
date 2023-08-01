@@ -11,6 +11,7 @@ import Spinner from '@components/atoms/spinner/Spinner';
 import React from 'react';
 import Progress from '@/components/atoms/progress/Progress';
 import { formatPercentage } from '@/utils/helpers';
+import { Card } from '@/components/ui/card';
 
 interface MediaCardProps {
   media: MediaType;
@@ -31,11 +32,8 @@ const MediaCard: FC<MediaCardProps> = ({ media }) => {
   const progressValue = totalDuration ? formatPercentage(currentDuration, totalDuration) : 0;
 
   return (
-    <div className="p-1 h-full ">
-      <div
-        key={media.id}
-        className="transition-all h-full flex flex-col rounded-lg overflow-hidden shadow-md bg-slate-200 dark:bg-slate-800 hover:shadow-lg"
-      >
+    <Card className="h-full ">
+      <div className="transition-all h-full flex flex-col rounded-lg overflow-hidden">
         <div className="h-40 rounded-lg overflow-hidden relative">
           <img
             src={`${baseUrl}/media/${media.id}/thumbnail`}
@@ -84,7 +82,7 @@ const MediaCard: FC<MediaCardProps> = ({ media }) => {
           )}
         </div>
       </div>
-    </div>
+    </Card>
   );
 };
 

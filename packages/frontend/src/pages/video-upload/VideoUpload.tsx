@@ -1,11 +1,10 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef } from 'react';
 import {
   useAddVideoMutation,
   useAddVideoSubtitleMutation,
   useDeleteVideoMutation,
   useGetVideosQuery,
 } from '@services/video';
-import { buttonVariant } from '@components/atoms/button';
 import VideoListItem from './VideoListItem';
 import { toast } from 'react-hot-toast/headless';
 import useToastStatus from '@hooks/useToastStatus';
@@ -13,8 +12,11 @@ import Spinner from '@components/atoms/spinner/Spinner';
 import { useAppDispatch, useAppSelector } from '@store/hook';
 import Progress from '@components/atoms/progress/Progress';
 import { setVideoUploadProgress } from '@store/globalSlice';
+import { Button } from '@/components/ui/button';
+import { ArrowUpTrayIcon } from '@heroicons/react/24/solid';
 
 function VideoUpload() {
+  const ref = useRef<HTMLInputElement>(null);
   const videoLoadProgress = useAppSelector((s) => s?.globalData?.videoUploadProgress);
 
   const dispatch = useAppDispatch();
@@ -43,16 +45,14 @@ function VideoUpload() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = async (e: React.ChangeEvent<HTMLInputElement>) => {
     dispatch(setVideoUploadProgress(0));
 
-    const target = e?.target as HTMLFormElement;
-    const targetFile = target.file as HTMLInputElement;
+    const target = e?.target;
 
-    if (targetFile && targetFile.files) {
+    if (target.files && target?.files[0]) {
       const formdata = new FormData();
-      const file = targetFile.files[0];
+      const file = target.files[0];
 
       if (!file) {
         toast.error('File is required');
@@ -63,7 +63,14 @@ function VideoUpload() {
 
       await addVideo(formdata);
 
-      target.reset();
+      target.value = '';
+    }
+  };
+
+  const openFile = () => {
+    const subInputDom = ref.current;
+    if (subInputDom) {
+      subInputDom.click();
     }
   };
 
@@ -94,17 +101,28 @@ function VideoUpload() {
         <Spinner full />
       ) : (
         <>
-          <form className="p-4" onSubmit={(e) => handleSubmit(e)}>
-            <div className="flex gap-4 justify-between items-center ">
-              <div className="h-6 flex gap-2 justify-start content-center">
-                <input className="h-8" type="file" id="file" accept="video/mp4" />
-              </div>
-
-              <div>
-                <input type="submit" value="Upload" {...buttonVariant()} />
-              </div>
+          <div className="flex gap-4 justify-between items-center p-4">
+            <input
+              ref={ref}
+              className="invisible fixed pointer-events-none left-0"
+              type="file"
+              id="file"
+              accept="video/mp4"
+              onChange={handleSubmit}
+            />
+            <div>
+              <div className="text-2xl font-semibold">Video Stream</div>
+              <div className="text-sm">Upload a copy your video file here to stream.</div>
             </div>
-          </form>
+            <Button onClick={openFile}>
+              <div className="flex gap-2 items-center">
+                <div>Upload Video</div>
+                <div className="w-4">
+                  <ArrowUpTrayIcon />
+                </div>
+              </div>
+            </Button>
+          </div>
           <div className="p-4 pt-0">
             {parsedVideos.length === 0 && (
               <div className="flex flex-col items-center p-10">

@@ -1,3 +1,4 @@
+import { Card } from '@/components/ui/card';
 import ClosedCaptionIcon from '@components/icons/ClosedCaptionIcon';
 import { VideoCameraIcon } from '@heroicons/react/20/solid';
 import { MusicalNoteIcon, PhotoIcon } from '@heroicons/react/24/solid';
@@ -53,13 +54,13 @@ const MediaStreamDetails: FC<MediaStreamDetailsProps> = ({ streams }) => {
   }, [streams]);
 
   return (
-    <div className="flex gap-3 overflow-x-auto">
+    <div className="flex gap-4 overflow-x-auto">
       {allStreams.map(({ title, icon, list }) => {
         return list.length ? (
-          <div key={title} className="flex flex-col gap-3 pt-4">
-            <div className="flex items-center gap-3">
+          <div key={title} className="flex flex-col gap-4 pt-4">
+            <div className="flex items-center gap-4">
               <div className="w-5">{icon}</div>
-              <div>{title}</div>
+              <div className="font-bold">{title}</div>
             </div>
             {list.map((s) => {
               return <StreamItem stream={s} />;
@@ -79,7 +80,7 @@ const StreamItem = ({ stream }: { stream: MediaStreamType }) => {
   }, [stream]);
 
   return (
-    <div className="max-w-fit rounded-lg shadow-md dark:bg-slate-800 bg-slate-200 p-3">
+    <Card className="max-w-fit rounded-lg shadow-m p-4">
       <div
         style={{ gridTemplateColumns: 'auto 200px' }}
         className={'text-xs grid gap-x-3 gap-y-1 transition-all'}
@@ -93,7 +94,7 @@ const StreamItem = ({ stream }: { stream: MediaStreamType }) => {
           </React.Fragment>
         ))}
       </div>
-    </div>
+    </Card>
   );
 };
 
