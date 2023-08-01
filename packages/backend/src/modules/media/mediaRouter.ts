@@ -14,6 +14,7 @@ import {
   markWatched,
   updatePlayStatus,
   setAudioStream,
+  stopMedia,
 } from './mediaController';
 
 const router = Router();
@@ -27,6 +28,7 @@ router.get('/probe', probeFile);
 router.get('/', getAllMedia);
 router.get('/:id', getMedia);
 router.get('/:id/play', playMedia);
+router.put('/:id/stop', stopMedia);
 router.put('/:id/status', updatePlayStatus);
 router.post('/:id/favourite', markFavourite);
 router.post('/:id/watched', markWatched);

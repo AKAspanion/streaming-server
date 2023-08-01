@@ -14,7 +14,7 @@ function VIdeoPlay() {
   const { mediaId = '' } = useParams();
   const [searchParams] = useSearchParams();
 
-  const { updateMediaStatus } = useMediaMutation();
+  const { updateMediaStatus, stopMedia } = useMediaMutation();
   const { data: mediaData, isFetching, status } = usePlayMediaByIdQuery(mediaId);
 
   usePollingEffect(async () => {
@@ -56,7 +56,7 @@ function VIdeoPlay() {
             ref={ref}
             src={videoSrc}
             currentTime={currentTime}
-            onUnmount={() => console.log('Unmount' + new Date().getTime())}
+            onUnmount={() => mediaData?.data?.id && stopMedia(mediaData?.data?.id)}
           />
         ) : null}
       </div>

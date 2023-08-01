@@ -61,7 +61,6 @@ export default class Transcoder {
     } catch (error) {
       // err
     }
-    this.removeTempFolder();
   }
 
   getLatestSegment() {
@@ -143,6 +142,10 @@ export default class Transcoder {
               err.message != 'ffmpeg was killed with signal SIGKILL'
             ) {
               ffmpegLogger.error(`Cannot process video: ${err.message}`);
+            }
+            if (err.message === 'ffmpeg was killed with signal SIGKILL') {
+              // delete data;
+              this.removeTempFolder();
             }
             ffmpegLogger.error(stderr);
             console.error(err);

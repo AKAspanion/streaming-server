@@ -179,10 +179,6 @@ export const playMedia: RequestHandler = async (req, res) => {
   const id = req.params.id || '';
   const { data } = await getOneMediaData(id);
 
-  if (!data?.format?.filename) {
-    throw new AppError({ httpCode: HttpCode.NOT_FOUND, description: 'Video path not found' });
-  }
-
   const manifestFile = `${id}.m3u8`;
 
   const hlsPath = getResourcePath(MANIFEST_TEMP_FOLDER + id);
@@ -194,6 +190,19 @@ export const playMedia: RequestHandler = async (req, res) => {
   return res
     .status(HttpCode.OK)
     .send({ data: { ...data, id, src: `/media/stream/hls/${manifestFile}` } });
+};
+
+export const stopMedia: RequestHandler = async (req, res) => {
+  const id = req.params.id || '';
+  await getOneMediaData(id);
+
+  const hlsManager = new HLSManager();
+
+  if (hlsManager.isAnyVideoTranscoderActive(id)) {
+    HLSManager.stopVideotranscoders(id);
+  }
+
+  return res.status(HttpCode.OK).send({ data: { message: 'Video stopped successfully' } });
 };
 
 export const streamMedia: RequestHandler = async (req, res) => {

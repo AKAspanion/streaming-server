@@ -50,6 +50,13 @@ export const mediaApi = createApi({
       }),
       invalidatesTags: ['MediaDetails'],
     }),
+    stopMediaById: builder.mutation<{ data: { message: string } }, string>({
+      query: (id) => ({
+        url: `media/${id}/stop`,
+        method: 'PUT',
+      }),
+      invalidatesTags: ['MediaDetails'],
+    }),
     deleteMediaById: builder.mutation<{ data: { message: string } }, string>({
       query: (id) => ({
         url: `media/${id}`,
@@ -78,4 +85,5 @@ export const {
   useMarkMediaWatchedMutation,
   useUpdateMediaStatusMutation,
   useSetMediaAudioMutation,
+  useStopMediaByIdMutation,
 } = mediaApi;
