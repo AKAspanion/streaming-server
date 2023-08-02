@@ -13,6 +13,7 @@ import ManageMedia from '@pages/manage-media/ManageMedia';
 import MediaDetails from '@pages/media-details/MediaDetails';
 import Home from '@pages/home/Home';
 import MediaPlay from '@pages/media-play/MediaPlay';
+import ManageMediaFolder from '@/pages/manage-media/ManageMediaFolder';
 
 export const routes: RouteObject[] = [
   {
@@ -101,21 +102,57 @@ export const routes: RouteObject[] = [
             element: <ManageMedia />,
             handle: {
               hide: true,
-              name: 'Media List',
-              crumb: [() => ({ to: '/manage-media', label: 'Media List' })],
+              name: 'Media Collection',
+              crumb: [() => ({ to: '/manage-media', label: 'Media Collection' })],
             },
           },
           {
-            path: '/manage-media/:mediaId',
+            path: '/manage-media/:mediaId/details',
             element: <MediaDetails />,
             loader: ({ params }) => params,
             handle: {
               hide: true,
               name: 'Media Details',
               crumb: [
-                () => ({ to: '/manage-media', label: 'Media List' }),
+                () => ({ to: '/manage-media', label: 'Media Collection' }),
                 (p: Params<string>) => ({
-                  to: `/manage-media/${p.mediaId}`,
+                  to: `/manage-media/${p.mediaId}/details`,
+                  label: 'Media Details',
+                }),
+              ],
+            },
+          },
+          {
+            path: '/manage-media/:folderId/folder',
+            element: <ManageMediaFolder />,
+            loader: ({ params }) => params,
+            handle: {
+              hide: true,
+              name: 'Media List',
+              crumb: [
+                () => ({ to: '/manage-media', label: 'Media Collection' }),
+                (p: Params<string>) => ({
+                  to: `/manage-media/${p.mediaId}/folder`,
+                  label: 'Media Folder',
+                }),
+              ],
+            },
+          },
+          {
+            path: '/manage-media/:folderId/folder/:mediaId/details',
+            element: <MediaDetails />,
+            loader: ({ params }) => params,
+            handle: {
+              hide: true,
+              name: 'Media Details',
+              crumb: [
+                () => ({ to: '/manage-media', label: 'Media Collection' }),
+                (p: Params<string>) => ({
+                  to: `/manage-media/${p.folderId}/folder`,
+                  label: 'Media Folder', // todo dynamic name
+                }),
+                (p: Params<string>) => ({
+                  to: `/manage-media/${p.folderId}/folder/${p.mediaId}/details`,
                   label: 'Media Details',
                 }),
               ],

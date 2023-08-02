@@ -4,11 +4,19 @@ import { baseUrl } from '@config/api';
 export const folderApi = createApi({
   reducerPath: 'folderApi',
   baseQuery: fetchBaseQuery({ baseUrl }),
-  tagTypes: ['Folder'],
+  tagTypes: ['Folder', 'MediaInFolder'],
   endpoints: (builder) => ({
     getFolder: builder.query<{ data: FolderType[] }, string>({
       query: () => `folder`,
       providesTags: ['Folder'],
+    }),
+    getFolderById: builder.query<{ data: FolderType }, string>({
+      query: (id) => `folder/${id}`,
+      providesTags: ['Folder'],
+    }),
+    getMediaInFolder: builder.query<{ data: MediaType[] }, string>({
+      query: (id) => `folder/${id}/media`,
+      providesTags: ['Folder', 'MediaInFolder'],
     }),
     addFolder: builder.mutation<{ data: FolderType }, AddFolderRequest>({
       query: (body) => ({
@@ -21,4 +29,9 @@ export const folderApi = createApi({
   }),
 });
 
-export const { useGetFolderQuery, useAddFolderMutation } = folderApi;
+export const {
+  useGetFolderQuery,
+  useAddFolderMutation,
+  useGetFolderByIdQuery,
+  useGetMediaInFolderQuery,
+} = folderApi;

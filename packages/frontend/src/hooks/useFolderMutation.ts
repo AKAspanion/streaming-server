@@ -1,5 +1,6 @@
 import { useAddFolderMutation } from '@/services/folder';
 import useToastStatus from './useToastStatus';
+import { extractErrorMessage } from '@/utils/extract';
 
 const useFolderMutation = () => {
   const [
@@ -9,7 +10,7 @@ const useFolderMutation = () => {
 
   useToastStatus(addFolderStatus, {
     successMessage: 'Folder added successfullly',
-    errorMessage: 'Failed to add Folder',
+    errorMessage: extractErrorMessage(addFolderError, 'Failed to add Folder'),
   });
 
   return { addFolder, addFolderLoading, addFolderStatus, addFolderError };

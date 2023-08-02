@@ -26,22 +26,16 @@ export const getAllMedia: RequestHandler = async (req, res) => {
 };
 
 export const addMedia: RequestHandler = async (req, res) => {
-  const { file } = req.body;
+  const { file, folderId } = req.body;
 
   if (!file?.path) {
-    throw new AppError({
-      description: 'File path is required',
-      httpCode: HttpCode.BAD_REQUEST,
-    });
+    throw new AppError({ description: 'File path is required', httpCode: HttpCode.BAD_REQUEST });
   }
 
   const { type } = getFileType(file.path);
 
   if (type === 'directory') {
-    throw new AppError({
-      description: 'File path points to a directory',
-      httpCode: HttpCode.BAD_REQUEST,
-    });
+    throw new AppError({ description: 'File path is a directory', httpCode: HttpCode.BAD_REQUEST });
   }
 
   const metadata: MediaTypeJSONDB = await getVideoMetaData(file.path);
@@ -60,6 +54,7 @@ export const addMedia: RequestHandler = async (req, res) => {
 
   const body: MediaTypeJSONDB = {
     ...metadata,
+    folderId,
     audioStreams,
     thumbnail,
     selectedAudio,
@@ -153,10 +148,7 @@ export const setAudioStream: RequestHandler = async (req, res) => {
   const { data } = await getOneMediaData(id);
 
   if (!req?.body?.index) {
-    throw new AppError({
-      httpCode: HttpCode.BAD_REQUEST,
-      description: 'Audio index is required',
-    });
+    throw new AppError({ httpCode: HttpCode.BAD_REQUEST, description: 'Audio index is required' });
   }
 
   const body: MediaTypeJSONDB = { ...data, selectedAudio: req?.body?.index };

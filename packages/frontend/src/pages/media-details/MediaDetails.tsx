@@ -7,7 +7,14 @@ import { FC, useMemo } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import MediaStreamDetails from './MediaStreamDetails';
 import { cs, formatBytes, formatHumanSeconds, formatPercentage, titleCase } from '@utils/helpers';
-import { EyeIcon, FilmIcon, HeartIcon, PlayIcon, TrashIcon } from '@heroicons/react/24/solid';
+import {
+  EyeIcon,
+  FilmIcon,
+  FolderIcon,
+  HeartIcon,
+  PlayIcon,
+  TrashIcon,
+} from '@heroicons/react/24/solid';
 import { TagIcon } from '@heroicons/react/20/solid';
 import useMediaMutation from '@hooks/useMediaMutation';
 import Progress from '@components/atoms/progress/Progress';
@@ -23,14 +30,15 @@ import {
 } from '@/components/ui/select';
 import MediaSubtitleDetails from './MediaSubtitleDetails';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import CoverButton from '@/components/CoverButton';
+import { useGetFolderByIdQuery } from '@/services/folder';
 
 interface MediaDetailsProps {}
 
 const MediaDetails: FC<MediaDetailsProps> = () => {
   const navigate = useNavigate();
-  const { mediaId = '' } = useParams();
+  const { mediaId = '', folderId = '' } = useParams();
   const {
     handleDelete,
     isDeleteLoading,
@@ -44,11 +52,13 @@ const MediaDetails: FC<MediaDetailsProps> = () => {
     onDelete: () => navigate('/manage-media'),
   });
 
+  const { data: folderData, isFetching } = useGetFolderByIdQuery(folderId);
   const { data: mediaData, isLoading, status } = useGetMediaByIdQuery(mediaId);
 
-  const loading = isLoading || isDeleteLoading;
+  const loading = isLoading || isFetching || isDeleteLoading;
   const mutationLoading = isMarkFavouriteLoading || isMarkWatchedLoading || isAudioUpdating;
 
+  const folder = folderData?.data;
   const media = useMemo(() => mediaData?.data || ({} as MediaTypeFull), [mediaData?.data]);
 
   useToastStatus(status, {
@@ -115,6 +125,14 @@ const MediaDetails: FC<MediaDetailsProps> = () => {
                 <CardTitle>
                   <div className="line-clamp-2">{mediaTitle}</div>
                 </CardTitle>
+                <CardDescription>
+                  <div className="gap-2 flex">
+                    <div className="text-yellow-300 w-5">
+                      <FolderIcon />
+                    </div>
+                    <div>{folder?.name}</div>
+                  </div>
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="flex flex-col gap-4">
@@ -189,7 +207,7 @@ const MediaDetails: FC<MediaDetailsProps> = () => {
                           </SelectContent>
                         </Select>
                       </div>
-                      <Button variant={'secondary'} onClick={() => handleDelete(media.id)}>
+                      <Button variant={'destructive'} onClick={() => handleDelete(media.id)}>
                         <div className="flex gap-2 items-center">
                           Delete
                           <div className="w-4">

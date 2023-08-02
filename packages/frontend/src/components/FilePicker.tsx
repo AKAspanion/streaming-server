@@ -37,7 +37,8 @@ const FilePicker: React.FC<FilePickerProps> = (props) => {
 
   const [selectedFiles, setSelectedFiles] = useState<Record<string, boolean>>({});
 
-  const files = data?.data || [];
+  const locations = data?.data || [];
+  const files = useMemo(() => (data?.data || []).filter((l) => l.isFile), [data?.data]);
 
   const handleFileChange = (f: FileLocationType) => {
     if (!f.isFile) {
@@ -50,7 +51,14 @@ const FilePicker: React.FC<FilePickerProps> = (props) => {
   };
 
   const handleClear = () => {
-    setSelectedFiles(() => ({}));
+    setSelectedFiles((s) => {
+      const newS: Record<string, boolean> = {};
+      Object.keys(s).forEach((k: string) => {
+        newS[k] = false;
+      });
+
+      return newS;
+    });
   };
 
   const handleSubmit = () => {
@@ -66,6 +74,29 @@ const FilePicker: React.FC<FilePickerProps> = (props) => {
   const isFileSelected = useMemo(() => {
     return Object.values(selectedFiles).filter(Boolean).length !== 0;
   }, [selectedFiles]);
+
+  const selectAllFiles = (v: boolean) => {
+    const newS: Record<string, boolean> = {};
+    files.forEach((f) => {
+      newS[f.path] = v;
+    });
+    setSelectedFiles((s) => ({ ...s, ...newS }));
+  };
+
+  const isAllSelected = useMemo(() => {
+    let count = 0;
+    const fileLength = files.length;
+    for (let i = 0; i < fileLength; i++) {
+      const f = files[i];
+      if (selectedFiles[f.path]) {
+        count++;
+      }
+    }
+
+    return count === 0 ? false : count === fileLength ? true : 'indeterminate';
+  }, [files, selectedFiles]);
+
+  console.log(isAllSelected);
 
   useToastStatus(status, {
     errorMessage: 'Error loading directory',
@@ -88,23 +119,32 @@ const FilePicker: React.FC<FilePickerProps> = (props) => {
             className="flex flex-col gap-2 max-w-full"
             style={{ '--file-title-width': 'calc(100% - 32px)' } as React.CSSProperties}
           >
-            {files.map((f) => {
-              const fileName = f.isFile ? `${f.name}${f.ext}` : f.name;
+            <div className="flex justify-between pr-2">
+              <div>Select All</div>
+              <Checkbox
+                disabled={files.length === 0}
+                checked={isAllSelected}
+                defaultChecked={isAllSelected}
+                onCheckedChange={selectAllFiles}
+              />
+            </div>
+            {locations.map((l) => {
+              const fileName = l.isFile ? `${l.name}${l.ext}` : l.name;
               return (
                 <div
-                  key={f.path}
+                  key={l.path}
                   className={cs(
                     'flex gap-2 items-center justify-between rounded px-2 py-1 bg-slate-300 dark:bg-slate-600',
-                    { 'hover:bg-slate-100 dark:hover:bg-slate-500': !f.isFile },
+                    { 'hover:bg-slate-100 dark:hover:bg-slate-500': !l.isFile },
                   )}
                 >
                   <div
                     className={cs('flex items-center flex-1 gap-2 w-[var(--file-title-width)]', {
-                      'cursor-pointer': !f.isFile,
+                      'cursor-pointer': !l.isFile,
                     })}
-                    onClick={() => handleFileChange(f)}
+                    onClick={() => handleFileChange(l)}
                   >
-                    <div className="w-4">{f.isFile ? <DocumentIcon /> : <FolderIcon />}</div>
+                    <div className="w-4">{l.isFile ? <DocumentIcon /> : <FolderIcon />}</div>
                     <div
                       title={fileName}
                       className="text-sm overflow-hidden text-ellipsis whitespace-nowrap w-[var(--file-title-width)]"
@@ -113,10 +153,10 @@ const FilePicker: React.FC<FilePickerProps> = (props) => {
                     </div>
                   </div>
                   <div>
-                    {allowedFiles.includes(f.ext || '') && (
+                    {allowedFiles.includes(l.ext || '') && (
                       <Checkbox
-                        checked={selectedFiles[f.path]}
-                        onCheckedChange={(v) => handleFileSelect(v, f)}
+                        checked={selectedFiles[l.path]}
+                        onCheckedChange={(v) => handleFileSelect(v, l)}
                       />
                     )}
                   </div>

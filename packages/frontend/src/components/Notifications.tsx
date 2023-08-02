@@ -8,7 +8,7 @@ const Notifications = () => {
 
   return (
     <div
-      className="h-screen fixed z-[80] bottom-0 left-20 overflow-visible"
+      className="absolute z-[80] bottom-16 left-4 overflow-visible"
       onMouseEnter={startPause}
       onMouseLeave={endPause}
     >

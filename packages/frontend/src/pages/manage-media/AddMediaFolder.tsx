@@ -20,18 +20,20 @@ const AddMediaFolder: FC<AddMediaFolderProps> = () => {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
   const [category, setCategory] = useState('video');
+  const [description, setDescription] = useState('');
 
   const { addFolder, addFolderStatus } = useFolderMutation();
 
   const handleAdd = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    await addFolder({ name, category });
+    await addFolder({ name, category, description });
     clearForm();
   };
 
   const clearForm = () => {
     setCategory('video');
+    setDescription('');
     setName('');
   };
 
@@ -49,9 +51,13 @@ const AddMediaFolder: FC<AddMediaFolderProps> = () => {
         </div>
       </Button>
       <Modal title="Add Folder" open={open} onClose={() => setOpen(false)}>
-        <form onSubmit={handleAdd}>
-          <Input value={name} placeholder="Folder Name" onChange={(e) => setName(e.target.value)} />
-          <div className="pt-3" />
+        <form className="flex flex-col gap-3" onSubmit={handleAdd}>
+          <Input value={name} placeholder="Name" onChange={(e) => setName(e.target.value)} />
+          <Input
+            value={description}
+            placeholder="Description"
+            onChange={(e) => setDescription(e.target.value)}
+          />
           <Select value={category} onValueChange={(v) => setCategory(v)}>
             <SelectTrigger>
               <SelectValue placeholder="Category" />

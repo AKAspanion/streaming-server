@@ -19,6 +19,11 @@ declare type RouterHandler = {
   crumb: CrumbFunction[];
 };
 
+declare type APIStatusResponseType = {
+  data: { message: string };
+};
+declare type APIErrorType = APIStatusResponseType;
+
 declare type VideoType = {
   id: string;
   fieldname: string;
@@ -51,6 +56,7 @@ declare type FolderBaseType = {
   id: string;
   name: string;
   category?: string;
+  description?: string;
 };
 
 declare type FolderJoinType = {
@@ -75,6 +81,8 @@ declare type FileLocationType = {
   stat?: Stats;
   isFile?: boolean;
 };
+
+declare type AddMediaAPIRequest = { file: FileLocationType; folderId?: string };
 
 declare type MediaChapterType = any;
 declare type MediaStreamType = any;
@@ -110,6 +118,7 @@ declare type MediaTypeFull = MediaTypeJSONDB & {
 
 declare type MediaType = {
   id: string;
+  folderId?: string;
   format: any;
   originalName: string;
   mimeType: string;

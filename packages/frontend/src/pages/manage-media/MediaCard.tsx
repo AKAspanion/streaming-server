@@ -18,10 +18,11 @@ import { Popover, PopoverContent } from '@/components/ui/popover';
 import { PopoverTrigger } from '@radix-ui/react-popover';
 
 interface MediaCardProps {
+  folderId?: string;
   media: MediaType;
 }
 
-const MediaCard: FC<MediaCardProps> = ({ media }) => {
+const MediaCard: FC<MediaCardProps> = ({ media, folderId }) => {
   const { handleDelete, isDeleteLoading } = useMediaMutation();
 
   const copyLink = async (txt: string) => {
@@ -62,7 +63,13 @@ const MediaCard: FC<MediaCardProps> = ({ media }) => {
           </div>
         </CoverButton>
         <div className="flex gap-4 justify-between items-start p-4">
-          <Link to={`/manage-media/${media.id}`}>
+          <Link
+            to={
+              folderId
+                ? `/manage-media/${folderId}/folder/${media.id}/details`
+                : `/manage-media/${media.id}/details`
+            }
+          >
             <div title={media.originalName} className="break-all text-sm">
               {media.originalName}
             </div>
@@ -79,7 +86,7 @@ const MediaCard: FC<MediaCardProps> = ({ media }) => {
                   <Spinner />
                 ) : (
                   <React.Fragment>
-                    <Link to={`/manage-media/${media.id}`}>
+                    <Link to={`/manage-media/${media.id}/details`}>
                       <IconButton>
                         <InformationCircleIcon />
                       </IconButton>

@@ -18,21 +18,21 @@ export const mediaApi = createApi({
       query: () => `media`,
       providesTags: ['Media', 'MediaDetails'],
     }),
-    markMediaFavourite: builder.mutation<{ data: { message: string } }, string>({
+    markMediaFavourite: builder.mutation<APIStatusResponseType, string>({
       query: (id) => ({
         url: `media/${id}/favourite`,
         method: 'POST',
       }),
       invalidatesTags: ['MediaDetails'],
     }),
-    markMediaWatched: builder.mutation<{ data: { message: string } }, string>({
+    markMediaWatched: builder.mutation<APIStatusResponseType, string>({
       query: (id) => ({
         url: `media/${id}/watched`,
         method: 'POST',
       }),
       invalidatesTags: ['MediaDetails'],
     }),
-    setMediaAudio: builder.mutation<{ data: { message: string } }, { id: string; index: string }>({
+    setMediaAudio: builder.mutation<APIStatusResponseType, { id: string; index: string }>({
       query: (body) => ({
         url: `media/${body.id}/audio`,
         method: 'POST',
@@ -41,7 +41,7 @@ export const mediaApi = createApi({
       invalidatesTags: ['MediaDetails'],
     }),
     updateMediaStatus: builder.mutation<
-      { data: { message: string } },
+      APIStatusResponseType,
       { id: string; paused: boolean; currentTime: number }
     >({
       query: (body) => ({
@@ -51,21 +51,21 @@ export const mediaApi = createApi({
       }),
       invalidatesTags: ['MediaDetails'],
     }),
-    stopMediaById: builder.mutation<{ data: { message: string } }, string>({
+    stopMediaById: builder.mutation<APIStatusResponseType, string>({
       query: (id) => ({
         url: `media/${id}/stop`,
         method: 'PUT',
       }),
       invalidatesTags: ['MediaDetails'],
     }),
-    deleteMediaById: builder.mutation<{ data: { message: string } }, string>({
+    deleteMediaById: builder.mutation<APIStatusResponseType, string>({
       query: (id) => ({
         url: `media/${id}`,
         method: 'DELETE',
       }),
       invalidatesTags: ['Media'],
     }),
-    addMedia: builder.mutation<{ data: { data: string } }, { file: FileLocationType }>({
+    addMedia: builder.mutation<APIStatusResponseType, AddMediaAPIRequest>({
       query: (body) => ({
         url: `media`,
         method: 'POST',
@@ -92,7 +92,7 @@ export const mediaApi = createApi({
       }),
       invalidatesTags: ['MediaDetails'],
     }),
-    deleteMediaSubtitle: builder.mutation<{ data: { message: string } }, string>({
+    deleteMediaSubtitle: builder.mutation<APIStatusResponseType, string>({
       query: (id) => ({
         url: `subtitle/${id}/media`,
         method: 'DELETE',

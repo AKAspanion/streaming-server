@@ -31,3 +31,17 @@ export const getAllFolderData = async () => {
 
   return { data };
 };
+
+export const getOneFolderData = async (folderId: string) => {
+  const { data, error } = await getFolderDataDB<FolderTypeJSONDB>(`/${folderId}`);
+
+  if (error) {
+    handleJSONDBDataError(error, folderId);
+  }
+
+  if (!data) {
+    throw new AppError({ httpCode: HttpCode.BAD_REQUEST, description: 'Folder not found' });
+  }
+
+  return { data: { ...data, id: folderId } };
+};
