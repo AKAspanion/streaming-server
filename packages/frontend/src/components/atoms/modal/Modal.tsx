@@ -28,14 +28,14 @@ const Modal: React.FC<ModalProps> = (props) => {
       contentLabel="Example Modal"
     >
       <div
-        className="dark:bg-slate-900  bg-slate-200 p-4 rounded-md"
+        className="dark:bg-slate-900  bg-slate-100 p-4 rounded-md"
         style={{
           maxWidth: 'calc(100vw - 100px)',
           minWidth: '400px',
         }}
       >
         <div className="flex items-center justify-between gap-6 pb-4">
-          <div className="">{title}</div>
+          <div className="font-bold text-lg">{title}</div>
           <IconButton onClick={onClose}>
             <XMarkIcon />
           </IconButton>

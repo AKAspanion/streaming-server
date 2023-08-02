@@ -4,9 +4,11 @@ import { JsonDB, Config } from 'node-json-db';
 
 const videoDBPath = getResourcePath('/_appdata/_db/StreamingServerVideoDB');
 const mediaDBPath = getResourcePath('/_appdata/_db/StreamingServerMediaDB');
+const folderDBPath = getResourcePath('/_appdata/_db/StreamingServerFolderDB');
 
 export const vidoesDB = new JsonDB(new Config(videoDBPath, true, IS_DEV, '/'));
 export const mediaDB = new JsonDB(new Config(mediaDBPath, true, IS_DEV, '/'));
+export const folderDB = new JsonDB(new Config(folderDBPath, true, IS_DEV, '/'));
 
 export const getVideoDataDB = async <T>(path: string) => {
   try {
@@ -61,6 +63,36 @@ export const getMediaDataDB = async <T>(path: string) => {
 export const deleteMediaDB = async (path: string) => {
   try {
     await mediaDB.delete(path);
+
+    return { error: undefined };
+  } catch (error) {
+    return { error };
+  }
+};
+
+export const pushFolderDB = async <T>(path: string, body: T) => {
+  try {
+    await folderDB.push(path, body);
+
+    return { error: undefined };
+  } catch (error) {
+    return { error };
+  }
+};
+
+export const getFolderDataDB = async <T>(path: string) => {
+  try {
+    const data: T = await folderDB.getData(path);
+
+    return { error: undefined, data };
+  } catch (error) {
+    return { error, data: undefined };
+  }
+};
+
+export const deleteFolderDB = async (path: string) => {
+  try {
+    await folderDB.delete(path);
 
     return { error: undefined };
   } catch (error) {

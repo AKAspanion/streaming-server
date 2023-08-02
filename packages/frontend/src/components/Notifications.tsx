@@ -7,8 +7,13 @@ const Notifications = () => {
   const { startPause, endPause, calculateOffset, updateHeight } = handlers;
 
   return (
-    <div className="absolute bottom-16 left-4" onMouseEnter={startPause} onMouseLeave={endPause}>
+    <div
+      className="h-screen fixed z-[80] bottom-0 left-20 overflow-visible"
+      onMouseEnter={startPause}
+      onMouseLeave={endPause}
+    >
       {toasts.map((toast) => {
+        console.log(toast);
         const offset = calculateOffset(toast, {
           reverseOrder: false,
           gutter: 16,
@@ -25,7 +30,7 @@ const Notifications = () => {
           <div
             key={toast.id}
             ref={ref}
-            className="dark:bg-slate-800 bg-slate-50 p-3 shadow-md rounded-lg absolute w-[300px]"
+            className="bg-background border border-accent p-3 shadow-md rounded-lg absolute w-[300px]"
             style={{
               transition: 'all 0.3s ease-out',
               opacity: toast.visible ? 1 : 0,

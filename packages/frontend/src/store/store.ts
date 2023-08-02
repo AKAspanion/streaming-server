@@ -7,6 +7,7 @@ import { fileSystemApi } from '@services/file-system';
 import { videoApi } from '@services/video';
 import { mediaApi } from '@services/media';
 import globalReducer from './globalSlice';
+import { folderApi } from '@/services/folder';
 
 const persistConfig = { key: 'streamin-server', storage };
 
@@ -17,12 +18,14 @@ export const store = configureStore({
     globalData: persistReducer(persistConfig, globalReducer),
     [mediaApi.reducerPath]: mediaApi.reducer,
     [videoApi.reducerPath]: videoApi.reducer,
+    [folderApi.reducerPath]: folderApi.reducer,
     [fileSystemApi.reducerPath]: fileSystemApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
       .concat(mediaApi.middleware)
       .concat(videoApi.middleware)
+      .concat(folderApi.middleware)
       .concat(fileSystemApi.middleware),
   devTools: process.env.NODE_ENV !== 'production',
 });

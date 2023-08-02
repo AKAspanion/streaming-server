@@ -45,6 +45,22 @@ declare type SubsType = {
   videoId: string;
 };
 
+declare type FolderTypeJSONDB = FolderBaseType;
+
+declare type FolderBaseType = {
+  id: string;
+  name: string;
+  category?: string;
+};
+
+declare type FolderJoinType = {
+  totalFiles?: number;
+};
+
+declare type FolderType = FolderJoinType & FolderBaseType;
+
+declare type AddFolderRequest = Omit<FolderType, 'id'>;
+
 declare type VideoTypeJSONDB = VideoType & {
   sub?: SubsType;
 };
