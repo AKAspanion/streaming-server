@@ -24,6 +24,7 @@ import {
 import MediaSubtitleDetails from './MediaSubtitleDetails';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import CoverButton from '@/components/CoverButton';
 
 interface MediaDetailsProps {}
 
@@ -89,7 +90,17 @@ const MediaDetails: FC<MediaDetailsProps> = () => {
       ) : (
         <div className="flex flex-col gap-4 p-4">
           <div className="flex flex-col md:flex-row gap-4">
-            <div className="bg-slate-300 dark:bg-slate-800 rounded-lg overflow-hidden relative">
+            <CoverButton
+              button={
+                <Link to={`/media-play/${media.id}`}>
+                  <Button variant={'ghost'} className="text-green-500">
+                    <div className="w-10">
+                      <PlayIcon />
+                    </div>
+                  </Button>
+                </Link>
+              }
+            >
               <Card className="h-full md:w-[336px]">
                 {media.id && (
                   <img
@@ -98,21 +109,7 @@ const MediaDetails: FC<MediaDetailsProps> = () => {
                   />
                 )}
               </Card>
-              <div
-                className={cs(
-                  'w-full h-full dark:bg-slate-800 bg-slate-500 absolute top-0 flex items-center justify-center',
-                  'opacity-0 hover:opacity-50 transition-opacity',
-                )}
-              >
-                <Link to={`/media-play/${media.id}`}>
-                  <Button variant={'ghost'} className="text-green-500">
-                    <div className="w-10">
-                      <PlayIcon />
-                    </div>
-                  </Button>
-                </Link>
-              </div>
-            </div>
+            </CoverButton>
             <Card className="w-full">
               <CardHeader>
                 <CardTitle>
@@ -132,7 +129,7 @@ const MediaDetails: FC<MediaDetailsProps> = () => {
                     <div className="flex flex-wrap gap-4">
                       {progressValue ? (
                         <Link to={`/media-play/${media.id}?resume=${currentDuration}`}>
-                          <Button variant={'secondary'}>
+                          <Button variant={!progressValue ? 'secondary' : undefined}>
                             <div className="flex gap-2 items-center">
                               Resume
                               <div className="w-4">
@@ -143,7 +140,7 @@ const MediaDetails: FC<MediaDetailsProps> = () => {
                         </Link>
                       ) : null}
                       <Link to={`/media-play/${media.id}`}>
-                        <Button variant={'secondary'}>
+                        <Button variant={progressValue ? 'secondary' : undefined}>
                           <div className="flex gap-2 items-center">
                             {progressValue ? 'Play From Start' : 'Play'}
                             <div className="w-4">

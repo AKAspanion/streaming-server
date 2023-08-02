@@ -1,6 +1,6 @@
 import IconButton from '@components/atoms/icon-button/IconButton';
 import { baseUrl } from '@config/api';
-import { LinkIcon, PlayIcon, TrashIcon } from '@heroicons/react/24/solid';
+import { EllipsisVerticalIcon, LinkIcon, PlayIcon, TrashIcon } from '@heroicons/react/24/solid';
 import { copyTextToClipboard } from '@utils/dom';
 import { toast } from 'react-hot-toast/headless';
 import { FC } from 'react';
@@ -12,6 +12,10 @@ import React from 'react';
 import Progress from '@/components/atoms/progress/Progress';
 import { formatPercentage } from '@/utils/helpers';
 import { Card } from '@/components/ui/card';
+import CoverButton from '@/components/CoverButton';
+import { Button } from '@/components/ui/button';
+import { Popover, PopoverContent } from '@/components/ui/popover';
+import { PopoverTrigger } from '@radix-ui/react-popover';
 
 interface MediaCardProps {
   media: MediaType;
@@ -34,52 +38,65 @@ const MediaCard: FC<MediaCardProps> = ({ media }) => {
   return (
     <Card className="h-full ">
       <div className="transition-all h-full flex flex-col rounded-lg overflow-hidden">
-        <div className="h-40 rounded-lg overflow-hidden relative">
-          <img
-            src={`${baseUrl}/media/${media.id}/thumbnail`}
-            className="w-full h-full object-cover"
-          />
-          {currentDuration ? (
-            <div className="absolute w-full bottom-0">
-              <Progress value={progressValue} />
-            </div>
-          ) : null}
-        </div>
-        <div title={media.originalName} className="p-3 pb-0 break-all">
-          {media.originalName}
-        </div>
-        {/* {media?.format?.filename && (
-          <div title={media.originalName} className="text-xs p-3 pt-1 pb-0 break-all">
-            {media?.format?.filename}
-          </div>
-        )} */}
-        <div className="flex-1"></div>
-
-        <div className="p-3 flex justify-end w-full gap-3">
-          {loading ? (
-            <Spinner />
-          ) : (
-            <React.Fragment>
-              <Link to={`/manage-media/${media.id}`}>
-                <IconButton>
-                  <InformationCircleIcon />
-                </IconButton>
-              </Link>
-              <IconButton onClick={() => copyLink(`/media-play/${media.id}`)}>
-                <div className="w-3.5 mt-0.5 ml-0.5">
-                  <LinkIcon />
-                </div>
-              </IconButton>
-              <Link to={`/media-play/${media.id}?resume=${currentDuration}`}>
-                <IconButton>
+        <CoverButton
+          button={
+            <Link to={`/media-play/${media.id}?resume=${currentDuration}`}>
+              <Button variant={'ghost'} className="text-green-500">
+                <div className="w-10">
                   <PlayIcon />
-                </IconButton>
-              </Link>
-              <IconButton onClick={() => handleDelete(media.id)}>
-                <TrashIcon />
-              </IconButton>
-            </React.Fragment>
-          )}
+                </div>
+              </Button>
+            </Link>
+          }
+        >
+          <div className="h-40 rounded-lg overflow-hidden">
+            <img
+              src={`${baseUrl}/media/${media.id}/thumbnail`}
+              className="w-full h-full object-cover"
+            />
+            {currentDuration ? (
+              <div className="absolute w-full bottom-0">
+                <Progress value={progressValue} />
+              </div>
+            ) : null}
+          </div>
+        </CoverButton>
+        <div className="flex gap-4 justify-between items-start p-4">
+          <Link to={`/manage-media/${media.id}`}>
+            <div title={media.originalName} className="break-all text-sm">
+              {media.originalName}
+            </div>
+          </Link>
+          <Popover>
+            <PopoverTrigger>
+              <div className="w-5">
+                <EllipsisVerticalIcon />
+              </div>
+            </PopoverTrigger>
+            <PopoverContent align="end" side="top">
+              <div className="flex justify-end w-full gap-3">
+                {loading ? (
+                  <Spinner />
+                ) : (
+                  <React.Fragment>
+                    <Link to={`/manage-media/${media.id}`}>
+                      <IconButton>
+                        <InformationCircleIcon />
+                      </IconButton>
+                    </Link>
+                    <IconButton onClick={() => copyLink(`/media-play/${media.id}`)}>
+                      <div className="w-3.5 mt-0.5 ml-0.5">
+                        <LinkIcon />
+                      </div>
+                    </IconButton>
+                    <IconButton onClick={() => handleDelete(media.id)}>
+                      <TrashIcon />
+                    </IconButton>
+                  </React.Fragment>
+                )}
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
     </Card>
