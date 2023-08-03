@@ -96,8 +96,6 @@ const FilePicker: React.FC<FilePickerProps> = (props) => {
     return count === 0 ? false : count === fileLength ? true : 'indeterminate';
   }, [files, selectedFiles]);
 
-  console.log(isAllSelected);
-
   useToastStatus(status, {
     errorMessage: 'Error loading directory',
   });

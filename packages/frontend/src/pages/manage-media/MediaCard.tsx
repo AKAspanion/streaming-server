@@ -23,7 +23,7 @@ interface MediaCardProps {
 }
 
 const MediaCard: FC<MediaCardProps> = ({ media, folderId }) => {
-  const { handleDelete, isDeleteLoading } = useMediaMutation();
+  const { deleteMedia, isDeleteLoading } = useMediaMutation();
 
   const copyLink = async (txt: string) => {
     const res = await copyTextToClipboard(baseUrl + '/#' + txt);
@@ -96,7 +96,7 @@ const MediaCard: FC<MediaCardProps> = ({ media, folderId }) => {
                         <LinkIcon />
                       </div>
                     </IconButton>
-                    <IconButton onClick={() => handleDelete(media.id)}>
+                    <IconButton onClick={() => deleteMedia(media.id)}>
                       <TrashIcon />
                     </IconButton>
                   </React.Fragment>

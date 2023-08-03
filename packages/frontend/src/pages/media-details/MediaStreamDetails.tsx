@@ -63,7 +63,7 @@ const MediaStreamDetails: FC<MediaStreamDetailsProps> = ({ streams }) => {
               <div className="font-bold">{title}</div>
             </div>
             {list.map((s) => {
-              return <StreamItem stream={s} />;
+              return <StreamItem key={s?.index} stream={s} />;
             })}
           </div>
         ) : null;

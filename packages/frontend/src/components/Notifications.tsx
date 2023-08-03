@@ -13,7 +13,6 @@ const Notifications = () => {
       onMouseLeave={endPause}
     >
       {toasts.map((toast) => {
-        console.log(toast);
         const offset = calculateOffset(toast, {
           reverseOrder: false,
           gutter: 16,

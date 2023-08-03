@@ -6,12 +6,15 @@ import {
   useStopMediaByIdMutation,
   useUpdateMediaStatusMutation,
 } from '@services/media';
-import { useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
 import useToastStatus from './useToastStatus';
+import { folderApi } from '@/services/folder';
+import { useDispatch } from 'react-redux';
 
 const useMediaMutation = (options?: { onDelete?: () => void }) => {
+  const dispath = useDispatch();
   const { onDelete } = options || {};
-  const [deleteMedia, { isLoading: isDeleteLoading, status: deleteStatus, data: deleteData }] =
+  const [processDelete, { isLoading: isDeleteLoading, status: deleteStatus, data: deleteData }] =
     useDeleteMediaByIdMutation();
 
   const [markMediaFavourite, { isLoading: isMarkFavouriteLoading }] =
@@ -21,11 +24,14 @@ const useMediaMutation = (options?: { onDelete?: () => void }) => {
   const [updateAudio, { isLoading: isAudioUpdating }] = useSetMediaAudioMutation();
   const [stopMedia] = useStopMediaByIdMutation();
 
-  const handleDelete = useCallback(
+  const deleteMedia = useCallback(
     async (id: string) => {
-      await deleteMedia(id);
+      await processDelete(id).unwrap();
+
+      dispath(folderApi.util.resetApiState());
+      onDelete && onDelete();
     },
-    [deleteMedia],
+    [dispath, onDelete, processDelete],
   );
 
   useToastStatus(deleteStatus, {
@@ -33,15 +39,8 @@ const useMediaMutation = (options?: { onDelete?: () => void }) => {
     errorMessage: 'Failed to delete media',
   });
 
-  useEffect(() => {
-    if (deleteStatus === 'fulfilled') {
-      onDelete && onDelete();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [deleteStatus]);
-
   return {
-    handleDelete,
+    deleteMedia,
     deleteData,
     isDeleteLoading,
     markMediaFavourite,

@@ -40,7 +40,7 @@ const MediaDetails: FC<MediaDetailsProps> = () => {
   const navigate = useNavigate();
   const { mediaId = '', folderId = '' } = useParams();
   const {
-    handleDelete,
+    deleteMedia,
     isDeleteLoading,
     markMediaFavourite,
     isMarkFavouriteLoading,
@@ -49,7 +49,7 @@ const MediaDetails: FC<MediaDetailsProps> = () => {
     updateAudio,
     isAudioUpdating,
   } = useMediaMutation({
-    onDelete: () => navigate('/manage-media'),
+    onDelete: () => navigate(folderId ? `/manage-media/${folderId}/folder` : '/manage-media'),
   });
 
   const { data: folderData, isFetching } = useGetFolderByIdQuery(folderId);
@@ -209,7 +209,7 @@ const MediaDetails: FC<MediaDetailsProps> = () => {
                           </SelectContent>
                         </Select>
                       </div>
-                      <Button variant={'destructive'} onClick={() => handleDelete(media.id)}>
+                      <Button variant={'destructive'} onClick={() => deleteMedia(media.id)}>
                         <div className="flex gap-2 items-center">
                           Delete
                           <div className="w-4">
