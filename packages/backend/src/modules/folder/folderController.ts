@@ -2,7 +2,9 @@ import { AppError, HttpCode } from '@utils/exceptions';
 import { randomUUID } from 'crypto';
 import { RequestHandler } from 'express';
 import { addOneFolder, getAllFolderData, getOneFolderData } from './folderData';
-import { getAllMediaData } from '@modules/media/mediaData';
+import { getAllMediaData, updateOneMedia } from '@modules/media/mediaData';
+import { deleteFolderDB } from '@database/json';
+import { handleJSONDBDataError } from '@utils/error';
 
 export const addFolder: RequestHandler = async (req, res) => {
   if (!req?.body?.name) {
@@ -24,6 +26,58 @@ export const addFolder: RequestHandler = async (req, res) => {
   return res.status(HttpCode.OK).send({ data });
 };
 
+export const updateFolder: RequestHandler = async (req, res) => {
+  const id = req.params.id || '';
+  const { data } = await getOneFolderData(id);
+
+  const body = {
+    id,
+    name: req?.body?.name || data?.name,
+    category: req?.body?.category || data?.category,
+    description: req?.body?.description || data?.description,
+  };
+
+  await addOneFolder(id, body);
+
+  return res.status(HttpCode.OK).send({ data: body });
+};
+
+export const deleteFolder: RequestHandler = async (req, res) => {
+  const id = req.params.id || '';
+  const { data } = await getOneFolderData(id);
+
+  const { data: mediaList } = await getAllMediaData();
+
+  const promises = [];
+
+  mediaList.forEach((m) => {
+    if (m.folderId === data?.id) {
+      promises.push(updateOneMedia(m.id, { ...m, folderId: undefined }));
+    }
+  });
+
+  try {
+    await Promise.all(
+      mediaList
+        .filter((m) => m.folderId === data.id)
+        .map((media) => updateOneMedia(media.id, { ...media, folderId: undefined })),
+    );
+  } catch (error) {
+    throw new AppError({
+      httpCode: HttpCode.INTERNAL_SERVER_ERROR,
+      description: 'Not able to delete folder ',
+    });
+  }
+
+  const { error: deleteError } = await deleteFolderDB(`/${id}`);
+
+  if (deleteError) {
+    handleJSONDBDataError(deleteError, id);
+  }
+
+  return res.status(HttpCode.OK).send({ data });
+};
+
 export const getFolder: RequestHandler = async (req, res) => {
   const id = req.params.id || '';
   const { data } = await getOneFolderData(id);
@@ -34,7 +88,14 @@ export const getFolder: RequestHandler = async (req, res) => {
 export const getAllFolder: RequestHandler = async (req, res) => {
   const { data } = await getAllFolderData();
 
-  return res.status(HttpCode.OK).send({ data });
+  const { data: mediaData } = await getAllMediaData();
+
+  const result = data.map((f) => ({
+    ...f,
+    totalFiles: mediaData.filter((m) => m.folderId === f.id).length,
+  }));
+
+  return res.status(HttpCode.OK).send({ data: result });
 };
 
 export const getMediaInFolder: RequestHandler = async (req, res) => {

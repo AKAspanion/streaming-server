@@ -4,19 +4,19 @@ import { baseUrl } from '@config/api';
 export const folderApi = createApi({
   reducerPath: 'folderApi',
   baseQuery: fetchBaseQuery({ baseUrl }),
-  tagTypes: ['Folder', 'MediaInFolder'],
+  tagTypes: ['FolderList', 'FolderDetails', 'MediaInFolder'],
   endpoints: (builder) => ({
     getFolder: builder.query<{ data: FolderType[] }, string>({
       query: () => `folder`,
-      providesTags: ['Folder'],
+      providesTags: ['FolderList'],
     }),
     getFolderById: builder.query<{ data: FolderType }, string>({
       query: (id) => `folder/${id}`,
-      providesTags: ['Folder'],
+      providesTags: ['FolderDetails'],
     }),
     getMediaInFolder: builder.query<{ data: MediaType[] }, string>({
       query: (id) => `folder/${id}/media`,
-      providesTags: ['Folder', 'MediaInFolder'],
+      providesTags: ['MediaInFolder'],
     }),
     addFolder: builder.mutation<{ data: FolderType }, AddFolderRequest>({
       query: (body) => ({
@@ -24,7 +24,22 @@ export const folderApi = createApi({
         method: 'POST',
         body: body,
       }),
-      invalidatesTags: ['Folder'],
+      invalidatesTags: ['FolderList'],
+    }),
+    updateFolder: builder.mutation<{ data: FolderType }, UpdateFolderRequest>({
+      query: (body) => ({
+        url: `folder/${body?.id}`,
+        method: 'PUT',
+        body: body,
+      }),
+      invalidatesTags: ['FolderList', 'FolderDetails'],
+    }),
+    deleteFolder: builder.mutation<{ data: FolderType }, string>({
+      query: (id) => ({
+        url: `folder/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['FolderList'],
     }),
   }),
 });
@@ -34,4 +49,6 @@ export const {
   useAddFolderMutation,
   useGetFolderByIdQuery,
   useGetMediaInFolderQuery,
+  useUpdateFolderMutation,
+  useDeleteFolderMutation,
 } = folderApi;

@@ -1,5 +1,5 @@
 import { FC, useState } from 'react';
-import AddMediaFolder from './AddMediaFolder';
+import AddEditMediaFolder from './AddEditMediaFolder';
 import { Button } from '@/components/ui/button';
 import Modal from '@/components/atoms/modal/Modal';
 import { FolderIcon, PlusIcon } from '@heroicons/react/24/solid';
@@ -8,6 +8,7 @@ import FilePicker from '@/components/FilePicker';
 interface ManageMediaHeaderProps {
   title: string;
   subtitle: string;
+  folderId?: string;
   isFolder?: boolean;
   onFileSubmit?: (files: FileLocationType[]) => void;
 }
@@ -15,6 +16,7 @@ interface ManageMediaHeaderProps {
 const ManageMediaHeader: FC<ManageMediaHeaderProps> = ({
   title,
   subtitle,
+  folderId,
   isFolder,
   onFileSubmit,
 }) => {
@@ -42,7 +44,7 @@ const ManageMediaHeader: FC<ManageMediaHeaderProps> = ({
           </div>
         </div>
         <div className="flex gap-3">
-          {!isFolder && <AddMediaFolder />}
+          <AddEditMediaFolder edit={isFolder} folderId={folderId} />
           <Button onClick={() => setOpen(true)}>
             <div className="flex gap-2 items-center">
               <div>Add Media</div>

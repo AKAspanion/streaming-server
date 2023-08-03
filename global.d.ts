@@ -66,6 +66,7 @@ declare type FolderJoinType = {
 declare type FolderType = FolderJoinType & FolderBaseType;
 
 declare type AddFolderRequest = Omit<FolderType, 'id'>;
+declare type UpdateFolderRequest = FolderType;
 
 declare type VideoTypeJSONDB = VideoType & {
   sub?: SubsType;

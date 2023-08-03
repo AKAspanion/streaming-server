@@ -33,6 +33,7 @@ const ManageMediaFolder: FC<ManageMediaFolderProps> = () => {
       {loading ? <Spinner full /> : null}
       <ManageMediaHeader
         isFolder
+        folderId={folder?.id}
         title={folder?.name || ''}
         subtitle={folder?.description || ''}
         onFileSubmit={handleFileSubmit}

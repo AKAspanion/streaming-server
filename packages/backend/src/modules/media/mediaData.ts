@@ -1,6 +1,16 @@
-import { getMediaDataDB } from '@database/json';
+import { getMediaDataDB, pushMediaDB } from '@database/json';
 import { handleJSONDBDataError } from '@utils/error';
 import { AppError, HttpCode } from '@utils/exceptions';
+
+export const updateOneMedia = async (id: string, body: MediaType) => {
+  const { error: pushError } = await pushMediaDB(`/${id}`, body);
+
+  if (pushError) {
+    handleJSONDBDataError(pushError, id);
+  }
+
+  return true;
+};
 
 export const getOneMediaData = async (mediaId: string) => {
   const { data, error } = await getMediaDataDB<MediaTypeJSONDB>(`/${mediaId}`);

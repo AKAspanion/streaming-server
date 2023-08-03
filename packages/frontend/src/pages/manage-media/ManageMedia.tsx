@@ -43,8 +43,10 @@ const ManageMedia = () => {
                       <FolderIcon />
                     </div>
                     <div className="flex flex-col">
-                      <div className="text-sm font-semibold">{f.name}</div>
-                      <div className="text-xs opacity-70">2 files</div>
+                      <div className="text-sm font-semibold">{f?.name}</div>
+                      <div className="text-xs opacity-70">
+                        {f?.totalFiles == 1 ? '1 File' : (f?.totalFiles || 'No') + ' Files'}
+                      </div>
                     </div>
                   </div>
                 </Link>
