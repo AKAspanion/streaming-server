@@ -6,6 +6,7 @@ import Spinner from '@/components/atoms/spinner/Spinner';
 import { useAddMediaMutation } from '@/services/media';
 import MediaCard from './MediaCard';
 import { useDispatch } from 'react-redux';
+import { FilmIcon, TvIcon, VideoCameraIcon } from '@heroicons/react/24/outline';
 
 interface ManageMediaFolderProps {}
 
@@ -28,6 +29,15 @@ const ManageMediaFolder: FC<ManageMediaFolderProps> = () => {
 
   const loading = isLoading || isFetching || isMediaFetching;
 
+  const getCategoryIcon = () => {
+    if (folder?.category === 'movie') {
+      return <FilmIcon />;
+    } else if (folder?.category === 'tv') {
+      return <TvIcon />;
+    }
+    return <VideoCameraIcon />;
+  };
+
   return (
     <div className="p-4 relative h-full">
       {loading ? <Spinner full /> : null}
@@ -36,6 +46,11 @@ const ManageMediaFolder: FC<ManageMediaFolderProps> = () => {
         folderId={folder?.id}
         title={folder?.name || ''}
         subtitle={folder?.description || ''}
+        tag={
+          <div className="w-5 pt-0.5 opacity-50" title={`${folder?.category || ''}`}>
+            {getCategoryIcon()}
+          </div>
+        }
         onFileSubmit={handleFileSubmit}
       />
       {mediaList.length ? (

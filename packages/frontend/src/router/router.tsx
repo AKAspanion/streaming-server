@@ -133,7 +133,7 @@ export const routes: RouteObject[] = [
               crumb: [
                 () => ({ to: '/manage-media', label: 'Media Collection' }),
                 ({ label, params }: LoaderResult) => ({
-                  to: `/manage-media/${params.folder}/folder`,
+                  to: `/manage-media/${params.folderId}/folder`,
                   label: label || 'Media Folder',
                 }),
               ],
@@ -150,7 +150,7 @@ export const routes: RouteObject[] = [
                 () => ({ to: '/manage-media', label: 'Media Collection' }),
                 ({ label, params }: LoaderResult) => ({
                   to: `/manage-media/${params.folderId}/folder`,
-                  label: label || 'Media Folder', // todo dynamic name
+                  label: label || 'Media Folder',
                 }),
                 ({ params }: LoaderResult) => ({
                   to: `/manage-media/${params.folderId}/folder/${params.mediaId}/details`,

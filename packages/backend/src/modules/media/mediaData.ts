@@ -43,11 +43,15 @@ export const getAllMediaData = async () => {
           id,
         }))
       : []
-  ).map((d) => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { chapters, streams, audioStreams, ...rest } = d;
-    return { ...rest };
-  });
+  )
+    .map((d) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { chapters, streams, audioStreams, ...rest } = d;
+      return { ...rest };
+    })
+    .sort((a, b) =>
+      a.originalName > b.originalName ? 1 : b.originalName > a.originalName ? -1 : 0,
+    );
 
   return { data };
 };

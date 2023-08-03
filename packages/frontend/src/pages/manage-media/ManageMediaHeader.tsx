@@ -10,10 +10,12 @@ interface ManageMediaHeaderProps {
   subtitle: string;
   folderId?: string;
   isFolder?: boolean;
+  tag?: React.ReactNode;
   onFileSubmit?: (files: FileLocationType[]) => void;
 }
 
 const ManageMediaHeader: FC<ManageMediaHeaderProps> = ({
+  tag,
   title,
   subtitle,
   folderId,
@@ -39,7 +41,10 @@ const ManageMediaHeader: FC<ManageMediaHeaderProps> = ({
             </div>
           )}
           <div>
-            <div className="text-xl font-semibold">{title}</div>
+            <div className="flex gap-2 items-center">
+              <div className="text-xl font-semibold">{title}</div>
+              {tag && <div>{tag}</div>}
+            </div>
             {subtitle && <div className="text-sm opacity-60">{subtitle}</div>}
           </div>
         </div>
