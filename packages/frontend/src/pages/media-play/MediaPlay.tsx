@@ -68,6 +68,7 @@ function VIdeoPlay() {
 
   let currentTime = 0;
   const resume = searchParams.get('resume');
+  const folderId = searchParams.get('back');
 
   if (resume) {
     currentTime = Number(resume);
@@ -84,7 +85,10 @@ function VIdeoPlay() {
     <div className="fixed w-screen h-screen top-0 left-0">
       {loading && <Spinner full />}
       <div className="bg-black h-screen">
-        <LazyHeader backTo="/manage-media" name={mediaData?.data?.originalName} />
+        <LazyHeader
+          backTo={folderId ? `/manage-media/${folderId}/folder` : '/manage-media'}
+          name={mediaData?.data?.originalName}
+        />
         {videoSrc ? (
           <HLSPLayer
             ref={ref}

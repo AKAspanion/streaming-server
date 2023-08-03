@@ -1,6 +1,12 @@
 import IconButton from '@components/atoms/icon-button/IconButton';
 import { baseUrl } from '@config/api';
-import { EllipsisVerticalIcon, LinkIcon, PlayIcon, TrashIcon } from '@heroicons/react/24/solid';
+import {
+  ChatBubbleBottomCenterTextIcon,
+  EllipsisVerticalIcon,
+  LinkIcon,
+  PlayIcon,
+  TrashIcon,
+} from '@heroicons/react/24/solid';
 import { copyTextToClipboard } from '@utils/dom';
 import { toast } from 'react-hot-toast/headless';
 import { FC } from 'react';
@@ -36,12 +42,14 @@ const MediaCard: FC<MediaCardProps> = ({ media, folderId }) => {
   const currentDuration = media?.currentTime || 0;
   const progressValue = totalDuration ? formatPercentage(currentDuration, totalDuration) : 0;
 
+  const hasSub = !!media.sub;
+
   return (
     <Card className="h-full ">
       <div className="transition-all h-full flex flex-col rounded-lg overflow-hidden">
         <CoverButton
           button={
-            <Link to={`/media-play/${media.id}?resume=${currentDuration}`}>
+            <Link to={`/media-play/${media.id}?resume=${currentDuration}&back=${folderId}`}>
               <Button variant={'ghost'} className="text-green-500">
                 <div className="w-10">
                   <PlayIcon />
@@ -50,6 +58,13 @@ const MediaCard: FC<MediaCardProps> = ({ media, folderId }) => {
             </Link>
           }
         >
+          {hasSub && (
+            <div className="absolute right-3 top-3 drop-shadow text-foreground">
+              <div className="w-5 ">
+                <ChatBubbleBottomCenterTextIcon />
+              </div>
+            </div>
+          )}
           <div className="h-40 rounded-lg overflow-hidden">
             <img
               src={`${baseUrl}/media/${media.id}/thumbnail`}
