@@ -27,9 +27,3 @@ export const msToTime = (timeTnMs: number, onlyValid = false) => {
     return h + ':' + m + ':' + s + '.' + ms;
   }
 };
-
-export const timestampToSeconds = (timestamp: string) => {
-  const time = timestamp.split(':');
-  const seconds = parseInt(time[0]) * 60 * 60 + parseInt(time[1]) * 60 + parseInt(time[2]);
-  return seconds;
-};

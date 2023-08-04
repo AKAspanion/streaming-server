@@ -2,10 +2,10 @@ import { useGetVideoByIdQuery, useGetVideoSubtitleByIdQuery } from '@services/vi
 import { baseUrl } from '@config/api';
 import { useParams } from 'react-router-dom';
 import { useEffect, useRef } from 'react';
-import LazyHeader from '@components/LazyHeader';
 import Spinner from '@components/atoms/spinner/Spinner';
 import useToastStatus from '@hooks/useToastStatus';
-import { HLSPLayer } from '@/components/HLSPLayer';
+import { HLSPlayer } from '@/components/PlayerHLS';
+import { normalizeText } from '@common/utils/validate';
 
 function VIdeoPlay() {
   const ref = useRef<HTMLVideoElement>(null);
@@ -60,11 +60,18 @@ function VIdeoPlay() {
 
   return (
     <div className="fixed w-screen h-screen top-0 left-0">
-      {loading && <Spinner full />}
-      <div className="bg-black h-screen">
-        <LazyHeader backTo="/video-upload" name={videoData?.data?.originalname} />
-        <HLSPLayer ref={ref} hls={false} src={src} />
-      </div>
+      {loading && (
+        <div className="w-screen h-screen">
+          <Spinner full />
+        </div>
+      )}
+      <HLSPlayer
+        ref={ref}
+        src={src}
+        hls={false}
+        backTo="/video-upload"
+        name={normalizeText(videoData?.data?.originalname)}
+      />
     </div>
   );
 }
