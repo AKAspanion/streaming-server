@@ -14,6 +14,7 @@ import {
   HeartIcon,
   PlayIcon,
   TrashIcon,
+  VideoCameraSlashIcon,
 } from '@heroicons/react/24/solid';
 import { TagIcon } from '@heroicons/react/20/solid';
 import useMediaMutation from '@hooks/useMediaMutation';
@@ -34,6 +35,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import CoverButton from '@/components/CoverButton';
 import { useGetFolderByIdQuery } from '@/services/folder';
 import { normalizeText } from '@common/utils/validate';
+import FullError from '@/components/FullError';
 
 interface MediaDetailsProps {}
 
@@ -92,10 +94,17 @@ const MediaDetails: FC<MediaDetailsProps> = () => {
 
   const progressValue = totalDuration ? formatPercentage(currentDuration, totalDuration) : 0;
 
+  const notFound = !mediaData?.data?.id && !isLoading;
+
   return (
-    <div>
+    <React.Fragment>
       {loading ? (
         <Spinner full />
+      ) : notFound ? (
+        <FullError
+          description="The media you are looking for is not available!"
+          icon={<VideoCameraSlashIcon />}
+        />
       ) : (
         <div className="flex flex-col gap-4 p-4">
           <div className="flex flex-col md:flex-row gap-4">
@@ -119,7 +128,10 @@ const MediaDetails: FC<MediaDetailsProps> = () => {
                 )}
               </Card>
             </CoverButton>
-            <Card className="w-full">
+            <Card
+              style={{ '--mediadetails-action-w': 'calc(100% - 352px)' } as React.CSSProperties}
+              className="w-full md:w-[var(--mediadetails-action-w)]"
+            >
               <CardHeader>
                 <CardTitle>
                   <div className="line-clamp-2">{mediaTitle}</div>
@@ -231,7 +243,7 @@ const MediaDetails: FC<MediaDetailsProps> = () => {
           <MediaStreamDetails streams={media?.streams} />
         </div>
       )}
-    </div>
+    </React.Fragment>
   );
 };
 

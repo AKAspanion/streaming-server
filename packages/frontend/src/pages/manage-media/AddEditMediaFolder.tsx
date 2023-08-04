@@ -12,7 +12,7 @@ import {
 import useFolderMutation from '@/hooks/useFolderMutation';
 import { useGetFolderByIdQuery } from '@/services/folder';
 import { normalizeText } from '@common/utils/validate';
-import { FolderPlusIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/solid';
+import { FolderPlusIcon, PencilSquareIcon, TrashIcon } from '@heroicons/react/24/solid';
 import { Select } from '@radix-ui/react-select';
 import { FC, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -69,10 +69,10 @@ const AddEditMediaFolder: FC<AddEditMediaFolderProps> = ({ edit, folderId = '' }
           </Button>
         )}
         <Button variant={'secondary'} onClick={() => setOpen(true)}>
-          <div className="w-5">{edit ? <PencilIcon /> : <FolderPlusIcon />}</div>
+          <div className="w-5">{edit ? <PencilSquareIcon /> : <FolderPlusIcon />}</div>
         </Button>
       </div>
-      <Modal title="Add Folder" open={open} onClose={() => setOpen(false)}>
+      <Modal title={`${edit ? 'Update' : 'Add'} Folder`} open={open} onClose={() => setOpen(false)}>
         <form className="flex flex-col gap-3" onSubmit={handleSubmit}>
           <Input value={name} placeholder="Name" onChange={(e) => setName(e.target.value)} />
           <Input

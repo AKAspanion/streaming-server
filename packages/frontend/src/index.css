@@ -19,6 +19,9 @@
   --breadcrumbs-height: var(--breadcrumbs-height-value);
   --header-height: 40px;
 
+  --media-header-height-md: 48px;
+  --media-header-height: 108px;
+
   --sidebar-width-value-collapsed: 68px;
   --sidebar-width-value: 220px;
   --sidebar-width: var(--sidebar-width-value);

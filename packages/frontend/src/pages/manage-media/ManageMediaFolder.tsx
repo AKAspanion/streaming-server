@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import React, { FC } from 'react';
 import ManageMediaHeader from './ManageMediaHeader';
 import { folderApi, useGetFolderByIdQuery, useGetMediaInFolderQuery } from '@/services/folder';
 import { useParams } from 'react-router-dom';
@@ -8,6 +8,8 @@ import MediaCard from './MediaCard';
 import { useDispatch } from 'react-redux';
 import { FilmIcon, TvIcon, VideoCameraIcon } from '@heroicons/react/24/outline';
 import { normalizeText } from '@common/utils/validate';
+import FullError from '@/components/FullError';
+import { FolderOpenIcon } from '@heroicons/react/24/solid';
 
 interface ManageMediaFolderProps {}
 
@@ -39,9 +41,19 @@ const ManageMediaFolder: FC<ManageMediaFolderProps> = () => {
     return <VideoCameraIcon />;
   };
 
-  return (
-    <div className="p-4 relative h-full">
-      {loading ? <Spinner full /> : null}
+  const notFound = !folderData?.data?.id && !isLoading;
+
+  const hasMedia = mediaList.length !== 0;
+
+  return loading ? (
+    <Spinner full />
+  ) : notFound ? (
+    <FullError
+      description="The folder you are looking for is not available!"
+      icon={<FolderOpenIcon />}
+    />
+  ) : (
+    <div className="relative h-full">
       <ManageMediaHeader
         isFolder
         folderId={folder?.id}
@@ -54,19 +66,34 @@ const ManageMediaFolder: FC<ManageMediaFolderProps> = () => {
         }
         onFileSubmit={handleFileSubmit}
       />
-      {mediaList.length ? (
-        <div>
-          <div className="grid xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-2 gap-4 py-4">
-            {mediaList?.map((m) => {
-              return (
-                <div key={m.id}>
-                  <MediaCard media={m} folderId={folderId} />
-                </div>
-              );
-            })}
+      <div
+        style={
+          {
+            '--managemediafolder-content-h': 'calc(100% - var(--media-header-height) - 32px)',
+            '--managemediafolder-content-h-md': 'calc(100% - var(--media-header-height-md) - 32px)',
+          } as React.CSSProperties
+        }
+        className="h-[var(--managemediafolder-content-h)] md:h-[var(--managemediafolder-content-h-md)] overflow-y-auto"
+      >
+        {hasMedia ? (
+          <div className="px-4 pb-4">
+            <div className="grid xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-2 gap-4">
+              {mediaList?.map((m) => {
+                return (
+                  <div key={m.id}>
+                    <MediaCard media={m} folderId={folderId} />
+                  </div>
+                );
+              })}
+            </div>
           </div>
-        </div>
-      ) : null}
+        ) : // <NoData
+        //   className="my-8"
+        //   description="Go ahead and add some video files in this folder!"
+        //   title="No Data found"
+        // />
+        null}
+      </div>
     </div>
   );
 };

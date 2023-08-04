@@ -23,19 +23,28 @@ const ManageMedia = () => {
 
   const loading = isFetching || isLoading || isFolderFetching;
 
-  return (
+  return loading ? (
+    <Spinner full />
+  ) : (
     <div className="relative h-full">
-      {loading ? <Spinner full /> : null}
-      <div className="p-4">
-        <ManageMediaHeader
-          title="Media Stream"
-          subtitle="Add any media file here to stream."
-          onFileSubmit={handleFileSubmit}
-        />
+      <ManageMediaHeader
+        title="Media Stream"
+        subtitle="Add any media file here to stream."
+        onFileSubmit={handleFileSubmit}
+      />
+      <div
+        style={
+          {
+            '--managemediafolder-content-h': 'calc(100% - var(--media-header-height) - 32px)',
+            '--managemediafolder-content-h-md': 'calc(100% - var(--media-header-height-md) - 32px)',
+          } as React.CSSProperties
+        }
+        className="h-[var(--managemediafolder-content-h)] md:h-[var(--managemediafolder-content-h-md)] overflow-y-auto"
+      >
         {folderList.length ? (
-          <div>
-            <div className="pt-6 font-bold">Folders</div>
-            <div className="grid xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-2 gap-4 py-4">
+          <div className="px-4 pb-4">
+            <div className="pt-4 font-bold">Folders</div>
+            <div className="grid xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-2 gap-4 pt-4">
               {(folderData?.data || []).map((f) => (
                 <Link key={f.id} to={`/manage-media/${f.id}/folder`}>
                   <div className="flex gap-3 items-center rounded-md w-full cursor-pointer">
@@ -55,9 +64,9 @@ const ManageMedia = () => {
           </div>
         ) : null}
         {mediaList.length ? (
-          <div>
-            <div className="pt-6 font-bold">Videos</div>
-            <div className="grid xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-2 gap-4 py-4">
+          <div className="px-4 pb-4">
+            <div className="pt-4 font-bold">Videos</div>
+            <div className="grid xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-2 gap-4 pt-4">
               {mediaList?.map((m) => {
                 return (
                   <div key={m.id}>

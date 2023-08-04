@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import Modal from '@/components/atoms/modal/Modal';
 import { FolderIcon, PlusIcon } from '@heroicons/react/24/solid';
 import FilePicker from '@/components/FilePicker';
+import { cs } from '@/utils/helpers';
 
 interface ManageMediaHeaderProps {
   title: string;
@@ -30,8 +31,13 @@ const ManageMediaHeader: FC<ManageMediaHeaderProps> = ({
   };
 
   return (
-    <div>
-      <div className="flex justify-between">
+    <div className="p-4">
+      <div
+        className={cs(
+          'flex flex-col md:flex-row gap-4 justify-between flex-end',
+          'h-[var(--media-header-height)] md:h-[var(--media-header-height-md)]',
+        )}
+      >
         <div className="flex gap-3 items-center">
           {isFolder && (
             <div>
@@ -42,17 +48,18 @@ const ManageMediaHeader: FC<ManageMediaHeaderProps> = ({
           )}
           <div>
             <div className="flex gap-2 items-center">
-              <div className="text-xl font-semibold">{title}</div>
+              <div className="text-xl line-clamp-1 font-semibold">{title}</div>
               {tag && <div>{tag}</div>}
             </div>
             {subtitle && <div className="text-sm opacity-60">{subtitle}</div>}
           </div>
         </div>
         <div className="flex gap-3 items-center">
+          <div className="flex-1" />
           <AddEditMediaFolder edit={isFolder} folderId={folderId} />
           <Button onClick={() => setOpen(true)}>
             <div className="flex gap-2 items-center">
-              <div>Add Media</div>
+              <div className="line-clamp-1">Add Media</div>
               <div className="w-4">
                 <PlusIcon />
               </div>

@@ -84,6 +84,7 @@ const MediaCard: FC<MediaCardProps> = ({ media, folderId }) => {
         </CoverButton>
         <div className="flex gap-4 justify-between items-start p-4">
           <Link
+            className="flex-1"
             to={
               folderId
                 ? `/manage-media/${folderId}/folder/${media.id}/details`
