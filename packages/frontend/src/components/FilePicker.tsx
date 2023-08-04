@@ -3,32 +3,15 @@ import { DocumentIcon, FolderIcon } from '@heroicons/react/24/solid';
 import useToastStatus from '@hooks/useToastStatus';
 import { useGetFileSystemQuery } from '@services/file-system';
 import { cs } from '@utils/helpers';
+import { normalizeText } from '@common/utils/validate';
 import { useMemo, useState } from 'react';
 import { Checkbox } from './ui/checkbox';
 import Button from './atoms/button/Button';
+import { ALLOWED_VIDEO_FILES } from '@common/constants/app';
 
 type FilePickerProps = {
   onSubmit?: (files: FileLocationType[]) => void;
 };
-
-const allowedFiles = [
-  '.mkv',
-  '.mp4',
-  '.M4P',
-  '.M4V',
-  '.avi',
-  '.WMV',
-  '.FLV',
-  '.SWF',
-  '.mov',
-  '.webm',
-  '.mpg',
-  '.mp2',
-  '.MPEG',
-  '.MPE',
-  '.MPV',
-  '.OGG',
-].map((t) => t.toLowerCase());
 
 const FilePicker: React.FC<FilePickerProps> = (props) => {
   const { onSubmit } = props;
@@ -151,7 +134,7 @@ const FilePicker: React.FC<FilePickerProps> = (props) => {
                     </div>
                   </div>
                   <div>
-                    {allowedFiles.includes(l.ext || '') && (
+                    {ALLOWED_VIDEO_FILES.includes(normalizeText(l.ext)) && (
                       <Checkbox
                         checked={selectedFiles[l.path]}
                         onCheckedChange={(v) => handleFileSelect(v, l)}

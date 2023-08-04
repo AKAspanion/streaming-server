@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/select';
 import useFolderMutation from '@/hooks/useFolderMutation';
 import { useGetFolderByIdQuery } from '@/services/folder';
+import { normalizeText } from '@common/utils/validate';
 import { FolderPlusIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/solid';
 import { Select } from '@radix-ui/react-select';
 import { FC, useState } from 'react';
@@ -26,9 +27,9 @@ const AddEditMediaFolder: FC<AddEditMediaFolderProps> = ({ edit, folderId = '' }
   const { data: folderData } = useGetFolderByIdQuery(folderId);
 
   const [open, setOpen] = useState(false);
-  const [name, setName] = useState(folderData?.data?.name || '');
-  const [category, setCategory] = useState(folderData?.data?.category || 'video');
-  const [description, setDescription] = useState(folderData?.data?.description || '');
+  const [name, setName] = useState(normalizeText(folderData?.data?.name));
+  const [category, setCategory] = useState(normalizeText(folderData?.data?.category, 'video'));
+  const [description, setDescription] = useState(normalizeText(folderData?.data?.description));
 
   const { addFolder, deleteFolder, updateFolder } = useFolderMutation({
     onDelete: () => navigate('/manage-media'),
@@ -58,7 +59,10 @@ const AddEditMediaFolder: FC<AddEditMediaFolderProps> = ({ edit, folderId = '' }
     <div>
       <div className="flex gap-1 items-center">
         {edit && (
-          <Button variant={'ghost'} onClick={() => deleteFolder(folderData?.data?.id || '')}>
+          <Button
+            variant={'ghost'}
+            onClick={() => deleteFolder(normalizeText(folderData?.data?.id))}
+          >
             <div className="w-5 text-red-500">
               <TrashIcon />
             </div>

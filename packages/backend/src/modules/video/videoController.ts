@@ -6,6 +6,7 @@ import { RequestHandler } from 'express';
 import fs from 'fs';
 import { getAllVideoData, getOneVideoData } from './videoData';
 import { deleteFilesSilently } from '@utils/helper';
+import { normalizeText } from '@common/utils/validate';
 
 export const addVideo: RequestHandler = async (req, res) => {
   const id = randomUUID();
@@ -23,7 +24,7 @@ export const addVideo: RequestHandler = async (req, res) => {
 };
 
 export const deleteVideo: RequestHandler = async (req, res) => {
-  const id = req.params.id || '';
+  const id = normalizeText(req.params.id);
   const { data } = await getOneVideoData(id);
 
   deleteFilesSilently([data?.path, data?.sub?.path, data?.thumbnail?.path]);
@@ -38,7 +39,7 @@ export const deleteVideo: RequestHandler = async (req, res) => {
 };
 
 export const streamVideo: RequestHandler = async (req, res) => {
-  const id = req.params.id || '';
+  const id = normalizeText(req.params.id);
   const range = req.headers.range;
   const { data: result } = await getOneVideoData(id);
 
@@ -78,7 +79,7 @@ export const getAllVideo: RequestHandler = async (_, res) => {
 };
 
 export const getVideo: RequestHandler = async (req, res) => {
-  const id = req.params.id || '';
+  const id = normalizeText(req.params.id);
   const { data } = await getOneVideoData(id);
 
   return res.status(HttpCode.OK).send({ data });

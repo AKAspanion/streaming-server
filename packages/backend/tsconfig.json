@@ -38,7 +38,9 @@
       "@lib/*": ["src/lib/*"],
       "@lib": ["src/lib"],
       "@utils/*": ["src/utils/*"],
-      "@utils": ["src/utils"]
+      "@utils": ["src/utils"],
+      "@common/*": ["../common/*"],
+      "@common": ["../common"]
     },
     "plugins": [{ "transform": "typescript-transform-paths" }]
   },

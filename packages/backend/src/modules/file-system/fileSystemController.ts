@@ -6,7 +6,7 @@ import fs from 'fs';
 import os from 'os';
 import uniqBy from 'lodash.uniqby';
 import { getFileType } from '@utils/file';
-import { ALLOWED_VIDEO_FILES } from '@constants/app';
+import { ALLOWED_VIDEO_FILES } from '@common/constants/app';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const drivelist = require('drivelist');
 

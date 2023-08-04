@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "cross-env NODE_ENV=production node build/src/index.js",
+    "start": "cross-env NODE_ENV=production node build/src/backend/src/index.js",
     "build": "ttsc && yarn build:es",
     "build:es": "cross-env NODE_ENV=production node esbuild.config.js",
     "prestart": "yarn build",
@@ -13,7 +13,7 @@
     "preview": "yarn start",
     "clean": "rm -rf dist && rm -rf build",
     "format": "prettier . --write",
-    "copy:env": "copyfiles .env.production dist && copyfiles .env.production build",
+    "copy:env": "copyfiles .env.production dist && copyfiles .env.production build/src/backend",
     "predev": "yarn",
     "prebuild": "yarn && yarn clean",
     "postbuild": "yarn copy:env"

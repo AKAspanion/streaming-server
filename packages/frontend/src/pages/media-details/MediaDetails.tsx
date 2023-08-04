@@ -33,6 +33,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import CoverButton from '@/components/CoverButton';
 import { useGetFolderByIdQuery } from '@/services/folder';
+import { normalizeText } from '@common/utils/validate';
 
 interface MediaDetailsProps {}
 
@@ -67,14 +68,12 @@ const MediaDetails: FC<MediaDetailsProps> = () => {
 
   const details = useMemo(() => {
     return [
-      { name: 'File Name', value: media.originalName || '' },
-      // { name: 'ID', value: media.id || '' },
+      { name: 'File Name', value: normalizeText(media.originalName) },
       { name: 'Duration', value: formatHumanSeconds(media?.format?.duration || 0) },
       { name: 'File Size', value: formatBytes(media?.format?.size || 0) },
-      { name: 'Format', value: media?.format?.format_long_name || '' },
-      // { name: 'Mime', value: media?.mimeType || '' },
-      { name: 'Bit Rate', value: media?.format?.bit_rate || '' },
-      { name: 'Location', value: media?.format?.filename || '' },
+      { name: 'Format', value: normalizeText(media?.format?.format_long_name) },
+      { name: 'Bit Rate', value: normalizeText(media?.format?.bit_rate) },
+      { name: 'Location', value: normalizeText(media?.format?.filename) },
     ];
   }, [media?.format, media.originalName]);
 
@@ -82,7 +81,7 @@ const MediaDetails: FC<MediaDetailsProps> = () => {
     const tagRecord = media?.format?.tags || {};
     return Object.keys(tagRecord).map((key) => ({
       name: titleCase(key),
-      value: tagRecord[key] || '',
+      value: normalizeText(tagRecord[key]),
     }));
   }, [media?.format?.tags]);
 
@@ -198,8 +197,8 @@ const MediaDetails: FC<MediaDetailsProps> = () => {
                                     key={stream?.index}
                                     value={`${stream?.index}`}
                                   >{`Audio: ${[
-                                    stream?.tags?.title || '',
-                                    titleCase(stream?.tags?.language || ''),
+                                    normalizeText(stream?.tags?.title),
+                                    titleCase(normalizeText(stream?.tags?.language)),
                                   ]
                                     .filter(Boolean)
                                     .join(' - ')}`}</SelectItem>

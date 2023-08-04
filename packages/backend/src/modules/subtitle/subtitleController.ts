@@ -1,3 +1,4 @@
+import { normalizeText } from '@common/utils/validate';
 import { deleteMediaDB, pushMediaDB, pushVideoDB } from '@database/json';
 import { getOneMediaData } from '@modules/media/mediaData';
 import { getOneVideoData } from '@modules/video/videoData';
@@ -8,7 +9,7 @@ import { RequestHandler } from 'express';
 import fs from 'fs';
 
 export const getVideoSubtitle: RequestHandler = async (req, res) => {
-  const videoId = req.params.videoId || '';
+  const videoId = normalizeText(req.params.videoId);
   const { data } = await getOneVideoData(videoId);
 
   if (data?.sub) {
@@ -21,7 +22,7 @@ export const getVideoSubtitle: RequestHandler = async (req, res) => {
 };
 
 export const getMediaSubtitle: RequestHandler = async (req, res) => {
-  const mediaId = req.params.mediaId || '';
+  const mediaId = normalizeText(req.params.mediaId);
   const { data } = await getOneMediaData(mediaId);
 
   if (data?.sub) {
@@ -34,7 +35,7 @@ export const getMediaSubtitle: RequestHandler = async (req, res) => {
 };
 
 export const addVideoSubtitle: RequestHandler = async (req, res) => {
-  const videoId = req.params.videoId || '';
+  const videoId = normalizeText(req.params.videoId);
   await getOneVideoData(videoId);
 
   const id = randomUUID();
@@ -52,7 +53,7 @@ export const addVideoSubtitle: RequestHandler = async (req, res) => {
 };
 
 export const addMediaSubtitle: RequestHandler = async (req, res) => {
-  const mediaId = req.params.mediaId || '';
+  const mediaId = normalizeText(req.params.mediaId);
 
   await getOneMediaData(mediaId);
 
@@ -71,7 +72,7 @@ export const addMediaSubtitle: RequestHandler = async (req, res) => {
 };
 
 export const deleteMediaSubtitle: RequestHandler = async (req, res) => {
-  const mediaId = req.params.mediaId || '';
+  const mediaId = normalizeText(req.params.mediaId);
 
   const { data } = await getOneMediaData(mediaId);
 

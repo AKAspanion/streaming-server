@@ -7,6 +7,7 @@ import { useAddMediaMutation } from '@/services/media';
 import MediaCard from './MediaCard';
 import { useDispatch } from 'react-redux';
 import { FilmIcon, TvIcon, VideoCameraIcon } from '@heroicons/react/24/outline';
+import { normalizeText } from '@common/utils/validate';
 
 interface ManageMediaFolderProps {}
 
@@ -44,10 +45,10 @@ const ManageMediaFolder: FC<ManageMediaFolderProps> = () => {
       <ManageMediaHeader
         isFolder
         folderId={folder?.id}
-        title={folder?.name || ''}
-        subtitle={folder?.description || ''}
+        title={normalizeText(folder?.name)}
+        subtitle={normalizeText(folder?.description)}
         tag={
-          <div className="w-5 pt-0.5 opacity-50" title={`${folder?.category || ''}`}>
+          <div className="w-5 pt-0.5 opacity-50" title={`${normalizeText(folder?.category)}`}>
             {getCategoryIcon()}
           </div>
         }

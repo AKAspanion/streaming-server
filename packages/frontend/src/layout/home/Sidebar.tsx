@@ -1,4 +1,5 @@
 import { cs } from '@/utils/helpers';
+import { normalizeText } from '@common/utils/validate';
 import IconButton from '@components/atoms/icon-button/IconButton';
 import {
   ArrowLeftOnRectangleIcon,
@@ -31,7 +32,7 @@ const Sidebar: FC<SidebarProps> = () => {
   const renderRoute = (route: RouteObject, level = 0): React.ReactElement => {
     const canShow = route?.handle?.name && !route?.handle?.hide;
     return (
-      <div key={`${level}+${route.path || ''}`} className={classNames()}>
+      <div key={`${level}+${normalizeText(route.path)}`} className={classNames()}>
         {canShow && (
           <NavLink to={route.path || '/'}>
             {({ isActive }) => (

@@ -8,6 +8,7 @@ import { useGetMediaSubtitleByIdQuery, usePlayMediaByIdQuery } from '@services/m
 import usePollingEffect from '@/hooks/usePolling';
 import useMediaMutation from '@/hooks/useMediaMutation';
 import { HLSPLayer } from '@/components/HLSPLayer';
+import { normalizeText } from '@common/utils/validate';
 
 function VIdeoPlay() {
   const ref = useRef<HTMLVideoElement>(null);
@@ -44,7 +45,7 @@ function VIdeoPlay() {
 
         const track = document.createElement('track');
         track.src = trackText;
-        track.label = mediaData?.data?.sub?.originalname || '';
+        track.label = normalizeText(mediaData?.data?.sub?.originalname);
         // track.srclang = 'en';
         track.default = true;
         videoRef.appendChild(track);

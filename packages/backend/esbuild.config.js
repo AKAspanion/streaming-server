@@ -2,7 +2,7 @@
 require('esbuild')
   .build({
     logLevel: 'info',
-    entryPoints: ['build/src/index.js'],
+    entryPoints: ['build/src/backend/src/index.js'],
     bundle: true,
     minify: true,
     platform: 'node',

@@ -22,6 +22,7 @@ import CoverButton from '@/components/CoverButton';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent } from '@/components/ui/popover';
 import { PopoverTrigger } from '@radix-ui/react-popover';
+import { normalizeText } from '@common/utils/validate';
 
 interface MediaCardProps {
   folderId?: string;
@@ -49,7 +50,11 @@ const MediaCard: FC<MediaCardProps> = ({ media, folderId }) => {
       <div className="transition-all h-full flex flex-col rounded-lg overflow-hidden">
         <CoverButton
           button={
-            <Link to={`/media-play/${media.id}?resume=${currentDuration}&back=${folderId || ''}`}>
+            <Link
+              to={`/media-play/${media.id}?resume=${currentDuration}&back=${normalizeText(
+                folderId,
+              )}`}
+            >
               <Button variant={'ghost'} className="text-green-500">
                 <div className="w-10">
                   <PlayIcon />

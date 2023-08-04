@@ -1,4 +1,5 @@
 import { Card } from '@/components/ui/card';
+import { normalizeText } from '@common/utils/validate';
 import ClosedCaptionIcon from '@components/icons/ClosedCaptionIcon';
 import { VideoCameraIcon } from '@heroicons/react/20/solid';
 import { MusicalNoteIcon, PhotoIcon } from '@heroicons/react/24/solid';
@@ -76,7 +77,7 @@ const StreamItem = ({ stream }: { stream: MediaStreamType }) => {
   const streamValues = useMemo(() => {
     return Object.keys(stream)
       .filter((k) => stream[k] && (typeof stream[k] === 'string' || typeof stream[k] === 'number'))
-      .map((key) => ({ name: titleCase(key), value: stream[key] || '' }));
+      .map((key) => ({ name: titleCase(key), value: normalizeText(stream[key]) }));
   }, [stream]);
 
   return (

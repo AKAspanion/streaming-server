@@ -6,6 +6,6 @@ import path from 'path';
 
 export const webFiles = IS_DEV
   ? express.static(path.join(__dirname, '../../../frontend/public'))
-  : express.static(path.join(__dirname, '../../../../frontend/dist'));
+  : express.static(path.join(__dirname, '../../../../../../frontend/dist'));
 
 export const hlsFiles = express.static(getResourcePath(SEGMENT_TEMP_FOLDER));

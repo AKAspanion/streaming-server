@@ -32,6 +32,7 @@ export default defineConfig(({ mode }) => {
         '@store': path.resolve(__dirname, './src/store'),
         '@utils': path.resolve(__dirname, './src/utils'),
         '@components': path.resolve(__dirname, './src/components'),
+        '@common': path.resolve(__dirname, '../common'),
       },
     },
     plugins: [react()],

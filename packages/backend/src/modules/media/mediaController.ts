@@ -10,9 +10,10 @@ import { deleteFilesSilently, getResourcePath, makeDirectory } from '@utils/help
 import { extractHLSFileInfo, generateManifest } from '@utils/hls';
 import { RequestHandler } from 'express';
 import { addOneMedia, addOneSubtitleForMedia, getAllMediaData, getOneMediaData } from './mediaData';
+import { normalizeText } from '@common/utils/validate';
 
 export const getMedia: RequestHandler = async (req, res) => {
-  const id = req.params.id || '';
+  const id = normalizeText(req.params.id);
   const { data } = await getOneMediaData(id);
 
   return res.status(HttpCode.OK).send({ data: { ...data, id } });
@@ -45,7 +46,7 @@ export const addMedia: RequestHandler = async (req, res) => {
 };
 
 export const deleteMedia: RequestHandler = async (req, res) => {
-  const id = req.params.id || '';
+  const id = normalizeText(req.params.id);
 
   const { data } = await getOneMediaData(id);
 
@@ -67,7 +68,7 @@ export const deleteMedia: RequestHandler = async (req, res) => {
 };
 
 export const updatePlayStatus: RequestHandler = async (req, res) => {
-  const id = req.params.id || '';
+  const id = normalizeText(req.params.id);
   const b = req.body;
   const { data } = await getOneMediaData(id);
 
@@ -86,7 +87,7 @@ export const updatePlayStatus: RequestHandler = async (req, res) => {
 };
 
 export const markFavourite: RequestHandler = async (req, res) => {
-  const id = req.params.id || '';
+  const id = normalizeText(req.params.id);
   const { data } = await getOneMediaData(id);
 
   const body = { ...data, isFavourite: !data?.isFavourite };
@@ -104,7 +105,7 @@ export const markFavourite: RequestHandler = async (req, res) => {
 };
 
 export const markWatched: RequestHandler = async (req, res) => {
-  const id = req.params.id || '';
+  const id = normalizeText(req.params.id);
   const { data } = await getOneMediaData(id);
 
   const body = { ...data, watched: !data?.watched };
@@ -122,7 +123,7 @@ export const markWatched: RequestHandler = async (req, res) => {
 };
 
 export const setAudioStream: RequestHandler = async (req, res) => {
-  const id = req.params.id || '';
+  const id = normalizeText(req.params.id);
   const { data } = await getOneMediaData(id);
 
   if (!req?.body?.index) {
@@ -146,7 +147,7 @@ export const setAudioStream: RequestHandler = async (req, res) => {
 };
 
 export const playMedia: RequestHandler = async (req, res) => {
-  const id = req.params.id || '';
+  const id = normalizeText(req.params.id);
   const { data } = await getOneMediaData(id);
 
   const manifestFile = `${id}.m3u8`;
@@ -163,7 +164,7 @@ export const playMedia: RequestHandler = async (req, res) => {
 };
 
 export const stopMedia: RequestHandler = async (req, res) => {
-  const id = req.params.id || '';
+  const id = normalizeText(req.params.id);
   await getOneMediaData(id);
 
   const hlsManager = new HLSManager();
@@ -233,7 +234,7 @@ export const streamMedia: RequestHandler = async (req, res) => {
 };
 
 export const getThumbnail: RequestHandler = async (req, res) => {
-  const id = req.params.id || '';
+  const id = normalizeText(req.params.id);
   const { data } = await getOneMediaData(id);
 
   if (data?.thumbnail && data?.thumbnail?.path) {
@@ -244,7 +245,7 @@ export const getThumbnail: RequestHandler = async (req, res) => {
 };
 
 export const generateStream: RequestHandler = async (req, res) => {
-  const id = req.params.id || '';
+  const id = normalizeText(req.params.id);
   const { data } = await getOneMediaData(id);
 
   const path = await createHLSStream(data?.format?.filename, id);

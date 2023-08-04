@@ -5,6 +5,7 @@ import { Switch } from '@/components/ui/switch';
 import useToastStatus from '@/hooks/useToastStatus';
 import { useAddMediaSubtitleMutation, useDeleteMediaSubtitleMutation } from '@/services/media';
 import { cs } from '@/utils/helpers';
+import { normalizeText } from '@common/utils/validate';
 import { ChatBubbleBottomCenterTextIcon } from '@heroicons/react/24/solid';
 import React from 'react';
 import { FC, useMemo, useRef, useState } from 'react';
@@ -55,7 +56,7 @@ const MediaSubtitleDetails: FC<MediaSubtitleDetailsProps> = ({ id, data }) => {
   };
 
   const details = useMemo(() => {
-    return [{ name: 'Name', value: data?.name || '' }];
+    return [{ name: 'Name', value: normalizeText(data?.name) }];
   }, [data?.name]);
 
   useToastStatus(subStatus, {

@@ -5,6 +5,7 @@ import { addOneFolder, getAllFolderData, getOneFolderData } from './folderData';
 import { getAllMediaData, updateOneMedia } from '@modules/media/mediaData';
 import { deleteFolderDB } from '@database/json';
 import { handleJSONDBDataError } from '@utils/error';
+import { normalizeText } from '@common/utils/validate';
 
 export const addFolder: RequestHandler = async (req, res) => {
   if (!req?.body?.name) {
@@ -27,7 +28,7 @@ export const addFolder: RequestHandler = async (req, res) => {
 };
 
 export const updateFolder: RequestHandler = async (req, res) => {
-  const id = req.params.id || '';
+  const id = normalizeText(req.params.id);
   const { data } = await getOneFolderData(id);
 
   const body = {
@@ -43,7 +44,7 @@ export const updateFolder: RequestHandler = async (req, res) => {
 };
 
 export const deleteFolder: RequestHandler = async (req, res) => {
-  const id = req.params.id || '';
+  const id = normalizeText(req.params.id);
   const { data } = await getOneFolderData(id);
 
   const { data: mediaList } = await getAllMediaData();
@@ -79,7 +80,7 @@ export const deleteFolder: RequestHandler = async (req, res) => {
 };
 
 export const getFolder: RequestHandler = async (req, res) => {
-  const id = req.params.id || '';
+  const id = normalizeText(req.params.id);
   const { data } = await getOneFolderData(id);
 
   return res.status(HttpCode.OK).send({ data });
@@ -99,7 +100,7 @@ export const getAllFolder: RequestHandler = async (req, res) => {
 };
 
 export const getMediaInFolder: RequestHandler = async (req, res) => {
-  const id = req.params.id || '';
+  const id = normalizeText(req.params.id);
 
   await getOneFolderData(id);
 
