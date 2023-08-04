@@ -37,7 +37,7 @@ const ManageMedia = () => {
             <div className="pt-6 font-bold">Folders</div>
             <div className="grid xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-2 gap-4 py-4">
               {(folderData?.data || []).map((f) => (
-                <Link to={`/manage-media/${f.id}/folder`}>
+                <Link key={f.id} to={`/manage-media/${f.id}/folder`}>
                   <div className="flex gap-3 items-center rounded-md w-full cursor-pointer">
                     <div className="w-12 text-yellow-300">
                       <FolderIcon />

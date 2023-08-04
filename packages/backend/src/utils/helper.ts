@@ -16,6 +16,16 @@ export const makeDirectory = (folderPath: string) => {
   mkdirp.sync(folderPath);
 };
 
+export const deleteFilesSilently = (deletePaths: (string | undefined)[]) => {
+  deletePaths.filter(Boolean).forEach((fullPath) => {
+    if (fullPath) {
+      fs.unlink(fullPath, async () => {
+        // do nothing
+      });
+    }
+  });
+};
+
 export const deleteDirectory = (directoryPath: string) => {
   try {
     if (fs.existsSync(directoryPath)) {

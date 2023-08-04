@@ -5,6 +5,7 @@ import { randomUUID } from 'crypto';
 import { RequestHandler } from 'express';
 import fs from 'fs';
 import { getAllVideoData, getOneVideoData } from './videoData';
+import { deleteFilesSilently } from '@utils/helper';
 
 export const addVideo: RequestHandler = async (req, res) => {
   const id = randomUUID();
@@ -25,15 +26,7 @@ export const deleteVideo: RequestHandler = async (req, res) => {
   const id = req.params.id || '';
   const { data } = await getOneVideoData(id);
 
-  const deletePaths = [data?.path, data?.sub?.path].filter(Boolean);
-
-  deletePaths.forEach((fullPath) => {
-    if (fullPath) {
-      fs.unlink(fullPath, async (err) => {
-        if (err) throw err;
-      });
-    }
-  });
+  deleteFilesSilently([data?.path, data?.sub?.path, data?.thumbnail?.path]);
 
   const { error: deleteError } = await deleteVideoDB(`/${id}`);
 

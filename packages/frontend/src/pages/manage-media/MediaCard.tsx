@@ -49,7 +49,7 @@ const MediaCard: FC<MediaCardProps> = ({ media, folderId }) => {
       <div className="transition-all h-full flex flex-col rounded-lg overflow-hidden">
         <CoverButton
           button={
-            <Link to={`/media-play/${media.id}?resume=${currentDuration}&back=${folderId}`}>
+            <Link to={`/media-play/${media.id}?resume=${currentDuration}&back=${folderId || ''}`}>
               <Button variant={'ghost'} className="text-green-500">
                 <div className="w-10">
                   <PlayIcon />

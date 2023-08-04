@@ -19,11 +19,11 @@ export const getffmpeg = () => {
   return ffmpeg;
 };
 
-export const createVideoThumbnail = (pathToFile: string, metadata: MediaTypeJSONDB) =>
-  new Promise<MediaThumbnailType>((resolve, reject) => {
+export const createVideoThumbnail = (id: string, pathToFile: string, metadata: MediaTypeJSONDB) =>
+  new Promise<ThumbnailType>((resolve, reject) => {
     const ffmpeg = getffmpeg();
     const pathToSnapshot = getResourcePath('_appdata/_screenshots');
-    const thumbnailFile = `thumb_${metadata?.originalName}.png`;
+    const thumbnailFile = `thumb_${id}_${metadata?.originalName}.png`;
     const thumbnailPath = path.join(pathToSnapshot, thumbnailFile);
 
     const time = secToTime(metadata?.format?.duration ? Number(metadata?.format?.duration) / 2 : 2);

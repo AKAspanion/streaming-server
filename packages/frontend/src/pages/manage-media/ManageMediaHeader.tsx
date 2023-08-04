@@ -48,7 +48,7 @@ const ManageMediaHeader: FC<ManageMediaHeaderProps> = ({
             {subtitle && <div className="text-sm opacity-60">{subtitle}</div>}
           </div>
         </div>
-        <div className="flex gap-3">
+        <div className="flex gap-3 items-center">
           <AddEditMediaFolder edit={isFolder} folderId={folderId} />
           <Button onClick={() => setOpen(true)}>
             <div className="flex gap-2 items-center">

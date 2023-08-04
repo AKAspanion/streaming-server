@@ -11,7 +11,7 @@ import { FC, useMemo, useRef, useState } from 'react';
 
 interface MediaSubtitleDetailsProps {
   id: string;
-  data?: SubsType;
+  data?: SubtitleType;
 }
 
 const MediaSubtitleDetails: FC<MediaSubtitleDetailsProps> = ({ id, data }) => {
@@ -55,11 +55,8 @@ const MediaSubtitleDetails: FC<MediaSubtitleDetailsProps> = ({ id, data }) => {
   };
 
   const details = useMemo(() => {
-    return [
-      { name: 'Name', value: data?.name || '' },
-      { name: 'Encoding', value: data?.encoding || '' },
-    ];
-  }, [data?.encoding, data?.name]);
+    return [{ name: 'Name', value: data?.name || '' }];
+  }, [data?.name]);
 
   useToastStatus(subStatus, {
     successMessage: 'Subtitle added successfully',

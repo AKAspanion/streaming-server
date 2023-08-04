@@ -36,18 +36,17 @@ declare type VideoType = {
   size: number;
 };
 
-declare type SubsType = {
+declare type SubtitleType = {
   id: string;
   name: string;
-  fieldname: string;
-  originalname: string;
-  encoding: string;
-  mimetype: string;
-  destination: string;
-  filename: string;
+  fieldname?: string;
+  originalname?: string;
+  encoding?: string;
+  mimetype?: string;
+  destination?: string;
+  filename?: string;
   path: string;
-  size: number;
-  videoId: string;
+  size?: number;
 };
 
 declare type FolderTypeJSONDB = FolderBaseType;
@@ -69,7 +68,8 @@ declare type AddFolderRequest = Omit<FolderType, 'id'>;
 declare type UpdateFolderRequest = FolderType;
 
 declare type VideoTypeJSONDB = VideoType & {
-  sub?: SubsType;
+  sub?: SubtitleType;
+  thumbnail?: ThumbnailType;
 };
 
 declare type PathLocationType = 'directory' | 'file';
@@ -87,7 +87,7 @@ declare type AddMediaAPIRequest = { file: FileLocationType; folderId?: string };
 
 declare type MediaChapterType = any;
 declare type MediaStreamType = any;
-declare type MediaThumbnailType = {
+declare type ThumbnailType = {
   path: string;
   name: string;
 };
@@ -110,7 +110,7 @@ declare type MediaTypeJSONDB = MediaType & {
   audioStreams: MediaStreamType[];
   format: MediaFormatType;
   chapters: MediaChapterType[];
-  thumbnail: MediaThumbnailType;
+  thumbnail: ThumbnailType;
 };
 
 declare type MediaTypeFull = MediaTypeJSONDB & {
@@ -131,5 +131,5 @@ declare type MediaType = {
   paused?: boolean;
   currentTime?: number;
   selectedAudio: string;
-  sub?: SubsType;
+  sub?: SubtitleType;
 };

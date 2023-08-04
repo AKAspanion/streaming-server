@@ -4,13 +4,12 @@ import HLSManager from '@lib/hls-manager';
 import { processHLSStream } from '@services/hls';
 import { handleJSONDBDataError } from '@utils/error';
 import { AppError, HttpCode } from '@utils/exceptions';
-import { createHLSStream, createVideoThumbnail, getVideoMetaData } from '@utils/ffmpeg';
+import { createHLSStream, getVideoMetaData } from '@utils/ffmpeg';
 import { getFileType } from '@utils/file';
-import { getResourcePath, makeDirectory } from '@utils/helper';
+import { deleteFilesSilently, getResourcePath, makeDirectory } from '@utils/helper';
 import { extractHLSFileInfo, generateManifest } from '@utils/hls';
-import { randomUUID } from 'crypto';
 import { RequestHandler } from 'express';
-import { getAllMediaData, getOneMediaData } from './mediaData';
+import { addOneMedia, addOneSubtitleForMedia, getAllMediaData, getOneMediaData } from './mediaData';
 
 export const getMedia: RequestHandler = async (req, res) => {
   const id = req.params.id || '';
@@ -38,38 +37,9 @@ export const addMedia: RequestHandler = async (req, res) => {
     throw new AppError({ description: 'File path is a directory', httpCode: HttpCode.BAD_REQUEST });
   }
 
-  const metadata: MediaTypeJSONDB = await getVideoMetaData(file.path);
-  const thumbnail = await createVideoThumbnail(file.path, metadata);
+  const { data } = await addOneMedia(file?.path, folderId);
 
-  const audioStreams: MediaStreamType[] = [];
-  (metadata?.streams || []).forEach((stream: MediaStreamType) => {
-    if (stream?.codec_type === 'audio') {
-      audioStreams.push(stream);
-    }
-  });
-
-  const selectedAudio = String(audioStreams[0]?.index || '1');
-
-  const id = randomUUID();
-
-  const body: MediaTypeJSONDB = {
-    ...metadata,
-    folderId,
-    audioStreams,
-    thumbnail,
-    selectedAudio,
-    path: file.path,
-    addDate: new Date().getTime(),
-  };
-
-  const { error } = await pushMediaDB(`/${id}`, body);
-
-  if (error) {
-    throw new AppError({
-      httpCode: HttpCode.INTERNAL_SERVER_ERROR,
-      description: 'Problem adding Video',
-    });
-  }
+  await addOneSubtitleForMedia(data?.id, file?.path);
 
   return res.status(HttpCode.OK).send({ data: { message: 'Video added successfully' } });
 };
@@ -77,7 +47,15 @@ export const addMedia: RequestHandler = async (req, res) => {
 export const deleteMedia: RequestHandler = async (req, res) => {
   const id = req.params.id || '';
 
-  await getOneMediaData(id);
+  const { data } = await getOneMediaData(id);
+
+  const filesToDelete: string[] = [data?.thumbnail?.path];
+
+  if (data?.sub?.fieldname === 'sub_file') {
+    filesToDelete.push(data?.sub?.path);
+  }
+
+  deleteFilesSilently(filesToDelete);
 
   const { error: deleteError } = await deleteMediaDB(`/${id}`);
 
@@ -284,6 +262,8 @@ export const probeFile: RequestHandler = async (req, res) => {
 
 export const testStuff: RequestHandler = async (req, res) => {
   const { file } = req.body;
+
+  await addOneSubtitleForMedia('lol', file);
 
   return res.status(HttpCode.OK).send({ file });
 };
