@@ -116,7 +116,7 @@ const FilePicker: React.FC<FilePickerProps> = (props) => {
                   key={l.path}
                   className={cs(
                     'flex gap-2 items-center justify-between rounded px-2 py-1 bg-slate-300 dark:bg-slate-600',
-                    { 'hover:bg-slate-100 dark:hover:bg-slate-500': !l.isFile },
+                    { 'hover:bg-slate-200 dark:hover:bg-slate-500': !l.isFile },
                   )}
                 >
                   <div

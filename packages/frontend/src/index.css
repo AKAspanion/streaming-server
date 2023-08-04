@@ -19,6 +19,8 @@
   --breadcrumbs-height: var(--breadcrumbs-height-value);
   --header-height: 40px;
 
+  --video-header-height-md: 48px;
+  --video-header-height: 108px;
   --media-header-height-md: 48px;
   --media-header-height: 108px;
 

@@ -5,6 +5,7 @@ import MediaCard from './MediaCard';
 import { useGetFolderQuery } from '@/services/folder';
 import { Link } from 'react-router-dom';
 import ManageMediaHeader from './ManageMediaHeader';
+import NoData from '@/components/NoData';
 
 const ManageMedia = () => {
   const { data, isFetching } = useGetMediaQuery('');
@@ -22,6 +23,8 @@ const ManageMedia = () => {
   const folderList = folderData?.data || [];
 
   const loading = isFetching || isLoading || isFolderFetching;
+
+  const noData = mediaList.length === 0 && folderList.length === 0 && !loading;
 
   return loading ? (
     <Spinner full />
@@ -41,6 +44,13 @@ const ManageMedia = () => {
         }
         className="h-[var(--managemediafolder-content-h)] md:h-[var(--managemediafolder-content-h-md)] overflow-y-auto"
       >
+        {noData && (
+          <NoData
+            className="py-8 px-4"
+            title="No media found"
+            description="Go ahead and create some folder and add your media!"
+          />
+        )}
         {folderList.length ? (
           <div className="px-4 pb-4">
             <div className="pt-4 font-bold">Folders</div>

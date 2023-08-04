@@ -14,6 +14,8 @@ import Progress from '@components/atoms/progress/Progress';
 import { setVideoUploadProgress } from '@store/globalSlice';
 import { Button } from '@/components/ui/button';
 import { ArrowUpTrayIcon } from '@heroicons/react/24/solid';
+import NoData from '@/components/NoData';
+import { cs } from '@/utils/helpers';
 
 function VideoUpload() {
   const ref = useRef<HTMLInputElement>(null);
@@ -92,7 +94,7 @@ function VideoUpload() {
   const loading = isLoading || subLoading || deleteLoading;
 
   return (
-    <div>
+    <React.Fragment>
       {addLoading && videoLoadProgress ? (
         <div className="absolute h-full w-full">
           <Progress full value={videoLoadProgress} />
@@ -101,50 +103,70 @@ function VideoUpload() {
         <Spinner full />
       ) : (
         <>
-          <div className="flex gap-4 justify-between items-center p-4">
-            <input
-              ref={ref}
-              className="invisible fixed pointer-events-none left-0"
-              type="file"
-              id="file"
-              accept="video/mp4"
-              onChange={handleSubmit}
-            />
-            <div>
-              <div className="text-xl font-semibold">Video Stream</div>
-              <div className="text-sm opacity-60">Upload a copy of .mp4 file here to stream.</div>
-            </div>
-            <Button onClick={openFile}>
-              <div className="flex gap-2 items-center">
-                <div>Upload Video</div>
-                <div className="w-4">
-                  <ArrowUpTrayIcon />
-                </div>
+          <div className="p-4">
+            <div
+              className={cs(
+                'flex gap-4 justify-between items-center',
+                'h-[var(--video-header-height)] md:h-[var(--video-header-height-md)]',
+              )}
+            >
+              <input
+                ref={ref}
+                className="invisible fixed pointer-events-none left-0"
+                type="file"
+                id="file"
+                accept="video/mp4"
+                onChange={handleSubmit}
+              />
+              <div>
+                <div className="text-xl font-semibold">Video Stream</div>
+                <div className="text-sm opacity-60">Upload a copy of .mp4 file here to stream.</div>
               </div>
-            </Button>
+              <Button onClick={openFile}>
+                <div className="flex gap-2 items-center">
+                  <div>Upload Video</div>
+                  <div className="w-4">
+                    <ArrowUpTrayIcon />
+                  </div>
+                </div>
+              </Button>
+            </div>
           </div>
-          <div className="p-4 pt-0">
-            {parsedVideos.length === 0 && (
-              <div className="flex flex-col items-center p-10">
-                <div className="text-3xl pb-1 text-yellow-400">⚠️</div>
-                <div>No Data Available</div>
+          <div
+            style={
+              {
+                '--managevideofolder-content-h': 'calc(100% - var(--video-header-height) - 32px)',
+                '--managevideofolder-content-h-md':
+                  'calc(100% - var(--video-header-height-md) - 32px)',
+              } as React.CSSProperties
+            }
+            className="h-[var(--managevideofolder-content-h)] md:h-[var(--managevideofolder-content-h-md)] overflow-y-auto"
+          >
+            {parsedVideos.length === 0 ? (
+              <NoData
+                className="py-8 px-4"
+                title="No video found"
+                description="Go ahead and upload some video!"
+              />
+            ) : (
+              <div className="p-4 pt-0">
+                {parsedVideos.map((v) => {
+                  return (
+                    <VideoListItem
+                      key={v.id}
+                      video={v}
+                      loading={false}
+                      onDelete={handleDelete}
+                      onSubtitle={handleSubtitle}
+                    />
+                  );
+                })}
               </div>
             )}
-            {parsedVideos.map((v) => {
-              return (
-                <VideoListItem
-                  key={v.id}
-                  video={v}
-                  loading={false}
-                  onDelete={handleDelete}
-                  onSubtitle={handleSubtitle}
-                />
-              );
-            })}
           </div>
         </>
       )}
-    </div>
+    </React.Fragment>
   );
 }
 

@@ -62,7 +62,7 @@ function VIdeoPlay() {
     <div className="fixed w-screen h-screen top-0 left-0">
       {loading && <Spinner full />}
       <div className="bg-black h-screen">
-        <LazyHeader name={videoData?.data?.originalname} />
+        <LazyHeader backTo="/video-upload" name={videoData?.data?.originalname} />
         <HLSPLayer ref={ref} hls={false} src={src} />
       </div>
     </div>

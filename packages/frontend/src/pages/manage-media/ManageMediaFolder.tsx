@@ -10,6 +10,7 @@ import { FilmIcon, TvIcon, VideoCameraIcon } from '@heroicons/react/24/outline';
 import { normalizeText } from '@common/utils/validate';
 import FullError from '@/components/FullError';
 import { FolderOpenIcon } from '@heroicons/react/24/solid';
+import NoData from '@/components/NoData';
 
 interface ManageMediaFolderProps {}
 
@@ -87,12 +88,12 @@ const ManageMediaFolder: FC<ManageMediaFolderProps> = () => {
               })}
             </div>
           </div>
-        ) : // <NoData
-        //   className="my-8"
-        //   description="Go ahead and add some video files in this folder!"
-        //   title="No Data found"
-        // />
-        null}
+        ) : (
+          <NoData
+            className="py-8 px-4"
+            description="Go ahead and add some video files in this folder!"
+          />
+        )}
       </div>
     </div>
   );
