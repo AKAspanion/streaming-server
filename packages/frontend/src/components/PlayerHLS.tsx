@@ -1,5 +1,5 @@
 import { ArrowLeftIcon, PauseIcon, PlayIcon } from '@heroicons/react/24/solid';
-import Hls from 'hls.js';
+import Hls, { LevelLoadedData } from 'hls.js';
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { secToTime } from '@common/utils/date-time';
@@ -54,25 +54,37 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
           hls.loadSource(src);
           hls.on(Hls.Events.MANIFEST_PARSED, () => {
             videoRef.play();
+            initializeVideo();
           });
+        });
+
+        hls.on(Hls.Events.LEVEL_LOADED, (_, data) => {
+          initializeVideo(data);
         });
       } else if (videoRef.canPlayType('application/vnd.apple.mpegurl')) {
         videoRef.src = src;
         videoRef.addEventListener('loadedmetadata', () => {
           videoRef.play();
+          initializeVideo();
         });
       }
     }
   };
 
-  const initializeVideo = () => {
+  const initializeVideo = (levelData?: LevelLoadedData) => {
     const videoRef = ref.current;
     if (videoRef) {
       setControlsVisible(true);
       lazyControlsHide();
       const videoDuration = Math.round(videoRef.duration);
 
-      setDuration(videoDuration);
+      if (!isNaN(videoDuration)) {
+        setDuration(videoDuration);
+      }
+
+      if (levelData?.details?.totalduration && !isNaN(levelData?.details?.totalduration)) {
+        setDuration(levelData?.details?.totalduration);
+      }
     }
   };
 
