@@ -3,10 +3,10 @@ import Hls, { LevelLoadedData } from 'hls.js';
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { secToTime } from '@common/utils/date-time';
-import { Progress } from './ui/progress';
+import { Progress } from '../ui/progress';
 import { MaximizeIcon, MinimizeIcon } from 'lucide-react';
 import { cs } from '@/utils/helpers';
-import Spinner from './atoms/spinner/Spinner';
+import Spinner from '../atoms/spinner/Spinner';
 
 type HLSPlayerProps = {
   hls?: boolean;
@@ -73,6 +73,32 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
     }
   };
 
+  const handleSourceLoad = () => {
+    try {
+      const videoRef = ref.current;
+      if (videoRef && src) {
+        const hasSource = videoRef.getElementsByTagName('source');
+
+        if (hasSource && hasSource.length > 0) {
+          for (const e of hasSource) {
+            videoRef.removeChild(e);
+          }
+        }
+
+        const source = document.createElement('source');
+        source.src = src;
+        videoRef.appendChild(source);
+
+        videoRef.addEventListener('loadedmetadata', () => {
+          videoRef.play();
+          initializeVideo();
+        });
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   const initializeVideo = (levelData?: LevelLoadedData) => {
     const videoRef = ref.current;
     if (videoRef) {
@@ -97,32 +123,6 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
       const offsetX = event.clientX - left;
       const skipTo = Math.round((offsetX / totalWidth) * duration);
       setSeekValue(skipTo);
-    }
-  };
-
-  const handleSourceLoad = () => {
-    try {
-      const videoRef = ref.current;
-      if (videoRef && src) {
-        const hasSource = videoRef.getElementsByTagName('source');
-
-        if (hasSource && hasSource.length > 0) {
-          for (const e of hasSource) {
-            videoRef.removeChild(e);
-          }
-        }
-
-        const source = document.createElement('source');
-        source.src = src;
-        videoRef.appendChild(source);
-
-        videoRef.addEventListener('loadedmetadata', () => {
-          videoRef.play();
-          initializeVideo();
-        });
-      }
-    } catch (e) {
-      console.error(e);
     }
   };
 
@@ -170,16 +170,15 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
   };
 
   const onWaiting = () => {
-    if (playing) setPlaying(false);
     setWaiting(true);
   };
 
   const onPlay = () => {
-    if (waiting) setWaiting(false);
     setPlaying(true);
   };
 
   const onPause = () => {
+    console.log('onPause');
     setPlaying(false);
     setWaiting(false);
   };
@@ -210,9 +209,9 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
 
     const percentage = seekValue / duration;
 
-    const tooltipLeft = Math.round(percentage * totalWidth);
+    const tooltipLeft = Math.round(percentage * totalWidth) + 20;
 
-    return tooltipLeft + 20;
+    return !isNaN(tooltipLeft) ? tooltipLeft : 0;
   };
 
   const lazyHeaderHide = () => {
@@ -248,7 +247,7 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
   }, [src]);
 
   useEffect(() => {
-    document.addEventListener('mousemove', (e) => {
+    const onMove = (e: MouseEvent) => {
       if (e.clientY < 200) {
         setHeaderVisible(true);
         lazyHeaderHide();
@@ -268,7 +267,12 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
       } else {
         setControlsVisible(false);
       }
-    });
+    };
+    document.addEventListener('mousemove', onMove);
+
+    return () => {
+      document.removeEventListener('mousemove', onMove);
+    };
   }, []);
 
   return (
@@ -304,7 +308,7 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
           style={{ '--hlsplayer-slider-w': 'calc(100%)' } as React.CSSProperties}
           className="w-[var(--hlsplayer-slider-w)] px-4 left-5"
         >
-          <div className="w-full group cursor-pointer">
+          <div className="w-full h-2 group cursor-pointer">
             <Progress
               className="w-full"
               max={duration}
@@ -313,7 +317,7 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
               onClick={seekVideo}
             />
             <Progress
-              className="w-full opacity-10 -translate-y-2 pointer-events-none"
+              className="w-full opacity-50 -translate-y-2 pointer-events-none"
               value={bufferProgress}
               max={100}
             />

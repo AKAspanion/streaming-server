@@ -6,7 +6,7 @@ import useToastStatus from '@hooks/useToastStatus';
 import { useGetMediaSubtitleByIdQuery, usePlayMediaByIdQuery } from '@services/media';
 import usePollingEffect from '@/hooks/usePolling';
 import useMediaMutation from '@/hooks/useMediaMutation';
-import { HLSPlayer } from '@/components/HLSPlayer';
+import { HLSPlayer } from '@/components/hls-player/HLSPlayer';
 import { normalizeText } from '@common/utils/validate';
 
 function VIdeoPlay() {
