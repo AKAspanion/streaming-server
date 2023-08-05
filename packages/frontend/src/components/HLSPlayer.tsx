@@ -27,10 +27,11 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
   const [duration, setDuration] = useState(0);
   const [progress, setProgress] = useState(0);
   const [seekValue, setSeekValue] = useState(0);
+  const [bufferProgress, setBufferProgress] = useState(0);
   const [elapsedDuration, setElapsedDuration] = useState(0);
   const [controlsVisible, setControlsVisible] = useState(true);
   const [headerVisible, setHeaderVisible] = useState(true);
-  const [buffering, setBuffering] = useState(false);
+  const [waiting, setWaiting] = useState(false);
   const [maximized, setMaximized] = useState(false);
   const [playing, setPlaying] = useState(false);
   const ref = useRef<HTMLVideoElement>(null);
@@ -53,22 +54,17 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
 
         hls.attachMedia(videoRef);
         hls.on(Hls.Events.MEDIA_ATTACHED, () => {
-          setBuffering(true);
           hls.loadSource(src);
           hls.on(Hls.Events.MANIFEST_PARSED, () => {
             videoRef.play();
             initializeVideo();
           });
         });
-        hls.on(Hls.Events.FRAG_BUFFERED, () => {
-          setBuffering(false);
-        });
         hls.on(Hls.Events.LEVEL_LOADED, (_, data) => {
           initializeVideo(data);
         });
       } else if (videoRef.canPlayType('application/vnd.apple.mpegurl')) {
         videoRef.src = src;
-        setBuffering(true);
         videoRef.addEventListener('loadedmetadata', () => {
           videoRef.play();
           initializeVideo();
@@ -167,15 +163,41 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
     const video = ref.current;
     if (!video) return;
 
+    setWaiting(false);
+
     setProgress(video.currentTime);
     setElapsedDuration(video.currentTime);
+  };
+
+  const onWaiting = () => {
+    if (playing) setPlaying(false);
+    setWaiting(true);
+  };
+
+  const onPlay = () => {
+    if (waiting) setWaiting(false);
+    setPlaying(true);
+  };
+
+  const onPause = () => {
+    setPlaying(false);
+    setWaiting(false);
+  };
+
+  const onProgress = () => {
+    const videoRef = ref.current;
+    if (!videoRef) return;
+    if (!videoRef.buffered) return;
+    const bufferedEnd = videoRef.buffered.end(videoRef.buffered.length - 1);
+    const duration = videoRef.duration;
+
+    setBufferProgress((bufferedEnd / duration) * 100);
   };
 
   const seekVideo = () => {
     const video = ref.current;
     if (!video) return;
 
-    setBuffering(true);
     setProgress(seekValue);
     video.currentTime = seekValue;
   };
@@ -256,11 +278,13 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
         ref={ref}
         id="myVideo"
         onClick={togglePlay}
-        onPlay={() => setPlaying(true)}
-        onPause={() => setPlaying(false)}
+        onPlay={onPlay}
+        onPause={onPause}
+        onWaiting={onWaiting}
+        onProgress={onProgress}
         onTimeUpdate={() => updateElapsedDuration()}
       />
-      {buffering && (
+      {waiting && (
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
           <Spinner large />
         </div>
@@ -287,6 +311,11 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
               value={progress}
               ref={progressRef}
               onClick={seekVideo}
+            />
+            <Progress
+              className="w-full opacity-10 -translate-y-2 pointer-events-none"
+              value={bufferProgress}
+              max={100}
             />
             <div
               style={{ left: getTooltipLeft() }}
