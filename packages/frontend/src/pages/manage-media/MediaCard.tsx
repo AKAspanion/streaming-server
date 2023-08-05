@@ -51,11 +51,12 @@ const MediaCard: FC<MediaCardProps> = ({ media, folderId }) => {
         <CoverButton
           button={
             <Link
+              className="hover:text-green-500"
               to={`/media-play/${media.id}?resume=${currentDuration}&back=${normalizeText(
                 folderId,
               )}`}
             >
-              <Button variant={'ghost'} className="text-green-500">
+              <Button variant={'ghost'} className="hover:text-green-500">
                 <div className="w-10">
                   <PlayIcon />
                 </div>

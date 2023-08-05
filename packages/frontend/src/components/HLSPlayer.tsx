@@ -6,6 +6,7 @@ import { secToTime } from '@common/utils/date-time';
 import { Progress } from './ui/progress';
 import { MaximizeIcon, MinimizeIcon } from 'lucide-react';
 import { cs } from '@/utils/helpers';
+import Spinner from './atoms/spinner/Spinner';
 
 type HLSPlayerProps = {
   hls?: boolean;
@@ -29,6 +30,7 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
   const [elapsedDuration, setElapsedDuration] = useState(0);
   const [controlsVisible, setControlsVisible] = useState(true);
   const [headerVisible, setHeaderVisible] = useState(true);
+  const [buffering, setBuffering] = useState(false);
   const [maximized, setMaximized] = useState(false);
   const [playing, setPlaying] = useState(false);
   const ref = useRef<HTMLVideoElement>(null);
@@ -51,18 +53,22 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
 
         hls.attachMedia(videoRef);
         hls.on(Hls.Events.MEDIA_ATTACHED, () => {
+          setBuffering(true);
           hls.loadSource(src);
           hls.on(Hls.Events.MANIFEST_PARSED, () => {
             videoRef.play();
             initializeVideo();
           });
         });
-
+        hls.on(Hls.Events.FRAG_BUFFERED, () => {
+          setBuffering(false);
+        });
         hls.on(Hls.Events.LEVEL_LOADED, (_, data) => {
           initializeVideo(data);
         });
       } else if (videoRef.canPlayType('application/vnd.apple.mpegurl')) {
         videoRef.src = src;
+        setBuffering(true);
         videoRef.addEventListener('loadedmetadata', () => {
           videoRef.play();
           initializeVideo();
@@ -169,6 +175,7 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
     const video = ref.current;
     if (!video) return;
 
+    setBuffering(true);
     setProgress(seekValue);
     video.currentTime = seekValue;
   };
@@ -253,6 +260,11 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
         onPause={() => setPlaying(false)}
         onTimeUpdate={() => updateElapsedDuration()}
       />
+      {buffering && (
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+          <Spinner large />
+        </div>
+      )}
       <div
         style={{ opacity: `${controlsVisible ? 1 : 0}` }}
         className={cs(

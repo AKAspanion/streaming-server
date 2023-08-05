@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 import { useEffect, useRef } from 'react';
 import Spinner from '@components/atoms/spinner/Spinner';
 import useToastStatus from '@hooks/useToastStatus';
-import { HLSPlayer } from '@/components/PlayerHLS';
+import { HLSPlayer } from '@/components/HLSPlayer';
 import { normalizeText } from '@common/utils/validate';
 
 function VIdeoPlay() {

@@ -6,13 +6,13 @@ import useToastStatus from '@hooks/useToastStatus';
 import { useGetMediaSubtitleByIdQuery, usePlayMediaByIdQuery } from '@services/media';
 import usePollingEffect from '@/hooks/usePolling';
 import useMediaMutation from '@/hooks/useMediaMutation';
-import { HLSPlayer } from '@/components/PlayerHLS';
+import { HLSPlayer } from '@/components/HLSPlayer';
 import { normalizeText } from '@common/utils/validate';
 
 function VIdeoPlay() {
   const ref = useRef<HTMLVideoElement>(null);
   const { mediaId = '' } = useParams();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const { updateMediaStatus, stopMedia } = useMediaMutation();
   const { data: mediaData, isFetching, status } = usePlayMediaByIdQuery(mediaId);
@@ -20,6 +20,8 @@ function VIdeoPlay() {
 
   usePollingEffect(async () => {
     if (ref.current && mediaData?.data?.id) {
+      searchParams.set('resume', `${ref.current?.currentTime}`);
+      setSearchParams(searchParams);
       await updateMediaStatus({
         id: mediaData?.data?.id,
         paused: ref.current?.paused,

@@ -2,10 +2,11 @@ import cs from 'classnames';
 
 type SpinnerProps = {
   full?: boolean;
+  large?: boolean;
 };
 
 function Spinner(props: SpinnerProps) {
-  const { full } = props;
+  const { full, large } = props;
   return (
     <div
       role="status"
@@ -16,7 +17,11 @@ function Spinner(props: SpinnerProps) {
     >
       <svg
         aria-hidden="true"
-        className="w-8 h-8 text-slate-300 animate-spin dark:text-slate-700 fill-slate-600 dark:fill-slate-300"
+        className={cs(
+          { 'w-16 h-16': large },
+          { 'w-8 h-8': !large },
+          ' text-slate-300 animate-spin dark:text-slate-700 fill-slate-600 dark:fill-slate-300',
+        )}
         viewBox="0 0 100 101"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
