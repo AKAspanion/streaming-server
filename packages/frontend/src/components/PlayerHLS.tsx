@@ -3,7 +3,9 @@ import Hls from 'hls.js';
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { secToTime } from '@common/utils/date-time';
-import { Slider } from './ui/slider';
+import { Progress } from './ui/progress';
+import { MaximizeIcon, MinimizeIcon } from 'lucide-react';
+import { cs } from '@/utils/helpers';
 
 type HLSPlayerProps = {
   hls?: boolean;
@@ -16,21 +18,22 @@ type HLSPlayerProps = {
   children?: React.ReactNode;
 };
 
-let lazyTimeout: NodeJS.Timeout;
+let lazyHeaderTimeout: NodeJS.Timeout;
+let lazyControlsTimeout: NodeJS.Timeout;
+// let seekTimeout: NodeJS.Timeout;
 export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, outerRef) => {
-  const {
-    src,
-    showHeader = true,
-    hls = true,
-    currentTime = 0,
-    name,
-    backTo = '/',
-    onUnmount,
-  } = props;
-  const [duration, setDuration] = useState('');
+  const { src, hls = true, currentTime = 0, name, backTo = '/', onUnmount } = props;
+  const [duration, setDuration] = useState(0);
+  const [progress, setProgress] = useState(0);
+  const [seekValue, setSeekValue] = useState(0);
+  const [elapsedDuration, setElapsedDuration] = useState(0);
+  const [controlsVisible, setControlsVisible] = useState(true);
+  const [headerVisible, setHeaderVisible] = useState(true);
+  const [maximized, setMaximized] = useState(false);
   const [playing, setPlaying] = useState(false);
-  const [visible, setVisible] = useState(true);
   const ref = useRef<HTMLVideoElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const progressRef = useRef<HTMLInputElement>(null);
   const hlsObj = useRef<Hls>();
 
   useImperativeHandle(outerRef, () => ref.current!);
@@ -62,6 +65,27 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
     }
   };
 
+  const initializeVideo = () => {
+    const videoRef = ref.current;
+    if (videoRef) {
+      setControlsVisible(true);
+      lazyControlsHide();
+      const videoDuration = Math.round(videoRef.duration);
+
+      setDuration(videoDuration);
+    }
+  };
+
+  const updateSeekTooltip = (event: React.MouseEvent<HTMLInputElement>) => {
+    if (progressRef.current) {
+      const { left, width } = progressRef.current.getBoundingClientRect();
+      const totalWidth = Math.floor(width);
+      const offsetX = event.clientX - left;
+      const skipTo = Math.round((offsetX / totalWidth) * duration);
+      setSeekValue(skipTo);
+    }
+  };
+
   const handleSourceLoad = () => {
     try {
       const videoRef = ref.current;
@@ -80,7 +104,7 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
 
         videoRef.addEventListener('loadedmetadata', () => {
           videoRef.play();
-          setDuration(secToTime(Math.round(videoRef.duration), true));
+          initializeVideo();
         });
       }
     } catch (e) {
@@ -109,10 +133,58 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
     }
   };
 
-  const lazyHide = () => {
-    clearTimeout(lazyTimeout);
-    lazyTimeout = setTimeout(() => {
-      setVisible(false);
+  const toggleFullScreen = () => {
+    if (!containerRef.current) return;
+
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+      setMaximized(false);
+    } else {
+      containerRef.current.requestFullscreen();
+      setMaximized(true);
+    }
+  };
+
+  const updateElapsedDuration = () => {
+    const video = ref.current;
+    if (!video) return;
+
+    setProgress(video.currentTime);
+    setElapsedDuration(video.currentTime);
+  };
+
+  const seekVideo = () => {
+    const video = ref.current;
+    if (!video) return;
+
+    setProgress(seekValue);
+    video.currentTime = seekValue;
+  };
+
+  const getTooltipLeft = () => {
+    if (!progressRef.current) return;
+
+    const { width } = progressRef.current.getBoundingClientRect();
+    const totalWidth = Math.floor(width);
+
+    const percentage = seekValue / duration;
+
+    const tooltipLeft = Math.round(percentage * totalWidth);
+
+    return tooltipLeft + 20;
+  };
+
+  const lazyHeaderHide = () => {
+    clearTimeout(lazyHeaderTimeout);
+    lazyHeaderTimeout = setTimeout(() => {
+      setHeaderVisible(false);
+    }, 5000);
+  };
+
+  const lazyControlsHide = () => {
+    clearTimeout(lazyControlsTimeout);
+    lazyControlsTimeout = setTimeout(() => {
+      setControlsVisible(false);
     }, 5000);
   };
 
@@ -136,17 +208,30 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
 
   useEffect(() => {
     document.addEventListener('mousemove', (e) => {
-      if (e.clientY < 100) {
-        setVisible(true);
-        lazyHide();
+      if (e.clientY < 200) {
+        setHeaderVisible(true);
+        lazyHeaderHide();
       } else {
-        setVisible(false);
+        setHeaderVisible(false);
+      }
+
+      let offset = 500;
+
+      if (containerRef.current) {
+        const { height } = containerRef.current.getBoundingClientRect();
+        offset = height / 2;
+      }
+      if (e.clientY > offset) {
+        setControlsVisible(true);
+        lazyControlsHide();
+      } else {
+        setControlsVisible(false);
       }
     });
   }, []);
 
   return (
-    <div className="w-full h-full bg-black relative">
+    <div ref={containerRef} className="w-full h-full bg-black relative">
       <video
         autoPlay
         ref={ref}
@@ -154,42 +239,76 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
         onClick={togglePlay}
         onPlay={() => setPlaying(true)}
         onPause={() => setPlaying(false)}
+        onTimeUpdate={() => updateElapsedDuration()}
       />
-      <div className="absolute p-4 bottom-4 left-4 cursor-pointer" onClick={togglePlay}>
-        <div className="w-5 ml-0.5">{playing ? <PauseIcon /> : <PlayIcon />}</div>
-      </div>
       <div
-        style={{ '--hlsplayer-slider-w': 'calc(100% - 40px)' } as React.CSSProperties}
-        className="absolute w-[var(--hlsplayer-slider-w)] p-4 bottom-20 left-5 cursor-pointer"
+        style={{ opacity: `${controlsVisible ? 1 : 0}` }}
+        className={cs(
+          'transition-all duration-500',
+          'absolute bottom-0 left-0 p-4 bg-gradient-to-b from-transparent to-black w-full',
+        )}
+        onMouseMove={updateSeekTooltip}
       >
-        <Slider />
-      </div>
-      <div className="text-xs opacity-60 absolute p-2 px-4 bottom-16 left-5">0:0</div>
-      <div className="text-xs opacity-60 absolute p-2 px-4 bottom-16 right-5">
-        {[duration].filter(Boolean).join(' / ')}
-      </div>
-
-      {showHeader && (
+        <div className="line-clamp-1 text-2xl overflow-hidden overflow-ellipsis whitespace-nowrap p-4 drop-shadow">
+          {name}
+        </div>
         <div
-          className="absolute top-0 left-0 bg-gradient-to-b from-black to-transparent  z-40 transition-all duration-500"
-          style={{ opacity: `${visible ? 1 : 1}` }}
+          style={{ '--hlsplayer-slider-w': 'calc(100%)' } as React.CSSProperties}
+          className="w-[var(--hlsplayer-slider-w)] px-4 left-5"
         >
-          <div
-            className="w-screen p-4 flex gap-4 justify-between"
-            style={{ '--max-wasd': 'calc(100vw - 160px)' } as React.CSSProperties}
-          >
-            <div className="text-white flex items-center gap-2 w-[var(--max-wasd)]">
-              <Link to={backTo} className="w-5">
-                <ArrowLeftIcon className="text-white w-5" />
-              </Link>
-              <div className="text-md overflow-hidden overflow-ellipsis whitespace-nowrap">
-                {name}
-              </div>
+          <div className="w-full group cursor-pointer">
+            <Progress
+              className="w-full"
+              max={duration}
+              value={progress}
+              ref={progressRef}
+              onClick={seekVideo}
+            />
+            <div
+              style={{ left: getTooltipLeft() }}
+              className="group-hover:visible invisible absolute text-xs top-24 py-4"
+            >
+              {secToTime(seekValue, true)}
             </div>
           </div>
-          <div className="h-5" />
         </div>
-      )}
+        <div className="flex justify-between gap-4">
+          <div className="text-xs drop-shadow pt-2 px-4">{secToTime(elapsedDuration, true)}</div>
+          <div className="text-xs drop-shadow pt-2 px-4 ">
+            {[duration]
+              .filter(Boolean)
+              .map((d) => secToTime(Math.round(d), true))
+              .join(' / ')}
+          </div>
+        </div>
+        <div className="flex gap-3 justify-between items-center">
+          <div className="p-4 pl-2.5 cursor-pointer" onClick={togglePlay}>
+            <div className="w-7 ml-0.5">{playing ? <PauseIcon /> : <PlayIcon />}</div>
+          </div>
+          <div className="p-4 pl-2.5 cursor-pointer" onClick={toggleFullScreen}>
+            <div className="w-7 ml-0.5">{maximized ? <MinimizeIcon /> : <MaximizeIcon />}</div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        style={{ opacity: `${headerVisible ? 1 : 0}` }}
+        className={cs(
+          'absolute top-0 left-0 bg-gradient-to-b from-black to-transparent z-40 transition-all duration-500',
+        )}
+      >
+        <div
+          className="w-screen p-4 flex gap-4 justify-between"
+          style={{ '--max-wasd': 'calc(100vw - 160px)' } as React.CSSProperties}
+        >
+          <div className="text-white flex items-center gap-2 w-[var(--max-wasd)]">
+            <Link to={backTo} className="w-5">
+              <ArrowLeftIcon className="text-white w-5" />
+            </Link>
+          </div>
+        </div>
+        <div className="h-5" />
+      </div>
     </div>
   );
 });

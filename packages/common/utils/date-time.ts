@@ -22,7 +22,7 @@ export const msToTime = (timeTnMs: number, onlyValid = false) => {
 
   if (onlyValid) {
     const v = m + ':' + s;
-    return h ? h + ':' + v : v;
+    return hours ? h + ':' + v : v;
   } else {
     return h + ':' + m + ':' + s + '.' + ms;
   }
