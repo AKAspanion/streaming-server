@@ -9,13 +9,21 @@ import { ffmpegLogger } from './logger';
 import { SEGMENT_FILE_NO_SEPERATOR, SEGMENT_TARGET_DURATION } from '@constants/hls';
 import { secToTime } from './date-time';
 import fs from 'fs';
+import os from 'os';
 
-/* eslint-disable @typescript-eslint/no-var-requires */
 export const getffmpeg = () => {
-  const ffmpegInstaller = require('@ffmpeg-installer/ffmpeg');
-  const ffmpegProbeInstaller = require('@ffprobe-installer/ffprobe');
-  ffmpeg.setFfmpegPath(ffmpegInstaller.path);
-  ffmpeg.setFfprobePath(ffmpegProbeInstaller.path);
+  let ffmpegLocal = '';
+  let ffmpegProbeLocal = '';
+  if (os.platform() === 'win32') {
+    ffmpegLocal = path.resolve('./src/bin/ffmpeg/ffmpeg.exe');
+    ffmpegProbeLocal = path.resolve('./src/bin/ffmpeg/ffprobe.exe');
+  } else {
+    ffmpegLocal = path.resolve('./src/bin/ffmpeg/ffmpeg');
+    ffmpegProbeLocal = path.resolve('./src/bin/ffmpeg/ffprobe');
+  }
+
+  ffmpeg.setFfmpegPath(ffmpegLocal);
+  ffmpeg.setFfprobePath(ffmpegProbeLocal);
 
   return ffmpeg;
 };
