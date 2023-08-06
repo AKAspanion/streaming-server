@@ -14,7 +14,7 @@
     "clean": "rm -rf dist && rm -rf build",
     "format": "prettier . --write",
     "copy:env": "copyfiles .env.production dist && copyfiles .env.production build/src/backend",
-    "copy:bin": "copyfiles -u 1 \"src/bin/**/*\"  build/src/backend/src",
+    "copy:bin": "copyfiles -u 1 \"src/.bin/**/*\"  build/src/backend/src",
     "predev": "yarn",
     "prebuild": "yarn && yarn clean",
     "postbuild": "yarn copy:env && yarn copy:bin"

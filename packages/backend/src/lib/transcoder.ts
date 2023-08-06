@@ -93,7 +93,7 @@ export default class Transcoder {
       const outputOptions = this.getOutputOptions();
 
       outputOptions.push('-map -a');
-      outputOptions.push(`-map 0:${this.audioStreamIndex}`);
+      outputOptions.push(`-map 0:${this.audioStreamIndex}?`);
 
       const inputOptions = this.getInputOptions();
 
