@@ -11,6 +11,7 @@ import {
   MinimizeIcon,
   PictureInPicture2,
   SettingsIcon,
+  SkipForwardIcon,
   Volume1Icon,
   Volume2Icon,
   VolumeXIcon,
@@ -38,6 +39,7 @@ type HLSPlayerProps = {
   hls?: boolean;
   src: string;
   thumbnailSrc?: string;
+  nextLink?: string;
   name: string;
   backTo?: string;
   showHeader?: boolean;
@@ -50,7 +52,16 @@ let lazyHeaderTimeout: NodeJS.Timeout;
 let lazyControlsTimeout: NodeJS.Timeout;
 // let seekTimeout: NodeJS.Timeout;
 export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, outerRef) => {
-  const { src, hls = true, currentTime = 0, name, thumbnailSrc, backTo = '/', onUnmount } = props;
+  const {
+    src,
+    hls = true,
+    currentTime = 0,
+    name,
+    thumbnailSrc,
+    backTo = '/',
+    nextLink,
+    onUnmount,
+  } = props;
   const [volume, setVolume] = useState(1);
   const [duration, setDuration] = useState(0);
   const [progress, setProgress] = useState(0);
@@ -432,8 +443,17 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
           'absolute bottom-0 left-0 p-4 bg-gradient-to-b from-transparent to-black w-full',
         )}
       >
-        <div className="line-clamp-1 text-2xl overflow-hidden overflow-ellipsis whitespace-nowrap p-4 drop-shadow">
-          {name}
+        <div className="flex items-center gap-4 justify-between">
+          <div className="line-clamp-1 text-2xl overflow-hidden overflow-ellipsis whitespace-nowrap p-4 drop-shadow">
+            {name}
+          </div>
+          {nextLink && (
+            <div className="w-5 mr-4">
+              <Link className="p-2" to={nextLink}>
+                <SkipForwardIcon />
+              </Link>
+            </div>
+          )}
         </div>
         <div
           style={{ '--hlsplayer-slider-w': 'calc(100%)' } as React.CSSProperties}

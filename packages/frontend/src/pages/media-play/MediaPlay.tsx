@@ -1,6 +1,6 @@
 import { baseUrl } from '@config/api';
 import { useParams, useSearchParams } from 'react-router-dom';
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import Spinner from '@components/atoms/spinner/Spinner';
 import useToastStatus from '@hooks/useToastStatus';
 import { useGetMediaSubtitleByIdQuery, usePlayMediaByIdQuery } from '@services/media';
@@ -8,15 +8,34 @@ import usePollingEffect from '@/hooks/usePolling';
 import useMediaMutation from '@/hooks/useMediaMutation';
 import { HLSPlayer } from '@/components/hls-player/HLSPlayer';
 import { normalizeText } from '@common/utils/validate';
+import { useGetMediaInFolderQuery } from '@/services/folder';
 
-function VIdeoPlay() {
+function MediaPlay() {
   const ref = useRef<HTMLVideoElement>(null);
   const { mediaId = '' } = useParams();
   const [searchParams] = useSearchParams();
 
+  const resume = searchParams.get('resume');
+  const folderId = searchParams.get('back');
+
   const { updateMediaStatus, stopMedia } = useMediaMutation();
+  const { data: mediaList } = useGetMediaInFolderQuery(folderId || '');
   const { data: mediaData, isFetching, status } = usePlayMediaByIdQuery(mediaId);
   const { data: subData, isLoading: subLoading } = useGetMediaSubtitleByIdQuery(mediaId);
+
+  const nextLink = useMemo(() => {
+    let path = '';
+    if (folderId && mediaList?.data && mediaList?.data.length) {
+      const index = mediaList?.data?.findIndex((m) => m.id === mediaData?.data?.id);
+      if (index && index > -1 && mediaList?.data[index + 1]) {
+        const nextId = mediaList?.data[index + 1].id;
+        path = `/media-play/${nextId}?back=${folderId}`;
+      }
+      return path;
+    }
+
+    return path;
+  }, [folderId, mediaData?.data?.id, mediaList]);
 
   usePollingEffect(async () => {
     if (ref.current && mediaData?.data?.id) {
@@ -67,8 +86,6 @@ function VIdeoPlay() {
   }
 
   let currentTime = 0;
-  const resume = searchParams.get('resume');
-  const folderId = searchParams.get('back');
 
   if (resume) {
     currentTime = Number(resume);
@@ -89,6 +106,7 @@ function VIdeoPlay() {
           <HLSPlayer
             ref={ref}
             src={videoSrc}
+            nextLink={nextLink}
             currentTime={currentTime}
             name={normalizeText(mediaData?.data?.originalName)}
             thumbnailSrc={`${baseUrl}/media/${mediaData?.data?.id}/thumbnail/seek`}
@@ -101,4 +119,4 @@ function VIdeoPlay() {
   );
 }
 
-export default VIdeoPlay;
+export default MediaPlay;
