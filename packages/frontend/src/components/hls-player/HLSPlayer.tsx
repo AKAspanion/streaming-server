@@ -424,7 +424,7 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
         </div>
       )}
       <div
-        style={{ opacity: `${controlsVisible ? 1 : 1}` }}
+        style={{ opacity: `${controlsVisible ? 1 : 0}` }}
         className={cs(
           'transition-all duration-500',
           'absolute bottom-0 left-0 p-4 bg-gradient-to-b from-transparent to-black w-full',
@@ -552,7 +552,7 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
       </div>
 
       <div
-        style={{ opacity: `${headerVisible ? 1 : 1}` }}
+        style={{ opacity: `${headerVisible ? 1 : 0}` }}
         className={cs(
           'absolute top-0 left-0 bg-gradient-to-b from-black to-transparent z-40 transition-all duration-500',
         )}
