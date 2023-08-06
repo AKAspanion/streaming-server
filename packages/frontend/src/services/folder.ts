@@ -11,11 +11,21 @@ export const folderApi = createApi({
       providesTags: ['FolderList'],
     }),
     getFolderById: builder.query<{ data: FolderType }, string>({
-      query: (id) => `folder/${id}`,
+      query: (id) => {
+        if (!id) {
+          throw new Error('Folder id is required.');
+        }
+        return `folder/${id}`;
+      },
       providesTags: ['FolderDetails'],
     }),
     getMediaInFolder: builder.query<{ data: MediaType[] }, string>({
-      query: (id) => `folder/${id}/media`,
+      query: (id) => {
+        if (!id) {
+          throw new Error('Folder id is required.');
+        }
+        return `folder/${id}/media`;
+      },
       providesTags: ['MediaInFolder'],
     }),
     addFolder: builder.mutation<{ data: FolderType }, AddFolderRequest>({
@@ -35,10 +45,12 @@ export const folderApi = createApi({
       invalidatesTags: ['FolderList', 'FolderDetails'],
     }),
     deleteFolder: builder.mutation<{ data: FolderType }, string>({
-      query: (id) => ({
-        url: `folder/${id}`,
-        method: 'DELETE',
-      }),
+      query: (id) => {
+        if (!id) {
+          throw new Error('Folder id is required.');
+        }
+        return { url: `folder/${id}`, method: 'DELETE' };
+      },
       invalidatesTags: ['FolderList'],
     }),
   }),

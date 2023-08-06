@@ -10,7 +10,12 @@ export const videoApi = createApi({
   tagTypes: ['Video'],
   endpoints: (builder) => ({
     getVideoById: builder.query<{ data: VideoType }, string>({
-      query: (id) => `video/${id}`,
+      query: (id) => {
+        if (!id) {
+          throw new Error('Video id is required.');
+        }
+        return `video/${id}`;
+      },
       providesTags: ['Video'],
     }),
     getVideos: builder.query<{ data: VideoType[] }, string>({
@@ -43,22 +48,29 @@ export const videoApi = createApi({
       invalidatesTags: ['Video'],
     }),
     deleteVideo: builder.mutation<VideoType, string>({
-      query: (id) => ({
-        url: `video/${id}`,
-        method: 'DELETE',
-      }),
+      query: (id) => {
+        if (!id) {
+          throw new Error('Video id is required.');
+        }
+        return { url: `video/${id}`, method: 'DELETE' };
+      },
       invalidatesTags: ['Video'],
     }),
     getVideoSubtitleById: builder.query<string, string>({
-      query: (id) => ({
-        url: `subtitle/${id}/video`,
-        method: 'GET',
-        responseHandler: async (response) => {
-          const textTrackUrl = await toWebVTT(await response.blob());
-          return textTrackUrl;
-        },
-        cache: 'no-cache',
-      }),
+      query: (id) => {
+        if (!id) {
+          throw new Error('Video id is required.');
+        }
+        return {
+          url: `subtitle/${id}/video`,
+          method: 'GET',
+          responseHandler: async (response) => {
+            const textTrackUrl = await toWebVTT(await response.blob());
+            return textTrackUrl;
+          },
+          cache: 'no-cache',
+        };
+      },
     }),
     addVideoSubtitle: builder.mutation<File, { id: string; body: FormData }>({
       query: ({ id, body }) => ({

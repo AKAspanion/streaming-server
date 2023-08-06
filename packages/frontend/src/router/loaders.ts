@@ -17,7 +17,7 @@ export const folderLoader = async ({ params }: LoaderFunctionArgs) => {
 
     label = normalizeText(response?.data?.name);
   } catch (e) {
-    console.log(e);
+    // console.log(e);
   }
 
   return { label, params } as LoaderResult;
