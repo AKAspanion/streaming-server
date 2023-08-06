@@ -16,10 +16,10 @@ export const getffmpeg = () => {
   let ffmpegProbeLocal = '';
   if (os.platform() === 'win32') {
     ffmpegLocal = path.resolve('./src/bin/ffmpeg/ffmpeg.exe');
-    ffmpegProbeLocal = path.resolve('./src/bin/ffmpeg/ffprobe.exe');
+    ffmpegProbeLocal = path.resolve('./src/bin/ffprobe/ffprobe.exe');
   } else {
     ffmpegLocal = path.resolve('./src/bin/ffmpeg/ffmpeg');
-    ffmpegProbeLocal = path.resolve('./src/bin/ffmpeg/ffprobe');
+    ffmpegProbeLocal = path.resolve('./src/bin/ffprobe/ffprobe');
   }
 
   ffmpeg.setFfmpegPath(ffmpegLocal);
