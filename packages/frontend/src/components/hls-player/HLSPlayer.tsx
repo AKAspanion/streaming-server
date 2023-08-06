@@ -4,9 +4,34 @@ import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } f
 import { Link } from 'react-router-dom';
 import { secToTime } from '@common/utils/date-time';
 import { Progress } from '../ui/progress';
-import { MaximizeIcon, MinimizeIcon } from 'lucide-react';
+import {
+  ChevronsLeft,
+  ChevronsRight,
+  MaximizeIcon,
+  MinimizeIcon,
+  PictureInPicture2,
+  SettingsIcon,
+  Volume1Icon,
+  Volume2Icon,
+  VolumeXIcon,
+} from 'lucide-react';
 import { cs } from '@/utils/helpers';
 import Spinner from '../atoms/spinner/Spinner';
+import useVideoControls from './useVideoControls';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '../ui/select';
+import { PLAYBACK_SPEEDS } from '@common/constants/app';
+import ClosedCaptionIcon from '../icons/ClosedCaptionIcon';
+import { Slider } from '../ui/slider';
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '../ui/hover-card';
 
 type HLSPlayerProps = {
   hls?: boolean;
@@ -15,8 +40,8 @@ type HLSPlayerProps = {
   backTo?: string;
   showHeader?: boolean;
   currentTime?: number;
-  onUnmount?: () => void;
   children?: React.ReactNode;
+  onUnmount?: () => void;
 };
 
 let lazyHeaderTimeout: NodeJS.Timeout;
@@ -24,16 +49,22 @@ let lazyControlsTimeout: NodeJS.Timeout;
 // let seekTimeout: NodeJS.Timeout;
 export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, outerRef) => {
   const { src, hls = true, currentTime = 0, name, backTo = '/', onUnmount } = props;
+  const [volume, setVolume] = useState(1);
   const [duration, setDuration] = useState(0);
   const [progress, setProgress] = useState(0);
   const [seekValue, setSeekValue] = useState(0);
+  const [waiting, setWaiting] = useState(false);
+  const [playing, setPlaying] = useState(false);
+  const [maximized, setMaximized] = useState(false);
+  const [pipVisible, setPipVisible] = useState(true);
+  const [playbackRate, setPlaybackRate] = useState('1');
+  const [volumeState, setVolumeState] = useState('high');
   const [bufferProgress, setBufferProgress] = useState(0);
   const [elapsedDuration, setElapsedDuration] = useState(0);
-  const [controlsVisible, setControlsVisible] = useState(true);
   const [headerVisible, setHeaderVisible] = useState(true);
-  const [waiting, setWaiting] = useState(false);
-  const [maximized, setMaximized] = useState(false);
-  const [playing, setPlaying] = useState(false);
+  const [controlsVisible, setControlsVisible] = useState(true);
+  const [subtitlesVisible, setSubtitlesVisible] = useState(true);
+
   const ref = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const progressRef = useRef<HTMLInputElement>(null);
@@ -57,17 +88,17 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
           hls.loadSource(src);
           hls.on(Hls.Events.MANIFEST_PARSED, () => {
             videoRef.play();
-            initializeVideo();
+            initVideo();
           });
         });
         hls.on(Hls.Events.LEVEL_LOADED, (_, data) => {
-          initializeVideo(data);
+          initVideo(data);
         });
       } else if (videoRef.canPlayType('application/vnd.apple.mpegurl')) {
         videoRef.src = src;
         videoRef.addEventListener('loadedmetadata', () => {
           videoRef.play();
-          initializeVideo();
+          initVideo();
         });
       }
     }
@@ -91,7 +122,7 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
 
         videoRef.addEventListener('loadedmetadata', () => {
           videoRef.play();
-          initializeVideo();
+          initVideo();
         });
       }
     } catch (e) {
@@ -99,12 +130,12 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
     }
   };
 
-  const initializeVideo = (levelData?: LevelLoadedData) => {
-    const videoRef = ref.current;
-    if (videoRef) {
+  const initVideo = (levelData?: LevelLoadedData) => {
+    const video = ref.current;
+    if (video) {
       setControlsVisible(true);
       lazyControlsHide();
-      const videoDuration = Math.round(videoRef.duration);
+      const videoDuration = Math.round(video.duration);
 
       if (!isNaN(videoDuration)) {
         setDuration(videoDuration);
@@ -112,6 +143,18 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
 
       if (levelData?.details?.totalduration && !isNaN(levelData?.details?.totalduration)) {
         setDuration(levelData?.details?.totalduration);
+      }
+
+      const hasTrack = video.getElementsByTagName('track');
+
+      if (hasTrack && hasTrack.length > 0) {
+        setSubtitlesVisible(video.textTracks[0].mode === 'showing');
+      } else {
+        setSubtitlesVisible(false);
+      }
+
+      if (!('pictureInPictureEnabled' in document)) {
+        setPipVisible(false);
       }
     }
   };
@@ -123,6 +166,34 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
       const offsetX = event.clientX - left;
       const skipTo = Math.round((offsetX / totalWidth) * duration);
       setSeekValue(skipTo);
+    }
+  };
+
+  const updatePlaybackRate = (value: string) => {
+    const video = ref.current;
+    if (video) {
+      video.playbackRate = parseFloat(value);
+      setPlaybackRate(value);
+      video.play();
+    }
+  };
+
+  const updateVolume = (value: number[]) => {
+    const video = ref.current;
+    if (video) {
+      if (video.muted) {
+        video.muted = false;
+      }
+
+      setVolume(value[0]);
+      video.volume = value[0];
+    }
+  };
+
+  const updateSeekTime = (multiplier: number) => {
+    const video = ref.current;
+    if (video) {
+      video.currentTime += 10 * multiplier;
     }
   };
 
@@ -144,6 +215,40 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
     } else {
       video.pause();
       setPlaying(false);
+    }
+  };
+
+  const toggleMute = () => {
+    const video = ref.current;
+    if (!video) return;
+
+    video.muted = !video.muted;
+  };
+
+  const togglePip = async () => {
+    try {
+      const video = ref.current;
+      if (pipVisible && video && video !== document.pictureInPictureElement) {
+        await video.requestPictureInPicture();
+      } else {
+        await document.exitPictureInPicture();
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const toggleSubtitle = () => {
+    const video = ref.current;
+    if (video) {
+      const hasTrack = video.getElementsByTagName('track');
+
+      if (hasTrack && hasTrack.length > 0) {
+        const current = video.textTracks[0].mode;
+        const isVisible = current === 'showing';
+        setSubtitlesVisible(!isVisible);
+        video.textTracks[0].mode = isVisible ? 'hidden' : 'showing';
+      }
     }
   };
 
@@ -178,7 +283,6 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
   };
 
   const onPause = () => {
-    console.log('onPause');
     setPlaying(false);
     setWaiting(false);
   };
@@ -191,6 +295,19 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
     const duration = videoRef.duration;
 
     setBufferProgress((bufferedEnd / duration) * 100);
+  };
+
+  const onVolumeChange = () => {
+    const video = ref.current;
+    if (!video) return;
+
+    if (video.muted || video.volume === 0) {
+      setVolumeState('mute');
+    } else if (video.volume > 0 && video.volume <= 0.5) {
+      setVolumeState('low');
+    } else {
+      setVolumeState('high');
+    }
   };
 
   const seekVideo = () => {
@@ -248,19 +365,19 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
 
   useEffect(() => {
     const onMove = (e: MouseEvent) => {
-      if (e.clientY < 200) {
+      let offset = 500;
+      if (containerRef.current) {
+        const { height } = containerRef.current.getBoundingClientRect();
+        offset = height / 2;
+      }
+
+      if (e.clientY < offset) {
         setHeaderVisible(true);
         lazyHeaderHide();
       } else {
         setHeaderVisible(false);
       }
 
-      let offset = 500;
-
-      if (containerRef.current) {
-        const { height } = containerRef.current.getBoundingClientRect();
-        offset = height / 2;
-      }
       if (e.clientY > offset) {
         setControlsVisible(true);
         lazyControlsHide();
@@ -268,12 +385,14 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
         setControlsVisible(false);
       }
     };
-    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mousemove', onMove, false);
 
     return () => {
-      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mousemove', onMove, false);
     };
   }, []);
+
+  useVideoControls(ref, { toggleFullScreen, togglePlay, updateSeekTime, updateVolume });
 
   return (
     <div ref={containerRef} className="w-full h-full bg-black relative">
@@ -286,6 +405,7 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
         onPause={onPause}
         onWaiting={onWaiting}
         onProgress={onProgress}
+        onVolumeChange={onVolumeChange}
         onTimeUpdate={() => updateElapsedDuration()}
       />
       {waiting && (
@@ -294,7 +414,7 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
         </div>
       )}
       <div
-        style={{ opacity: `${controlsVisible ? 1 : 0}` }}
+        style={{ opacity: `${controlsVisible ? 1 : 1}` }}
         className={cs(
           'transition-all duration-500',
           'absolute bottom-0 left-0 p-4 bg-gradient-to-b from-transparent to-black w-full',
@@ -310,7 +430,7 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
         >
           <div className="w-full h-2 group cursor-pointer">
             <Progress
-              className="w-full"
+              className="w-full drop-shadow"
               max={duration}
               value={progress}
               ref={progressRef}
@@ -339,28 +459,101 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
           </div>
         </div>
         <div className="flex gap-3 justify-between items-center">
-          <div className="p-4 pl-2.5 cursor-pointer" onClick={togglePlay}>
-            <div className="w-7 ml-0.5">{playing ? <PauseIcon /> : <PlayIcon />}</div>
+          <div className="pl-3.5 flex gap-4 items-center">
+            <div className="w-7 scale-[1.2] cursor-pointer" onClick={() => updateSeekTime(-1)}>
+              <ChevronsLeft className="w-7" />
+            </div>
+            <div className="p-4 cursor-pointer" onClick={togglePlay}>
+              <div className="w-7 ml-0.5">{playing ? <PauseIcon /> : <PlayIcon />}</div>
+            </div>
+            <div className="w-7 scale-[1.2] cursor-pointer" onClick={() => updateSeekTime(1)}>
+              <ChevronsRight className="w-7" />
+            </div>
           </div>
-          <div className="p-4 pl-2.5 cursor-pointer" onClick={toggleFullScreen}>
-            <div className="w-7 ml-0.5">{maximized ? <MinimizeIcon /> : <MaximizeIcon />}</div>
+          <div className="flex gap-4 items-center">
+            <div className="flex gap-2 items-center">
+              <HoverCard openDelay={0}>
+                <HoverCardTrigger>
+                  <div className="w-7 scale-[1.2]" onClick={toggleMute}>
+                    {volumeState === 'mute' ? (
+                      <VolumeXIcon />
+                    ) : volumeState === 'low' ? (
+                      <Volume1Icon />
+                    ) : (
+                      <Volume2Icon />
+                    )}
+                  </div>
+                </HoverCardTrigger>
+                <HoverCardContent className="w-56" align="center" side="top">
+                  <Slider
+                    max={1}
+                    min={0}
+                    step={0.1}
+                    value={[volume]}
+                    className={cs({ 'opacity-50': volumeState === 'mute' })}
+                    onValueCommit={updateVolume}
+                    onValueChange={(e) => setVolume(e[0])}
+                  />
+                </HoverCardContent>
+              </HoverCard>
+            </div>
+            <div className="p-2 cursor-pointer" onClick={toggleSubtitle}>
+              <div className={cs('w-8', { 'opacity-50': !subtitlesVisible })}>
+                <ClosedCaptionIcon />
+              </div>
+            </div>
+            <Popover>
+              <PopoverTrigger>
+                <div className="w-7">
+                  <SettingsIcon />
+                </div>
+              </PopoverTrigger>
+              <PopoverContent align="end" side="top">
+                <div className="flex items-center gap-3">
+                  <div className="whitespace-nowrap">Playback Speed </div>
+                  <Select value={playbackRate} onValueChange={(v) => updatePlaybackRate(v)}>
+                    <SelectTrigger className="border-none">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel>Playback speed</SelectLabel>
+                        {PLAYBACK_SPEEDS.map(({ value, name }) => (
+                          <SelectItem key={value} value={value}>
+                            {name}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </PopoverContent>
+            </Popover>
+            <div className="p-2 cursor-pointer" onClick={togglePip}>
+              <div className={cs('', { 'opacity-50': !pipVisible })}>
+                <PictureInPicture2 className="scale-[1.2]" />
+              </div>
+            </div>
+            <div className="p-2 pr-2.5 cursor-pointer" onClick={toggleFullScreen}>
+              <div className="w-7 ml-0.5">{maximized ? <MinimizeIcon /> : <MaximizeIcon />}</div>
+            </div>
           </div>
         </div>
       </div>
 
       <div
-        style={{ opacity: `${headerVisible ? 1 : 0}` }}
+        style={{ opacity: `${headerVisible ? 1 : 1}` }}
         className={cs(
           'absolute top-0 left-0 bg-gradient-to-b from-black to-transparent z-40 transition-all duration-500',
         )}
       >
         <div
-          className="w-screen p-4 flex gap-4 justify-between"
+          className="w-screen p-6 px-8 flex gap-4 justify-between"
           style={{ '--max-wasd': 'calc(100vw - 160px)' } as React.CSSProperties}
         >
           <div className="text-white flex items-center gap-2 w-[var(--max-wasd)]">
-            <Link to={backTo} className="w-5">
-              <ArrowLeftIcon className="text-white w-5" />
+            <Link to={backTo} className="w-6 scale-[1]">
+              <ArrowLeftIcon className="text-white w-6" />
             </Link>
           </div>
         </div>
