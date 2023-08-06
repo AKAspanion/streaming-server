@@ -330,7 +330,9 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
 
     const tooltipLeft = Math.round(percentage * totalWidth) - 75;
 
-    return `translate(${!isNaN(tooltipLeft) ? tooltipLeft : 0}px, -198px)`;
+    return `translate(${!isNaN(tooltipLeft) ? tooltipLeft : 0}px, ${
+      thumbnailSrc ? '-198' : '0'
+    }px)`;
   };
 
   const getThumbnailSrc = () => {
@@ -452,9 +454,11 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
             />
             <div
               style={{ transform: getTooltipLeft() }}
-              className="group-hover:visible invisible w-[150px] text-xs py-4 z-20"
+              className="transition-opacity group-hover:opacity-100 pointer-events-none opacity-0 w-[150px] text-xs py-4 z-20"
             >
-              <LazyImage src={getThumbnailSrc()} className="h-full object-cover drop-shadow" />
+              {thumbnailSrc && (
+                <LazyImage src={getThumbnailSrc()} className="h-full object-cover drop-shadow" />
+              )}
               <div className="text-center pt-2 drop-shadow">{secToTime(seekValue, true)}</div>
             </div>
           </div>

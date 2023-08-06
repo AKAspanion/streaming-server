@@ -70,6 +70,7 @@ function VIdeoPlay() {
         src={src}
         hls={false}
         backTo="/video-upload"
+        thumbnailSrc={`${baseUrl}/video/${videoData?.data?.id}/thumbnail/seek`}
         name={normalizeText(videoData?.data?.originalname)}
       />
     </div>

@@ -22,12 +22,14 @@ export const getAllFolderData = async () => {
     throw new AppError({ httpCode: HttpCode.BAD_REQUEST, description: 'Folder not found' });
   }
 
-  const data: FolderType[] = result
-    ? Object.keys(result || {}).map((id) => ({
-        ...(result[id] || {}),
-        id,
-      }))
-    : [];
+  const data: FolderType[] = (
+    result
+      ? Object.keys(result || {}).map((id) => ({
+          ...(result[id] || {}),
+          id,
+        }))
+      : []
+  ).sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0));
 
   return { data };
 };

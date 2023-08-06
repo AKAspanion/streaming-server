@@ -7,6 +7,7 @@ import fs from 'fs';
 import { getAllVideoData, getOneVideoData } from './videoData';
 import { deleteFilesSilently } from '@utils/helper';
 import { normalizeText } from '@common/utils/validate';
+import { createSeekThumbnail } from '@utils/ffmpeg';
 
 export const addVideo: RequestHandler = async (req, res) => {
   const id = randomUUID();
@@ -70,6 +71,20 @@ export const streamVideo: RequestHandler = async (req, res) => {
 
   // Stream the video chunk to the client
   videoStream.pipe(res);
+};
+
+export const getSeekThumbnail: RequestHandler = async (req, res) => {
+  const id = normalizeText(req.params.id);
+  const time = parseInt(normalizeText(req.query.time));
+
+  const { data } = await getOneVideoData(id);
+
+  if (data?.path) {
+    const thumbnail = await createSeekThumbnail(id, data?.path, time);
+    res.download(thumbnail?.path, thumbnail.name || 'thumbnail.png');
+  } else {
+    throw new AppError({ httpCode: HttpCode.NOT_FOUND, description: 'Thumbnail not found' });
+  }
 };
 
 export const getAllVideo: RequestHandler = async (_, res) => {
