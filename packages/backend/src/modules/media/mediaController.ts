@@ -4,7 +4,7 @@ import HLSManager from '@lib/hls-manager';
 import { processHLSStream } from '@services/hls';
 import { handleJSONDBDataError } from '@utils/error';
 import { AppError, HttpCode } from '@utils/exceptions';
-import { createHLSStream, getVideoMetaData } from '@utils/ffmpeg';
+import { createHLSStream, createSeekThumbnail, getVideoMetaData } from '@utils/ffmpeg';
 import { getFileType } from '@utils/file';
 import { deleteFilesSilently, getResourcePath, makeDirectory } from '@utils/helper';
 import { extractHLSFileInfo, generateManifest } from '@utils/hls';
@@ -244,6 +244,20 @@ export const getThumbnail: RequestHandler = async (req, res) => {
   }
 };
 
+export const getSeekThumbnail: RequestHandler = async (req, res) => {
+  const id = normalizeText(req.params.id);
+  const time = parseInt(normalizeText(req.query.time));
+
+  const { data } = await getOneMediaData(id);
+
+  if (data?.path) {
+    const thumbnail = await createSeekThumbnail(id, data?.path, time);
+    res.download(thumbnail?.path, thumbnail.name || 'thumbnail.png');
+  } else {
+    throw new AppError({ httpCode: HttpCode.NOT_FOUND, description: 'Thumbnail not found' });
+  }
+};
+
 export const generateStream: RequestHandler = async (req, res) => {
   const id = normalizeText(req.params.id);
   const { data } = await getOneMediaData(id);
@@ -264,7 +278,7 @@ export const probeFile: RequestHandler = async (req, res) => {
 export const testStuff: RequestHandler = async (req, res) => {
   const { file } = req.body;
 
-  await addOneSubtitleForMedia('lol', file);
+  await createSeekThumbnail('lol', file, 100);
 
   return res.status(HttpCode.OK).send({ file });
 };

@@ -15,11 +15,13 @@ import {
   updatePlayStatus,
   setAudioStream,
   stopMedia,
+  getSeekThumbnail,
 } from './mediaController';
 
 const router = Router();
 
 router.get('/:id/thumbnail', getThumbnail);
+router.get('/:id/thumbnail/seek', getSeekThumbnail);
 router.post('/stream/:id/generate', generateStream);
 router.get('/stream/hls/*', streamMedia);
 

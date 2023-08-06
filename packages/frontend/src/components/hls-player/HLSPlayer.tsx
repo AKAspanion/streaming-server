@@ -32,10 +32,12 @@ import ClosedCaptionIcon from '../icons/ClosedCaptionIcon';
 import { Slider } from '../ui/slider';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '../ui/hover-card';
+import LazyImage from '../LazyImage';
 
 type HLSPlayerProps = {
   hls?: boolean;
   src: string;
+  thumbnailSrc?: string;
   name: string;
   backTo?: string;
   showHeader?: boolean;
@@ -48,7 +50,7 @@ let lazyHeaderTimeout: NodeJS.Timeout;
 let lazyControlsTimeout: NodeJS.Timeout;
 // let seekTimeout: NodeJS.Timeout;
 export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, outerRef) => {
-  const { src, hls = true, currentTime = 0, name, backTo = '/', onUnmount } = props;
+  const { src, hls = true, currentTime = 0, name, thumbnailSrc, backTo = '/', onUnmount } = props;
   const [volume, setVolume] = useState(1);
   const [duration, setDuration] = useState(0);
   const [progress, setProgress] = useState(0);
@@ -326,9 +328,17 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
 
     const percentage = seekValue / duration;
 
-    const tooltipLeft = Math.round(percentage * totalWidth) + 20;
+    const tooltipLeft = Math.round(percentage * totalWidth) - 75;
 
-    return !isNaN(tooltipLeft) ? tooltipLeft : 0;
+    return `translate(${!isNaN(tooltipLeft) ? tooltipLeft : 0}px, -198px)`;
+  };
+
+  const getThumbnailSrc = () => {
+    if (isNaN(seekValue)) return;
+
+    const srcNum = Math.round(seekValue / 10) * 10;
+
+    return `${thumbnailSrc}?time=${srcNum}`;
   };
 
   const lazyHeaderHide = () => {
@@ -419,7 +429,6 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
           'transition-all duration-500',
           'absolute bottom-0 left-0 p-4 bg-gradient-to-b from-transparent to-black w-full',
         )}
-        onMouseMove={updateSeekTooltip}
       >
         <div className="line-clamp-1 text-2xl overflow-hidden overflow-ellipsis whitespace-nowrap p-4 drop-shadow">
           {name}
@@ -428,7 +437,7 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
           style={{ '--hlsplayer-slider-w': 'calc(100%)' } as React.CSSProperties}
           className="w-[var(--hlsplayer-slider-w)] px-4 left-5"
         >
-          <div className="w-full h-2 group cursor-pointer">
+          <div className="w-full h-2 group cursor-pointer" onMouseMove={updateSeekTooltip}>
             <Progress
               className="w-full drop-shadow"
               max={duration}
@@ -442,10 +451,11 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
               max={100}
             />
             <div
-              style={{ left: getTooltipLeft() }}
-              className="group-hover:visible invisible absolute text-xs top-24 py-4"
+              style={{ transform: getTooltipLeft() }}
+              className="group-hover:visible invisible w-[150px] text-xs py-4 z-20"
             >
-              {secToTime(seekValue, true)}
+              <LazyImage src={getThumbnailSrc()} className="h-full object-cover drop-shadow" />
+              <div className="text-center pt-2 drop-shadow">{secToTime(seekValue, true)}</div>
             </div>
           </div>
         </div>

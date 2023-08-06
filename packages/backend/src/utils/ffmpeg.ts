@@ -8,6 +8,7 @@ import ffmpeg from 'fluent-ffmpeg';
 import { ffmpegLogger } from './logger';
 import { SEGMENT_FILE_NO_SEPERATOR, SEGMENT_TARGET_DURATION } from '@constants/hls';
 import { secToTime } from './date-time';
+import fs from 'fs';
 
 /* eslint-disable @typescript-eslint/no-var-requires */
 export const getffmpeg = () => {
@@ -22,9 +23,11 @@ export const getffmpeg = () => {
 export const createVideoThumbnail = (id: string, pathToFile: string, metadata: MediaTypeJSONDB) =>
   new Promise<ThumbnailType>((resolve, reject) => {
     const ffmpeg = getffmpeg();
-    const pathToSnapshot = getResourcePath('_appdata/_screenshots');
+    const pathToSnapshot = getResourcePath(`_appdata/_screenshots/${id}`);
     const thumbnailFile = `thumb_${id}_${metadata?.originalName}.png`;
     const thumbnailPath = path.join(pathToSnapshot, thumbnailFile);
+
+    makeDirectory(pathToSnapshot);
 
     const time = secToTime(metadata?.format?.duration ? Number(metadata?.format?.duration) / 2 : 2);
 
@@ -42,6 +45,37 @@ export const createVideoThumbnail = (id: string, pathToFile: string, metadata: M
       .on('error', (err: any) => {
         return reject(new Error(err));
       });
+  });
+
+export const createSeekThumbnail = (id: string, pathToFile: string, time: number) =>
+  new Promise<ThumbnailType>((resolve, reject) => {
+    const ffmpeg = getffmpeg();
+    const pathToSnapshot = getResourcePath(`_appdata/_screenshots/${id}`);
+    const thumbnailFile = `thumb_${id}_${time}.jpeg`;
+    const thumbnailPath = path.join(pathToSnapshot, thumbnailFile);
+
+    makeDirectory(pathToSnapshot);
+
+    fs.access(thumbnailPath, fs.constants.F_OK, (err) => {
+      if (!err) {
+        resolve({ path: thumbnailPath, name: thumbnailFile });
+      } else {
+        ffmpeg(pathToFile)
+          .on('start', async (commandLine) => {
+            ffmpegLogger.info(`Spawned Ffmpeg with command: ${commandLine})`);
+          })
+          .takeScreenshots(
+            { count: 1, filename: thumbnailFile, timemarks: [time], size: '150x?' },
+            pathToSnapshot,
+          )
+          .on('end', () => {
+            resolve({ path: thumbnailPath, name: thumbnailFile });
+          })
+          .on('error', (err: any) => {
+            return reject(new Error(err));
+          });
+      }
+    });
   });
 
 export const getVideoMetaData = (pathToFile: string) =>

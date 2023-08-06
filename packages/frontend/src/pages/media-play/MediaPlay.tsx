@@ -91,6 +91,7 @@ function VIdeoPlay() {
             src={videoSrc}
             currentTime={currentTime}
             name={normalizeText(mediaData?.data?.originalName)}
+            thumbnailSrc={`${baseUrl}/media/${mediaData?.data?.id}/thumbnail/seek`}
             backTo={folderId ? `/manage-media/${folderId}/folder` : '/manage-media'}
             onUnmount={() => mediaData?.data?.id && stopMedia(mediaData?.data?.id)}
           />
