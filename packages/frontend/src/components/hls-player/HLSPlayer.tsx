@@ -1,4 +1,4 @@
-import { ArrowLeftIcon, PauseIcon, PlayIcon } from '@heroicons/react/24/solid';
+import { ArrowLeftIcon, MinusIcon, PauseIcon, PlayIcon, PlusIcon } from '@heroicons/react/24/solid';
 import Hls, { LevelLoadedData } from 'hls.js';
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -66,6 +66,7 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
   const [duration, setDuration] = useState(0);
   const [progress, setProgress] = useState(0);
   const [seekValue, setSeekValue] = useState(0);
+  const [subtitleOffset, setSubtitleOffset] = useState(0);
   const [waiting, setWaiting] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [maximized, setMaximized] = useState(false);
@@ -208,6 +209,35 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
     if (video) {
       video.currentTime += 10 * multiplier;
     }
+  };
+
+  const updateSubtitleOffset = (multiplier: number) => {
+    const video = ref.current;
+    if (video) {
+      Array.from(video.textTracks).forEach((track) => {
+        if (track.mode === 'showing') {
+          if (track.cues) {
+            for (let i = 0; i < track.cues.length; i++) {
+              const cue = track.cues[i];
+
+              const newOffset = subtitleOffset + 0.5 * multiplier;
+
+              setSubtitleOffset(newOffset);
+
+              if (multiplier === -1) {
+                cue.startTime -= 0.5;
+                cue.endTime -= 0.5;
+              } else {
+                cue.startTime += 0.5;
+                cue.endTime += 0.5;
+              }
+            }
+          }
+          return true;
+        }
+      });
+    }
+    return false;
   };
 
   const initPlayer = () => {
@@ -543,6 +573,22 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
                 </div>
               </PopoverTrigger>
               <PopoverContent align="end" side="top">
+                <div className="flex gap-3 items-center justify-between pb-3">
+                  <div>Subtitle Delay</div>
+                  <div className="flex gap-1 items-center">
+                    <div className="p-2 cursor-pointer">
+                      <div className="w-5" onClick={() => updateSubtitleOffset(-1)}>
+                        <MinusIcon />
+                      </div>
+                    </div>
+                    <div className="p-1 rounded opacity-50">{subtitleOffset.toFixed(1)}s</div>
+                    <div className="p-2 cursor-pointer">
+                      <div className="w-5" onClick={() => updateSubtitleOffset(1)}>
+                        <PlusIcon />
+                      </div>
+                    </div>
+                  </div>
+                </div>
                 <div className="flex items-center gap-3">
                   <div className="whitespace-nowrap">Playback Speed </div>
                   <Select value={playbackRate} onValueChange={(v) => updatePlaybackRate(v)}>
