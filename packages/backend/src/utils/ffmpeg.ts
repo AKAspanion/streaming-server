@@ -4,7 +4,7 @@
 import mime from 'mime';
 import { deleteFile, getResourcePath, makeDirectory } from './helper';
 import path from 'path';
-import ffmpeg from 'fluent-ffmpeg';
+import Ffmpeg = require('fluent-ffmpeg');
 import { ffmpegLogger } from './logger';
 import { SEGMENT_FILE_NO_SEPERATOR, SEGMENT_TARGET_DURATION } from '@constants/hls';
 import { secToTime } from './date-time';
@@ -14,6 +14,10 @@ import os from 'os';
 export const getffmpeg = () => {
   let ffmpegLocal = '';
   let ffmpegProbeLocal = '';
+
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const ffmpeg = require('fluent-ffmpeg');
+
   if (os.platform() === 'win32') {
     ffmpegLocal = path.resolve('./src/.bin/ffmpeg/ffmpeg.exe');
     ffmpegProbeLocal = path.resolve('./src/.bin/ffprobe/ffprobe.exe');
@@ -25,7 +29,7 @@ export const getffmpeg = () => {
   ffmpeg.setFfmpegPath(ffmpegLocal);
   ffmpeg.setFfprobePath(ffmpegProbeLocal);
 
-  return ffmpeg;
+  return ffmpeg as typeof Ffmpeg;
 };
 
 export const createVideoThumbnail = (id: string, pathToFile: string, metadata: MediaTypeJSONDB) =>
@@ -84,6 +88,32 @@ export const createSeekThumbnail = (id: string, pathToFile: string, time: number
           });
       }
     });
+  });
+
+export const createSubtitle = (id: string, pathToFile: string, index: number) =>
+  new Promise<{ subPath: string; error: any }>((resolve) => {
+    const ffmpeg = getffmpeg();
+
+    const pathToSub = getResourcePath(`_appdata/_subs/${id}`);
+    const subFile = `sub_${id}_${index}.srt`;
+    const subPath = path.join(pathToSub, subFile);
+
+    makeDirectory(pathToSub);
+
+    ffmpeg(pathToFile)
+      .outputOptions([`-map 0:s:${index}?`])
+      .output(subPath)
+      .on('start', (commandLine) => {
+        ffmpegLogger.info(`Spawned Ffmpeg with command: ${commandLine})`);
+      })
+      .on('error', (error) => {
+        ffmpegLogger.error(`Error in Ffmpeg: ${error})`);
+        resolve({ subPath: '', error });
+      })
+      .on('end', () => {
+        resolve({ subPath, error: undefined });
+      })
+      .run();
   });
 
 export const getVideoMetaData = (pathToFile: string) =>

@@ -4,7 +4,12 @@ import HLSManager from '@lib/hls-manager';
 import { processHLSStream } from '@services/hls';
 import { handleJSONDBDataError } from '@utils/error';
 import { AppError, HttpCode } from '@utils/exceptions';
-import { createHLSStream, createSeekThumbnail, getVideoMetaData } from '@utils/ffmpeg';
+import {
+  createHLSStream,
+  createSeekThumbnail,
+  createSubtitle,
+  getVideoMetaData,
+} from '@utils/ffmpeg';
 import { getFileType } from '@utils/file';
 import { deleteFilesSilently, getResourcePath, makeDirectory } from '@utils/helper';
 import { extractHLSFileInfo, generateManifest } from '@utils/hls';
@@ -278,7 +283,7 @@ export const probeFile: RequestHandler = async (req, res) => {
 export const testStuff: RequestHandler = async (req, res) => {
   const { file } = req.body;
 
-  await createSeekThumbnail('lol', file, 100);
+  const data = await createSubtitle('lol', file, 1);
 
-  return res.status(HttpCode.OK).send({ file });
+  return res.status(HttpCode.OK).send({ data, file });
 };
