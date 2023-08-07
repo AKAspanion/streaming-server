@@ -1,5 +1,5 @@
 import { normalizeText } from '@common/utils/validate';
-import { deleteMediaDB, pushMediaDB, pushVideoDB } from '@database/json';
+import { deleteMediaDB, geMediaDBIndex, pushMediaDB, pushVideoDB } from '@database/json';
 import { getOneMediaData } from '@modules/media/mediaData';
 import { getOneVideoData } from '@modules/video/videoData';
 import { handleJSONDBDataError } from '@utils/error';
@@ -25,10 +25,14 @@ export const getMediaSubtitle: RequestHandler = async (req, res) => {
   const mediaId = normalizeText(req.params.mediaId);
   const { data } = await getOneMediaData(mediaId);
 
-  if (data?.sub) {
-    const fileName = `/${data?.sub.id}.wtt`;
+  const subtitleStream = data?.selectedSubtitle || 0;
 
-    res.download(data?.sub.path, fileName);
+  const foundSub = (data?.subs || [])[subtitleStream];
+
+  if (foundSub) {
+    const fileName = `/${foundSub.id}.srt`;
+
+    res.download(foundSub.path, fileName);
   } else {
     throw new AppError({ httpCode: HttpCode.NOT_FOUND, description: 'Subtitle not found' });
   }
@@ -41,7 +45,7 @@ export const addVideoSubtitle: RequestHandler = async (req, res) => {
   const id = randomUUID();
 
   const body = { ...req.file, id };
-  const { error: pushError } = await pushVideoDB(`/${videoId}/sub`, body);
+  const { error: pushError } = await pushVideoDB(`/${videoId}/subs[]`, body);
 
   if (pushError) {
     handleJSONDBDataError(pushError, videoId);
@@ -60,7 +64,7 @@ export const addMediaSubtitle: RequestHandler = async (req, res) => {
   const id = randomUUID();
 
   const body = { ...req.file, name: req?.body?.name, id };
-  const { error: pushError } = await pushMediaDB(`/${mediaId}/sub`, body);
+  const { error: pushError } = await pushMediaDB(`/${mediaId}/subs[]`, body);
 
   if (pushError) {
     handleJSONDBDataError(pushError, mediaId);
@@ -80,16 +84,19 @@ export const deleteMediaSubtitle: RequestHandler = async (req, res) => {
 
   deletePaths.forEach((fullPath) => {
     if (fullPath) {
-      fs.unlink(fullPath, async (err) => {
-        if (err) throw err;
+      fs.unlink(fullPath, async () => {
+        // if (err) throw err;
       });
     }
   });
 
-  const { error: deleteError } = await deleteMediaDB(`/${mediaId}/sub`);
+  if (data?.sub?.id) {
+    const index = await geMediaDBIndex('/arraytest/myarray', data?.sub?.id);
+    const { error: deleteError } = await deleteMediaDB(`/${mediaId}/subs[${index}]`);
 
-  if (deleteError) {
-    handleJSONDBDataError(deleteError, mediaId);
+    if (deleteError) {
+      handleJSONDBDataError(deleteError, mediaId);
+    }
   }
 
   return res.status(HttpCode.OK).send({ data: { messsage: 'Subtitle deleted successfully' } });

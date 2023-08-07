@@ -82,6 +82,38 @@ export const addOneSubtitleForMedia = async (mediaId: string, mediaPath: string)
   }
 };
 
+export const extractSubtitleForMedia = async (mediaId: string, mediaPath: string) => {
+  try {
+    const parseData = path.parse(mediaPath);
+    const ext = parseData.ext;
+    const name = parseData.name;
+
+    const srtFilePath = mediaPath.replace(ext, '.srt');
+
+    const exists = await checkIfFileExists(srtFilePath);
+    const stat = await fs.promises.stat(srtFilePath);
+
+    if (exists) {
+      const id = randomUUID();
+
+      const newSub: SubtitleType = {
+        id,
+        name: `${name}.srt`,
+        originalname: `${name}.srt`,
+        filename: `${name}.srt`,
+        path: srtFilePath,
+        size: stat.size,
+      };
+
+      await addOneMediaSubtitle(mediaId, newSub);
+
+      return true;
+    }
+  } catch (error) {
+    return false;
+  }
+};
+
 export const updateOneMedia = async (id: string, body: MediaType) => {
   const { error: pushError } = await pushMediaDB(`/${id}`, body);
 

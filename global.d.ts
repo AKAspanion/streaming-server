@@ -131,5 +131,7 @@ declare type MediaType = {
   paused?: boolean;
   currentTime?: number;
   selectedAudio: string;
+  selectedSubtitle: number;
   sub?: SubtitleType;
+  subs?: SubtitleType[];
 };

@@ -14,7 +14,13 @@ import { getFileType } from '@utils/file';
 import { deleteFilesSilently, getResourcePath, makeDirectory } from '@utils/helper';
 import { extractHLSFileInfo, generateManifest } from '@utils/hls';
 import { RequestHandler } from 'express';
-import { addOneMedia, addOneSubtitleForMedia, getAllMediaData, getOneMediaData } from './mediaData';
+import {
+  addOneMedia,
+  addOneSubtitleForMedia,
+  extractSubtitleForMedia,
+  getAllMediaData,
+  getOneMediaData,
+} from './mediaData';
 import { normalizeText } from '@common/utils/validate';
 
 export const getMedia: RequestHandler = async (req, res) => {
@@ -45,7 +51,10 @@ export const addMedia: RequestHandler = async (req, res) => {
 
   const { data } = await addOneMedia(file?.path, folderId);
 
-  await addOneSubtitleForMedia(data?.id, file?.path);
+  await Promise.all([
+    addOneSubtitleForMedia(data?.id, file?.path),
+    extractSubtitleForMedia(data?.id, file?.path),
+  ]);
 
   return res.status(HttpCode.OK).send({ data: { message: 'Video added successfully' } });
 };

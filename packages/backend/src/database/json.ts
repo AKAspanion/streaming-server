@@ -70,6 +70,16 @@ export const deleteMediaDB = async (path: string) => {
   }
 };
 
+export const geMediaDBIndex = async (path: string, id: string) => {
+  try {
+    await mediaDB.getIndex(path, id, 'id');
+
+    return { error: undefined };
+  } catch (error) {
+    return { error };
+  }
+};
+
 export const pushFolderDB = async <T>(path: string, body: T) => {
   try {
     await folderDB.push(path, body);
