@@ -126,12 +126,15 @@ export const mediaApi = createApi({
       }),
       invalidatesTags: ['MediaDetails'],
     }),
-    deleteMediaSubtitle: builder.mutation<APIStatusResponseType, string>({
-      query: (id) => {
+    deleteMediaSubtitle: builder.mutation<
+      APIStatusResponseType,
+      { id: string; subtitleId: string }
+    >({
+      query: ({ id, subtitleId }) => {
         if (!id) {
           throw new Error('Media id is required.');
         }
-        return { url: `subtitle/${id}/media`, method: 'DELETE' };
+        return { url: `subtitle/${id}/media`, body: { id, subtitleId }, method: 'DELETE' };
       },
       invalidatesTags: ['MediaDetails'],
     }),

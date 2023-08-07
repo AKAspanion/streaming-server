@@ -64,8 +64,8 @@ const MediaSubtitleDetails: FC<MediaSubtitleDetailsProps> = ({
     }
   };
 
-  const deleteFile = async () => {
-    await deleteSubtitle(id);
+  const deleteFile = async (subtitleId: string) => {
+    await deleteSubtitle({ id, subtitleId });
   };
 
   useToastStatus(subStatus, {
@@ -93,25 +93,28 @@ const MediaSubtitleDetails: FC<MediaSubtitleDetailsProps> = ({
           </div>
         </div>
       </Button>
-      <Modal title={'Subtitle Details'} open={open} onClose={() => setOpen(!open)}>
+      <Modal title={'Subtitles'} open={open} onClose={() => setOpen(!open)}>
         <div className="w-[420px]">
-          {subLoading ? (
+          {allLoading ? (
             <div className="flex items-center justify-center">
               <Spinner />
             </div>
-          ) : data ? (
+          ) : data && data?.length > 0 ? (
             data.map((d, index) => (
               <React.Fragment>
                 <div
                   className={
-                    'p-4 px-4 bg-slate-800 rounded-md mb-4 gap-2 text-sm flex justify-between items-center transition-all'
+                    'p-3 bg-slate-800 rounded-md mb-3 gap-2 text-sm flex justify-between items-center transition-all'
                   }
                 >
                   <div title={d?.name} className="line-clamp-2 pr-4 font-semibold">
                     {normalizeText(d?.name)}
                   </div>
-                  <div className="flex gap-3">
-                    <div className="w-4 cursor-pointer text-red-500">
+                  <div className="flex gap-4">
+                    <div
+                      className="w-4 cursor-pointer text-red-500"
+                      onClick={() => deleteFile(d.id)}
+                    >
                       <TrashIcon />
                     </div>
                     <Checkbox
@@ -127,14 +130,7 @@ const MediaSubtitleDetails: FC<MediaSubtitleDetailsProps> = ({
             <div className="text-center p-6">No subtitle loaded</div>
           )}
         </div>
-        <div className="flex w-full justify-between gap-4">
-          <Button
-            disabled={!data || allLoading}
-            variant={'destructive'}
-            onClick={() => deleteFile()}
-          >
-            <div className="flex gap-4 items-center">Delete</div>
-          </Button>
+        <div className="flex w-full justify-end gap-4 pt-1">
           <Button disabled={allLoading} onClick={() => openFile()}>
             <div className="flex gap-4 items-center">Add</div>
           </Button>

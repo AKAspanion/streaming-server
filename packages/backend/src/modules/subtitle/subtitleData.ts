@@ -12,7 +12,7 @@ export const addOneMediaSubtitle = async (mediaId: string, body: SubtitleType) =
 };
 
 export const getOneMediaSubtitle = async (mediaId: string) => {
-  const index = await geMediaDBIndex('/${mediaId}/subs', mediaId);
+  const index = await geMediaDBIndex(`/${mediaId}/subs`, mediaId);
   const { data, error: getError } = await getMediaDataDB(`/${mediaId}/subs[${index}]`);
 
   if (getError) {

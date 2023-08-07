@@ -44,7 +44,7 @@ export const addVideoSubtitle: RequestHandler = async (req, res) => {
 
   const id = randomUUID();
 
-  const body = { ...req.file, id };
+  const body = { ...req.file, id, copied: true };
   const { error: pushError } = await pushVideoDB(`/${videoId}/subs[]`, body);
 
   if (pushError) {
@@ -63,7 +63,7 @@ export const addMediaSubtitle: RequestHandler = async (req, res) => {
 
   const id = randomUUID();
 
-  const body = { ...req.file, name: req?.body?.name, id };
+  const body = { ...req.file, name: req?.body?.name, id, copied: true };
   const { error: pushError } = await pushMediaDB(`/${mediaId}/subs[]`, body);
 
   if (pushError) {
@@ -80,24 +80,39 @@ export const deleteMediaSubtitle: RequestHandler = async (req, res) => {
 
   const { data } = await getOneMediaData(mediaId);
 
-  const deletePaths = [data?.sub?.path].filter(Boolean);
+  const subtitleId = req?.body?.subtitleId;
 
-  deletePaths.forEach((fullPath) => {
+  if (subtitleId === undefined) {
+    throw new AppError({
+      httpCode: HttpCode.BAD_REQUEST,
+      description: 'Subtitle id is required',
+    });
+  }
+
+  const { index, error } = await geMediaDBIndex(`/${mediaId}/subs`, subtitleId);
+  if (error) {
+    handleJSONDBDataError(error, subtitleId);
+  }
+
+  const { error: deleteError } = await deleteMediaDB(`/${mediaId}/subs[${index}]`);
+
+  if (deleteError) {
+    handleJSONDBDataError(deleteError, mediaId);
+  }
+
+  const deletePaths = [data?.sub?.path];
+
+  if (index !== undefined && data?.subs && data?.subs?.length && data?.subs[index]?.copied) {
+    deletePaths.push(data?.subs[index].path);
+  }
+
+  deletePaths.filter(Boolean).forEach((fullPath) => {
     if (fullPath) {
       fs.unlink(fullPath, async () => {
         // if (err) throw err;
       });
     }
   });
-
-  if (data?.sub?.id) {
-    const index = await geMediaDBIndex('/arraytest/myarray', data?.sub?.id);
-    const { error: deleteError } = await deleteMediaDB(`/${mediaId}/subs[${index}]`);
-
-    if (deleteError) {
-      handleJSONDBDataError(deleteError, mediaId);
-    }
-  }
 
   return res.status(HttpCode.OK).send({ data: { messsage: 'Subtitle deleted successfully' } });
 };

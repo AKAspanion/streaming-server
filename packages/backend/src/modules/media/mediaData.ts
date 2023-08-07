@@ -64,31 +64,19 @@ export const addOneSubtitleForMedia = async (mediaId: string, mediaPath: string)
 
     const srtFilePath = mediaPath.replace(ext, '.srt');
 
-    const exists = await checkIfFileExists(srtFilePath);
-    const stat = await fs.promises.stat(srtFilePath);
-
-    if (exists) {
-      const id = randomUUID();
-
-      const newSub: SubtitleType = {
-        id,
-        name: `${name}.srt`,
-        originalname: `${name}.srt`,
-        filename: `${name}.srt`,
-        path: srtFilePath,
-        size: stat.size,
-      };
-
-      await addOneMediaSubtitle(mediaId, newSub);
-
-      return true;
-    }
+    await addOneSubtitleOfMedia(mediaId, name, srtFilePath);
+    return true;
   } catch (error) {
     return false;
   }
 };
 
-const addOneSubtitleOfMedia = async (mediaId: string, name: string, srtFilePath: string) => {
+const addOneSubtitleOfMedia = async (
+  mediaId: string,
+  name: string,
+  srtFilePath: string,
+  copied = false,
+) => {
   try {
     const exists = await checkIfFileExists(srtFilePath);
     const stat = await fs.promises.stat(srtFilePath);
@@ -98,11 +86,12 @@ const addOneSubtitleOfMedia = async (mediaId: string, name: string, srtFilePath:
 
       const newSub: SubtitleType = {
         id,
-        name: `${name}.srt`,
-        originalname: `${name}.srt`,
+        name: `${name}`,
+        originalname: `${name}`,
         filename: `${name}.srt`,
         path: srtFilePath,
         size: stat.size,
+        copied,
       };
 
       await addOneMediaSubtitle(mediaId, newSub);
@@ -126,11 +115,11 @@ export const extractSubtitleForMedia = async (
       const addPromises: Promise<boolean>[] = [];
       const streamsLength = subtitleStreams.length;
       for (let i = 0; i < streamsLength; i++) {
-        const { subPath, name, error } = await createSubtitle(mediaId, mediaPath, 1);
+        const { subPath, name, error } = await createSubtitle(mediaId, mediaPath, i);
         if (!error) {
           const stream = subtitleStreams[i];
           const subName = stream?.tags?.title || name;
-          addPromises.push(addOneSubtitleOfMedia(mediaId, subName, subPath));
+          addPromises.push(addOneSubtitleOfMedia(mediaId, subName, subPath, true));
         }
       }
 

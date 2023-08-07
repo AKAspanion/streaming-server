@@ -54,7 +54,6 @@ export const streamVideo: RequestHandler = async (req, res) => {
   const start = Number(range.replace(/\D/g, ''));
   const end = Math.min(start + CHUNK_SIZE, videoSize - 1);
 
-  // Create headers
   const contentLength = end - start + 1;
   const headers = {
     'Content-Range': `bytes ${start}-${end}/${videoSize}`,
@@ -63,13 +62,10 @@ export const streamVideo: RequestHandler = async (req, res) => {
     'Content-Type': 'video/mp4',
   };
 
-  // HTTP Status 206 for Partial Content
-  res.writeHead(206, headers);
+  res.writeHead(HttpCode.PARTIAL_CONTENT, headers);
 
-  // create video read stream for this particular chunk
   const videoStream = fs.createReadStream(result.path, { start, end });
 
-  // Stream the video chunk to the client
   videoStream.pipe(res);
 };
 

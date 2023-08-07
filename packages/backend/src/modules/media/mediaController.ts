@@ -56,7 +56,7 @@ export const addMedia: RequestHandler = async (req, res) => {
     extractSubtitleForMedia(data?.id, file?.path, data.subtitleStreams),
   ]);
 
-  return res.status(HttpCode.OK).send({ data: { message: 'Media added successfully' } });
+  return res.status(HttpCode.OK_CREATED).send({ data: { message: 'Media added successfully' } });
 };
 
 export const deleteMedia: RequestHandler = async (req, res) => {
@@ -67,7 +67,7 @@ export const deleteMedia: RequestHandler = async (req, res) => {
   const filesToDelete: string[] = [data?.thumbnail?.path];
 
   (data?.subs || []).forEach((s) => {
-    if (s.fieldname === 'sub_file') {
+    if (s.copied) {
       filesToDelete.push(s.path);
     }
   });
@@ -140,10 +140,16 @@ export const markWatched: RequestHandler = async (req, res) => {
 
 export const setAudioStream: RequestHandler = async (req, res) => {
   const id = normalizeText(req.params.id);
+  HLSManager.stopVideotranscoders(id);
+
   const { data } = await getOneMediaData(id);
 
   if (req?.body?.index === undefined) {
     throw new AppError({ httpCode: HttpCode.BAD_REQUEST, description: 'Audio index is required' });
+  }
+
+  if (req?.body?.index === data?.selectedAudio) {
+    res.status(HttpCode.OK).send({ data: { message: 'Audio index is already set' } });
   }
 
   const body: MediaTypeJSONDB = { ...data, selectedAudio: req?.body?.index };
@@ -157,22 +163,24 @@ export const setAudioStream: RequestHandler = async (req, res) => {
     });
   }
 
-  HLSManager.stopVideotranscoders(id);
-
   return res.status(HttpCode.OK).send({ data: { message: 'Media audio index updated' } });
 };
 
 export const setSubtitleStream: RequestHandler = async (req, res) => {
   const id = normalizeText(req.params.id);
-  const { data } = await getOneMediaData(id);
+  HLSManager.stopVideotranscoders(id);
 
-  console.log(req?.body?.index);
+  const { data } = await getOneMediaData(id);
 
   if (req?.body?.index === undefined) {
     throw new AppError({
       httpCode: HttpCode.BAD_REQUEST,
       description: 'Subtitle index is required',
     });
+  }
+
+  if (req?.body?.index === data?.selectedSubtitle) {
+    res.status(HttpCode.OK).send({ data: { message: 'Subtitle index is already set' } });
   }
 
   const body: MediaTypeJSONDB = { ...data, selectedSubtitle: req?.body?.index };
@@ -185,8 +193,6 @@ export const setSubtitleStream: RequestHandler = async (req, res) => {
       description: 'Problem updating Media',
     });
   }
-
-  HLSManager.stopVideotranscoders(id);
 
   return res.status(HttpCode.OK).send({ data: { message: 'Media subtitle index updated' } });
 };

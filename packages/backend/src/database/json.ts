@@ -72,11 +72,11 @@ export const deleteMediaDB = async (path: string) => {
 
 export const geMediaDBIndex = async (path: string, id: string) => {
   try {
-    await mediaDB.getIndex(path, id, 'id');
+    const index = await mediaDB.getIndex(path, id, 'id');
 
-    return { error: undefined };
+    return { index, error: undefined };
   } catch (error) {
-    return { error };
+    return { error, index: undefined };
   }
 };
 

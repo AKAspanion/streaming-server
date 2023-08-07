@@ -47,6 +47,7 @@ declare type SubtitleType = {
   filename?: string;
   path: string;
   size?: number;
+  copied?: boolean;
 };
 
 declare type FolderTypeJSONDB = FolderBaseType;
