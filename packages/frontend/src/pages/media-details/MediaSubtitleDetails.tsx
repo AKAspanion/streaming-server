@@ -1,29 +1,42 @@
 import Modal from '@/components/atoms/modal/Modal';
 import Spinner from '@/components/atoms/spinner/Spinner';
 import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
+import { Checkbox } from '@/components/ui/checkbox';
 import useToastStatus from '@/hooks/useToastStatus';
-import { useAddMediaSubtitleMutation, useDeleteMediaSubtitleMutation } from '@/services/media';
+import {
+  useAddMediaSubtitleMutation,
+  useDeleteMediaSubtitleMutation,
+  useSetMediaSubtitleMutation,
+} from '@/services/media';
 import { cs } from '@/utils/helpers';
 import { normalizeText } from '@common/utils/validate';
-import { ChatBubbleBottomCenterTextIcon } from '@heroicons/react/24/solid';
+import { ChatBubbleBottomCenterTextIcon, TrashIcon } from '@heroicons/react/24/solid';
 import React from 'react';
-import { FC, useMemo, useRef, useState } from 'react';
+import { FC, useRef, useState } from 'react';
 
 interface MediaSubtitleDetailsProps {
   id: string;
-  data?: SubtitleType;
+  loading: boolean;
+  selected?: number;
+  data?: SubtitleType[];
 }
 
-const MediaSubtitleDetails: FC<MediaSubtitleDetailsProps> = ({ id, data }) => {
+const MediaSubtitleDetails: FC<MediaSubtitleDetailsProps> = ({
+  id,
+  data,
+  loading,
+  selected = 0,
+}) => {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLInputElement>(null);
 
   const [addSubtitle, { isLoading: subLoading, status: subStatus }] = useAddMediaSubtitleMutation();
   const [deleteSubtitle, { isLoading: subDeleteLoading, status: subDeleteStatus }] =
     useDeleteMediaSubtitleMutation();
+  const [updateSubtitle, { isLoading: subUpdateLoading, status: subUpdateStatus }] =
+    useSetMediaSubtitleMutation();
 
-  const loading = subLoading || subDeleteLoading;
+  const allLoading = loading || subLoading || subDeleteLoading || subUpdateLoading;
 
   const handleSubtitleLoad = async (e: React.ChangeEvent<HTMLInputElement>) => {
     try {
@@ -55,10 +68,6 @@ const MediaSubtitleDetails: FC<MediaSubtitleDetailsProps> = ({ id, data }) => {
     await deleteSubtitle(id);
   };
 
-  const details = useMemo(() => {
-    return [{ name: 'Name', value: normalizeText(data?.name) }];
-  }, [data?.name]);
-
   useToastStatus(subStatus, {
     successMessage: 'Subtitle added successfully',
     errorMessage: 'Failed to load subtitle',
@@ -67,6 +76,11 @@ const MediaSubtitleDetails: FC<MediaSubtitleDetailsProps> = ({ id, data }) => {
   useToastStatus(subDeleteStatus, {
     successMessage: 'Subtitle deleted successfully',
     errorMessage: 'Failed to delete subtitle',
+  });
+
+  useToastStatus(subUpdateStatus, {
+    successMessage: 'Subtitle set successfully',
+    errorMessage: 'Failed to set subtitle',
   });
 
   return (
@@ -86,37 +100,42 @@ const MediaSubtitleDetails: FC<MediaSubtitleDetailsProps> = ({ id, data }) => {
               <Spinner />
             </div>
           ) : data ? (
-            <React.Fragment>
-              <div
-                style={{ gridTemplateColumns: 'auto 1fr' }}
-                className={
-                  'p-4 px-4 bg-slate-800 rounded-md mb-4 text-sm grid grid-col-2 transition-all'
-                }
-              >
-                {details.map(({ name, value }) => (
-                  <React.Fragment key={name}>
-                    <div className="whitespace-nowrap pr-4 pb-1 font-semibold">{name}</div>
-                    <div title={value} className="break-all pb-1">
-                      {value}
+            data.map((d, index) => (
+              <React.Fragment>
+                <div
+                  className={
+                    'p-4 px-4 bg-slate-800 rounded-md mb-4 gap-2 text-sm flex justify-between items-center transition-all'
+                  }
+                >
+                  <div title={d?.name} className="line-clamp-2 pr-4 font-semibold">
+                    {normalizeText(d?.name)}
+                  </div>
+                  <div className="flex gap-3">
+                    <div className="w-4 cursor-pointer text-red-500">
+                      <TrashIcon />
                     </div>
-                  </React.Fragment>
-                ))}
-              </div>
-              <div className="flex gap-4 items-center justify-between">
-                <div className="pb-1">Load subtitle during play</div>
-                <Switch checked />
-              </div>
-              <div className="pt-4" />
-            </React.Fragment>
+                    <Checkbox
+                      checked={selected === index}
+                      defaultChecked={selected === index}
+                      onCheckedChange={() => updateSubtitle({ id, index })}
+                    />
+                  </div>
+                </div>
+              </React.Fragment>
+            ))
           ) : (
             <div className="text-center p-6">No subtitle loaded</div>
           )}
         </div>
         <div className="flex w-full justify-between gap-4">
-          <Button disabled={!data || loading} variant={'destructive'} onClick={() => deleteFile()}>
+          <Button
+            disabled={!data || allLoading}
+            variant={'destructive'}
+            onClick={() => deleteFile()}
+          >
             <div className="flex gap-4 items-center">Delete</div>
           </Button>
-          <Button disabled={loading} onClick={() => openFile()}>
+          <Button disabled={allLoading} onClick={() => openFile()}>
             <div className="flex gap-4 items-center">Add</div>
           </Button>
         </div>

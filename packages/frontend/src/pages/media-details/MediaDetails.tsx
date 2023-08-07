@@ -190,7 +190,12 @@ const MediaDetails: FC<MediaDetailsProps> = () => {
                           <EyeIcon />
                         </div>
                       </Button>
-                      <MediaSubtitleDetails id={media.id} data={media?.sub} />
+                      <MediaSubtitleDetails
+                        id={media.id}
+                        loading={false}
+                        data={media?.subs}
+                        selected={media?.selectedSubtitle}
+                      />
 
                       <div className="flex gap-2 items-center">
                         <Select

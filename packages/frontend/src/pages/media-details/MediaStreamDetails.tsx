@@ -2,7 +2,7 @@ import { Card } from '@/components/ui/card';
 import { normalizeText } from '@common/utils/validate';
 import ClosedCaptionIcon from '@components/icons/ClosedCaptionIcon';
 import { VideoCameraIcon } from '@heroicons/react/20/solid';
-import { MusicalNoteIcon, PhotoIcon } from '@heroicons/react/24/solid';
+import { MusicalNoteIcon, PaperClipIcon, PhotoIcon } from '@heroicons/react/24/solid';
 import { titleCase } from '@utils/helpers';
 import React from 'react';
 import { FC, useMemo } from 'react';
@@ -32,7 +32,7 @@ const MediaStreamDetails: FC<MediaStreamDetailsProps> = ({ streams }) => {
         icon: <MusicalNoteIcon />,
       });
     }
-    const subStreams = (streams || []).filter((s) => s?.codec_type === 'attachment');
+    const subStreams = (streams || []).filter((s) => s?.codec_type === 'subtitle');
     if (subStreams) {
       all.push({
         title: 'Subtitle',
@@ -40,6 +40,16 @@ const MediaStreamDetails: FC<MediaStreamDetailsProps> = ({ streams }) => {
         icon: <ClosedCaptionIcon />,
       });
     }
+
+    const attachStreams = (streams || []).filter((s) => s?.codec_type === 'attachment');
+    if (attachStreams) {
+      all.push({
+        title: 'Attachment',
+        list: attachStreams,
+        icon: <PaperClipIcon />,
+      });
+    }
+
     const imageStreams = (streams || []).filter(
       (s) => s?.codec_type === 'video' && s?.codec_name === 'mjpeg',
     );

@@ -1,7 +1,7 @@
 import { getMediaDataDB, pushMediaDB } from '@database/json';
 import { handleJSONDBDataError } from '@utils/error';
 import { AppError, HttpCode } from '@utils/exceptions';
-import { createVideoThumbnail, getVideoMetaData } from '@utils/ffmpeg';
+import { createSubtitle, createVideoThumbnail, getVideoMetaData } from '@utils/ffmpeg';
 import { checkIfFileExists } from '@utils/file';
 import { randomUUID } from 'crypto';
 import path from 'path';
@@ -16,9 +16,14 @@ export const addOneMedia = async (filePath: string, folderId?: string) => {
     const thumbnail = await createVideoThumbnail(id, filePath, metadata);
 
     const audioStreams: MediaStreamType[] = [];
+    const subtitleStreams: MediaStreamType[] = [];
     (metadata?.streams || []).forEach((stream: MediaStreamType) => {
       if (stream?.codec_type === 'audio') {
         audioStreams.push(stream);
+      }
+
+      if (stream?.codec_type === 'subtitle') {
+        subtitleStreams.push(stream);
       }
     });
 
@@ -29,6 +34,7 @@ export const addOneMedia = async (filePath: string, folderId?: string) => {
       id,
       folderId,
       audioStreams,
+      subtitleStreams,
       thumbnail,
       selectedAudio,
       path: filePath,
@@ -82,14 +88,8 @@ export const addOneSubtitleForMedia = async (mediaId: string, mediaPath: string)
   }
 };
 
-export const extractSubtitleForMedia = async (mediaId: string, mediaPath: string) => {
+const addOneSubtitleOfMedia = async (mediaId: string, name: string, srtFilePath: string) => {
   try {
-    const parseData = path.parse(mediaPath);
-    const ext = parseData.ext;
-    const name = parseData.name;
-
-    const srtFilePath = mediaPath.replace(ext, '.srt');
-
     const exists = await checkIfFileExists(srtFilePath);
     const stat = await fs.promises.stat(srtFilePath);
 
@@ -108,6 +108,36 @@ export const extractSubtitleForMedia = async (mediaId: string, mediaPath: string
       await addOneMediaSubtitle(mediaId, newSub);
 
       return true;
+    } else {
+      return true;
+    }
+  } catch (error) {
+    return false;
+  }
+};
+
+export const extractSubtitleForMedia = async (
+  mediaId: string,
+  mediaPath: string,
+  subtitleStreams: MediaStreamType[],
+) => {
+  try {
+    try {
+      const addPromises: Promise<boolean>[] = [];
+      const streamsLength = subtitleStreams.length;
+      for (let i = 0; i < streamsLength; i++) {
+        const { subPath, name, error } = await createSubtitle(mediaId, mediaPath, 1);
+        if (!error) {
+          const stream = subtitleStreams[i];
+          const subName = stream?.tags?.title || name;
+          addPromises.push(addOneSubtitleOfMedia(mediaId, subName, subPath));
+        }
+      }
+
+      await Promise.all(addPromises);
+      return true;
+    } catch (error) {
+      return false;
     }
   } catch (error) {
     return false;

@@ -53,10 +53,10 @@ export const addMedia: RequestHandler = async (req, res) => {
 
   await Promise.all([
     addOneSubtitleForMedia(data?.id, file?.path),
-    extractSubtitleForMedia(data?.id, file?.path),
+    extractSubtitleForMedia(data?.id, file?.path, data.subtitleStreams),
   ]);
 
-  return res.status(HttpCode.OK).send({ data: { message: 'Video added successfully' } });
+  return res.status(HttpCode.OK).send({ data: { message: 'Media added successfully' } });
 };
 
 export const deleteMedia: RequestHandler = async (req, res) => {
@@ -78,7 +78,7 @@ export const deleteMedia: RequestHandler = async (req, res) => {
     handleJSONDBDataError(deleteError, id);
   }
 
-  return res.status(HttpCode.OK).send({ data: { message: 'Video deleted successfully' } });
+  return res.status(HttpCode.OK).send({ data: { message: 'Media deleted successfully' } });
 };
 
 export const updatePlayStatus: RequestHandler = async (req, res) => {
@@ -111,11 +111,11 @@ export const markFavourite: RequestHandler = async (req, res) => {
   if (pushError) {
     throw new AppError({
       httpCode: HttpCode.INTERNAL_SERVER_ERROR,
-      description: 'Problem updating Video',
+      description: 'Problem updating Media',
     });
   }
 
-  return res.status(HttpCode.OK).send({ data: { message: 'Video marked as favourite' } });
+  return res.status(HttpCode.OK).send({ data: { message: 'Media marked as favourite' } });
 };
 
 export const markWatched: RequestHandler = async (req, res) => {
@@ -129,18 +129,18 @@ export const markWatched: RequestHandler = async (req, res) => {
   if (pushError) {
     throw new AppError({
       httpCode: HttpCode.INTERNAL_SERVER_ERROR,
-      description: 'Problem updating Video',
+      description: 'Problem updating Media',
     });
   }
 
-  return res.status(HttpCode.OK).send({ data: { message: 'Video marked as favourite' } });
+  return res.status(HttpCode.OK).send({ data: { message: 'Media marked as favourite' } });
 };
 
 export const setAudioStream: RequestHandler = async (req, res) => {
   const id = normalizeText(req.params.id);
   const { data } = await getOneMediaData(id);
 
-  if (!req?.body?.index) {
+  if (req?.body?.index === undefined) {
     throw new AppError({ httpCode: HttpCode.BAD_REQUEST, description: 'Audio index is required' });
   }
 
@@ -151,13 +151,42 @@ export const setAudioStream: RequestHandler = async (req, res) => {
   if (pushError) {
     throw new AppError({
       httpCode: HttpCode.INTERNAL_SERVER_ERROR,
-      description: 'Problem updating Video',
+      description: 'Problem updating Media',
     });
   }
 
   HLSManager.stopVideotranscoders(id);
 
-  return res.status(HttpCode.OK).send({ data: { message: 'Video audio index updated' } });
+  return res.status(HttpCode.OK).send({ data: { message: 'Media audio index updated' } });
+};
+
+export const setSubtitleStream: RequestHandler = async (req, res) => {
+  const id = normalizeText(req.params.id);
+  const { data } = await getOneMediaData(id);
+
+  console.log(req?.body?.index);
+
+  if (req?.body?.index === undefined) {
+    throw new AppError({
+      httpCode: HttpCode.BAD_REQUEST,
+      description: 'Subtitle index is required',
+    });
+  }
+
+  const body: MediaTypeJSONDB = { ...data, selectedSubtitle: req?.body?.index };
+
+  const { error: pushError } = await pushMediaDB(`/${id}`, body);
+
+  if (pushError) {
+    throw new AppError({
+      httpCode: HttpCode.INTERNAL_SERVER_ERROR,
+      description: 'Problem updating Media',
+    });
+  }
+
+  HLSManager.stopVideotranscoders(id);
+
+  return res.status(HttpCode.OK).send({ data: { message: 'Media subtitle index updated' } });
 };
 
 export const playMedia: RequestHandler = async (req, res) => {
@@ -187,7 +216,7 @@ export const stopMedia: RequestHandler = async (req, res) => {
     HLSManager.stopVideotranscoders(id);
   }
 
-  return res.status(HttpCode.OK).send({ data: { message: 'Video stopped successfully' } });
+  return res.status(HttpCode.OK).send({ data: { message: 'Media stopped successfully' } });
 };
 
 export const streamMedia: RequestHandler = async (req, res) => {

@@ -16,6 +16,7 @@ import {
   setAudioStream,
   stopMedia,
   getSeekThumbnail,
+  setSubtitleStream,
 } from './mediaController';
 
 const router = Router();
@@ -35,6 +36,7 @@ router.put('/:id/status', updatePlayStatus);
 router.post('/:id/favourite', markFavourite);
 router.post('/:id/watched', markWatched);
 router.post('/:id/audio', setAudioStream);
+router.post('/:id/subtitle', setSubtitleStream);
 router.delete('/:id', deleteMedia);
 
 router.get('/test/stuff', testStuff);

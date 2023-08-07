@@ -91,7 +91,7 @@ export const createSeekThumbnail = (id: string, pathToFile: string, time: number
   });
 
 export const createSubtitle = (id: string, pathToFile: string, index: number) =>
-  new Promise<{ subPath: string; error: any }>((resolve) => {
+  new Promise<{ subPath: string; name: string; error: any }>((resolve) => {
     const ffmpeg = getffmpeg();
 
     const pathToSub = getResourcePath(`_appdata/_subs/${id}`);
@@ -108,10 +108,10 @@ export const createSubtitle = (id: string, pathToFile: string, index: number) =>
       })
       .on('error', (error) => {
         ffmpegLogger.error(`Error in Ffmpeg: ${error})`);
-        resolve({ subPath: '', error });
+        resolve({ subPath: '', name: '', error });
       })
       .on('end', () => {
-        resolve({ subPath, error: undefined });
+        resolve({ subPath, name: subFile, error: undefined });
       })
       .run();
   });

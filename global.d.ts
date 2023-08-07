@@ -108,6 +108,7 @@ declare type MediaFormatType = {
 declare type MediaTypeJSONDB = MediaType & {
   streams: MediaStreamType[];
   audioStreams: MediaStreamType[];
+  subtitleStreams: MediaStreamType[];
   format: MediaFormatType;
   chapters: MediaChapterType[];
   thumbnail: ThumbnailType;

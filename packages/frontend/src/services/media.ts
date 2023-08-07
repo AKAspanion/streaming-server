@@ -55,6 +55,14 @@ export const mediaApi = createApi({
       }),
       invalidatesTags: ['MediaDetails'],
     }),
+    setMediaSubtitle: builder.mutation<APIStatusResponseType, { id: string; index: number }>({
+      query: (body) => ({
+        url: `media/${body.id}/subtitle`,
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['MediaDetails'],
+    }),
     updateMediaStatus: builder.mutation<
       APIStatusResponseType,
       { id: string; paused: boolean; currentTime: number }
@@ -140,6 +148,7 @@ export const {
   useMarkMediaWatchedMutation,
   useUpdateMediaStatusMutation,
   useSetMediaAudioMutation,
+  useSetMediaSubtitleMutation,
   useStopMediaByIdMutation,
   useGetMediaSubtitleByIdQuery,
   useAddMediaSubtitleMutation,
