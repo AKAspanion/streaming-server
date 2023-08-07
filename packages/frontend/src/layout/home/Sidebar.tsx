@@ -34,7 +34,7 @@ const Sidebar: FC<SidebarProps> = () => {
     return (
       <div key={`${level}+${normalizeText(route.path)}`} className={classNames()}>
         {canShow && (
-          <NavLink to={route.path || '/'}>
+          <NavLink to={route.path || '/'} onClick={() => dispatch(setSidebarOpen(false))}>
             {({ isActive }) => (
               <div
                 className={classNames('flex items-center cursor-pointer rounded-lg p-3', {
@@ -64,6 +64,8 @@ const Sidebar: FC<SidebarProps> = () => {
   return (
     <div
       className={cs(
+        { 'translate-x-0 sm:translate-x-0': sidebarOpen },
+        { '-translate-x-20 sm:translate-x-0': !sidebarOpen },
         'transition-all',
         'bg-slate-200 select-none dark:bg-slate-800 border-r dark:border-slate-700 border-slate-300 h-full p-3',
       )}
@@ -72,7 +74,7 @@ const Sidebar: FC<SidebarProps> = () => {
         <div className="w-8 h-8 p-1 rounded dark:bg-slate-500 bg-slate-50">
           <img src="/logo.png" />
         </div>
-        <div className="fixed left-5 bottom-3">
+        <div className="fixed left-5 bottom-3 sm:block">
           <IconButton onClick={() => dispatch(setSidebarOpen(!sidebarOpen))}>
             {sidebarOpen ? <ArrowLeftOnRectangleIcon /> : <ArrowRightOnRectangleIcon />}
           </IconButton>

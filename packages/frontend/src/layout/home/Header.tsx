@@ -1,11 +1,19 @@
 import useDarkSwitch from '@hooks/useDarkSwitch';
 import React from 'react';
-import { MinusIcon, MoonIcon, SunIcon, XMarkIcon } from '@heroicons/react/24/solid';
+import {
+  Bars3BottomLeftIcon,
+  MinusIcon,
+  MoonIcon,
+  SunIcon,
+  XMarkIcon,
+} from '@heroicons/react/24/solid';
 
 import IconButton from '@components/atoms/icon-button/IconButton';
 import { cs } from '@utils/helpers';
 import './Header.css';
 import useIPCRenderer from '@hooks/useIPCRenderer';
+import { useAppDispatch, useAppSelector } from '@/store/hook';
+import { setSidebarOpen } from '@/store/globalSlice';
 
 type HeaderProps = {
   title: string;
@@ -14,6 +22,8 @@ type HeaderProps = {
 const Header: React.FC<HeaderProps> = ({ title }) => {
   const ipcRenderer = useIPCRenderer();
   const { isDark, switchTheme } = useDarkSwitch();
+  const dispatch = useAppDispatch();
+  const sidebarOpen = useAppSelector((s) => s?.globalData?.sidebarOpen);
 
   const closeApp = () => {
     if (ipcRenderer) ipcRenderer.send('close-app');
@@ -31,14 +41,21 @@ const Header: React.FC<HeaderProps> = ({ title }) => {
       )}
     >
       {ipcRenderer && <div className="w-20"></div>}
-      <h1
-        className={cs('header-text p-2 px-4 font-bold flex-1', {
+
+      <div
+        className={cs('header-text p-2 px-4 font-bold flex-1 flex gap-2 items-center', {
           'text-left opacity-1': !ipcRenderer,
           'text-center opacity-1': !!ipcRenderer,
         })}
       >
-        {title}
-      </h1>
+        <div
+          className="w-5 h-5 sm:hidden block cursor-pointer"
+          onClick={() => dispatch(setSidebarOpen(!sidebarOpen))}
+        >
+          <Bars3BottomLeftIcon />
+        </div>
+        <div className="line-clamp-1">{title}</div>
+      </div>
       <div className="flex gap-1 px-2">
         <IconButton onClick={switchTheme}>
           <div className="w-4">{isDark ? <SunIcon /> : <MoonIcon />}</div>

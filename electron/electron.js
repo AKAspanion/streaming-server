@@ -1,3 +1,5 @@
+/* eslint-disable no-control-regex */
+/* eslint-disable @typescript-eslint/no-var-requires */
 const {
   app,
   ipcMain,
