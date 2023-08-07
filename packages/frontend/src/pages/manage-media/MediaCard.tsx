@@ -43,7 +43,7 @@ const MediaCard: FC<MediaCardProps> = ({ media, folderId }) => {
   const currentDuration = media?.currentTime || 0;
   const progressValue = totalDuration ? formatPercentage(currentDuration, totalDuration) : 0;
 
-  const hasSub = !!media.sub;
+  const hasSub = media?.subs && media?.subs.length;
 
   return (
     <Card className="h-full ">

@@ -63,8 +63,11 @@ function MediaPlay() {
 
         const track = document.createElement('track');
         track.src = trackText;
-        track.label = normalizeText(mediaData?.data?.sub?.originalname);
-        // track.srclang = 'en';
+        if (mediaData?.data?.subs) {
+          track.label = normalizeText(
+            mediaData?.data?.subs[mediaData?.data?.selectedSubtitle || 0]?.name,
+          );
+        }
         track.default = true;
         videoRef.appendChild(track);
 

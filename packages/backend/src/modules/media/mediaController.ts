@@ -66,9 +66,11 @@ export const deleteMedia: RequestHandler = async (req, res) => {
 
   const filesToDelete: string[] = [data?.thumbnail?.path];
 
-  if (data?.sub?.fieldname === 'sub_file') {
-    filesToDelete.push(data?.sub?.path);
-  }
+  (data?.subs || []).forEach((s) => {
+    if (s.fieldname === 'sub_file') {
+      filesToDelete.push(s.path);
+    }
+  });
 
   deleteFilesSilently(filesToDelete);
 
