@@ -5,8 +5,10 @@
   "main": "index.js",
   "scripts": {
     "start": "cross-env NODE_ENV=production node build/src/backend/src/index.js",
-    "build": "ttsc && yarn build:es",
+    "start:dist": "cross-env NODE_ENV=production node dist/index.js",
+    "build": "ttsc && yarn build:webpack",
     "build:es": "cross-env NODE_ENV=production node esbuild.config.js",
+    "build:webpack": "cross-env NODE_ENV=production webpack --config webpack.config.js",
     "prestart": "yarn build",
     "lint": "eslint . --fix",
     "dev": "cross-env NODE_ENV=development nodemon -r tsconfig-paths/register src/index.ts",
@@ -23,6 +25,7 @@
   "author": "Ankit Kumar Pandit",
   "license": "ISC",
   "dependencies": {
+    "bindings": "^1.5.0",
     "cors": "^2.8.5",
     "cross-env": "^7.0.3",
     "dotenv": "^16.3.1",
@@ -48,10 +51,14 @@
     "@types/mysql": "^2.15.21",
     "copyfiles": "^2.4.1",
     "esbuild": "^0.18.16",
+    "esbuild-loader": "^3.1.0",
     "nodemon": "^3.0.1",
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.2.0",
     "ttsc": "^0.3.1",
-    "typescript-transform-paths": "^3.4.6"
+    "typescript-transform-paths": "^3.4.6",
+    "webpack": "^5.88.2",
+    "webpack-cli": "^5.1.4",
+    "webpack-node-externals": "^3.0.0"
   }
 }
