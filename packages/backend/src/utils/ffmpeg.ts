@@ -35,8 +35,8 @@ export const getffmpeg = () => {
 export const createVideoThumbnail = (id: string, pathToFile: string, metadata: MediaTypeJSONDB) =>
   new Promise<ThumbnailType>((resolve, reject) => {
     const ffmpeg = getffmpeg();
-    const pathToSnapshot = getResourcePath(`_appdata/_screenshots/${id}`);
-    const thumbnailFile = `thumb_${id}_${metadata?.originalName}.png`;
+    const pathToSnapshot = getResourcePath(`_appdata/_images/${id}`);
+    const thumbnailFile = `poster_thumbnail_${id}.png`;
     const thumbnailPath = path.join(pathToSnapshot, thumbnailFile);
 
     makeDirectory(pathToSnapshot);
@@ -46,6 +46,9 @@ export const createVideoThumbnail = (id: string, pathToFile: string, metadata: M
     ffmpeg(pathToFile)
       .on('error', (err: any) => {
         return reject(new Error(err));
+      })
+      .on('start', (commandLine) => {
+        ffmpegLogger.info(`Spawned Ffmpeg with command: ${commandLine})`);
       })
       .takeScreenshots(
         { count: 1, filename: thumbnailFile, timemarks: [time], size: '250x?' },
@@ -62,7 +65,7 @@ export const createVideoThumbnail = (id: string, pathToFile: string, metadata: M
 export const createSeekThumbnail = (id: string, pathToFile: string, time: number) =>
   new Promise<ThumbnailType>((resolve, reject) => {
     const ffmpeg = getffmpeg();
-    const pathToSnapshot = getResourcePath(`_appdata/_screenshots/${id}`);
+    const pathToSnapshot = getResourcePath(`_appdata/_images/${id}`);
     const thumbnailFile = `thumb_${id}_${time}.jpeg`;
     const thumbnailPath = path.join(pathToSnapshot, thumbnailFile);
 
@@ -112,6 +115,32 @@ export const createSubtitle = (id: string, pathToFile: string, index: number) =>
       })
       .on('end', () => {
         resolve({ subPath, name: subFile, error: undefined });
+      })
+      .run();
+  });
+
+export const createPoster = (id: string, pathToFile: string) =>
+  new Promise<{ posterPath: string; error: any }>((resolve) => {
+    const ffmpeg = getffmpeg();
+
+    const pathToPoster = getResourcePath(`_appdata/_images/${id}`);
+    const subFile = `poster_${id}.jpg`;
+    const posterPath = path.join(pathToPoster, subFile);
+
+    makeDirectory(pathToPoster);
+
+    ffmpeg(pathToFile)
+      .outputOptions([`-map 0:v`, '-map -0:V', '-c copy'])
+      .output(posterPath)
+      .on('start', (commandLine) => {
+        ffmpegLogger.info(`Spawned Ffmpeg with command: ${commandLine})`);
+      })
+      .on('error', (error) => {
+        ffmpegLogger.error(`Error in Ffmpeg: ${error})`);
+        resolve({ posterPath: '', error });
+      })
+      .on('end', () => {
+        resolve({ posterPath, error: undefined });
       })
       .run();
   });

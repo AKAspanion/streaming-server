@@ -92,6 +92,11 @@ declare type ThumbnailType = {
   path: string;
   name: string;
 };
+
+declare type PosterType = {
+  path: string;
+  name?: string;
+};
 declare type MediaFormatType = {
   filename?: string;
   nb_streams: number;
@@ -113,6 +118,7 @@ declare type MediaTypeJSONDB = MediaType & {
   format: MediaFormatType;
   chapters: MediaChapterType[];
   thumbnail: ThumbnailType;
+  poster: PosterType;
 };
 
 declare type MediaTypeFull = MediaTypeJSONDB & {

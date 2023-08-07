@@ -122,7 +122,7 @@ const MediaDetails: FC<MediaDetailsProps> = () => {
               <Card className="h-full md:w-[336px]">
                 {media.id && (
                   <img
-                    src={`${baseUrl}/media/${media.id}/thumbnail`}
+                    src={`${baseUrl}/media/${media.id}/poster`}
                     className="w-full h-full object-cover"
                   />
                 )}

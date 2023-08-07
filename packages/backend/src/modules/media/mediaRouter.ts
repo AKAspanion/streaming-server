@@ -17,10 +17,12 @@ import {
   stopMedia,
   getSeekThumbnail,
   setSubtitleStream,
+  getPoster,
 } from './mediaController';
 
 const router = Router();
 
+router.get('/:id/poster', getPoster);
 router.get('/:id/thumbnail', getThumbnail);
 router.get('/:id/thumbnail/seek', getSeekThumbnail);
 router.post('/stream/:id/generate', generateStream);

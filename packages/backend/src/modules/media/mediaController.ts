@@ -7,7 +7,7 @@ import { AppError, HttpCode } from '@utils/exceptions';
 import {
   createHLSStream,
   createSeekThumbnail,
-  createSubtitle,
+  createPoster,
   getVideoMetaData,
 } from '@utils/ffmpeg';
 import { getFileType } from '@utils/file';
@@ -16,10 +16,11 @@ import { extractHLSFileInfo, generateManifest } from '@utils/hls';
 import { RequestHandler } from 'express';
 import {
   addOneMedia,
-  addOneSubtitleForMedia,
+  addFileSubtitleForMedia,
   extractSubtitleForMedia,
   getAllMediaData,
   getOneMediaData,
+  extractPosterForMedia,
 } from './mediaData';
 import { normalizeText } from '@common/utils/validate';
 
@@ -52,7 +53,8 @@ export const addMedia: RequestHandler = async (req, res) => {
   const { data } = await addOneMedia(file?.path, folderId);
 
   await Promise.all([
-    addOneSubtitleForMedia(data?.id, file?.path),
+    extractPosterForMedia(data?.id, file?.path),
+    addFileSubtitleForMedia(data?.id, file?.path),
     extractSubtitleForMedia(data?.id, file?.path, data.subtitleStreams),
   ]);
 
@@ -295,6 +297,19 @@ export const getThumbnail: RequestHandler = async (req, res) => {
   }
 };
 
+export const getPoster: RequestHandler = async (req, res) => {
+  const id = normalizeText(req.params.id);
+  const { data } = await getOneMediaData(id);
+
+  const poster = data?.poster?.path || data?.thumbnail?.path;
+
+  if (poster) {
+    res.download(poster, 'poster.jpg');
+  } else {
+    throw new AppError({ httpCode: HttpCode.NOT_FOUND, description: 'Poster not found' });
+  }
+};
+
 export const getSeekThumbnail: RequestHandler = async (req, res) => {
   const id = normalizeText(req.params.id);
   const time = parseInt(normalizeText(req.query.time));
@@ -329,7 +344,7 @@ export const probeFile: RequestHandler = async (req, res) => {
 export const testStuff: RequestHandler = async (req, res) => {
   const { file } = req.body;
 
-  const data = await createSubtitle('lol', file, 1);
+  const { posterPath } = await createPoster('lol', file);
 
-  return res.status(HttpCode.OK).send({ data, file });
+  return res.status(HttpCode.OK).send({ posterPath, file });
 };

@@ -1,7 +1,12 @@
 import { getMediaDataDB, pushMediaDB } from '@database/json';
 import { handleJSONDBDataError } from '@utils/error';
 import { AppError, HttpCode } from '@utils/exceptions';
-import { createSubtitle, createVideoThumbnail, getVideoMetaData } from '@utils/ffmpeg';
+import {
+  createPoster,
+  createSubtitle,
+  createVideoThumbnail,
+  getVideoMetaData,
+} from '@utils/ffmpeg';
 import { checkIfFileExists } from '@utils/file';
 import { randomUUID } from 'crypto';
 import path from 'path';
@@ -56,7 +61,24 @@ export const addOneMedia = async (filePath: string, folderId?: string) => {
   }
 };
 
-export const addOneSubtitleForMedia = async (mediaId: string, mediaPath: string) => {
+export const extractPosterForMedia = async (mediaId: string, mediaPath: string) => {
+  try {
+    const { posterPath } = await createPoster(mediaId, mediaPath);
+    if (posterPath) {
+      const { error: pushError } = await pushMediaDB(`/${mediaId}/poster`, { path: posterPath });
+
+      if (pushError) {
+        handleJSONDBDataError(pushError, mediaId);
+      }
+    }
+
+    return true;
+  } catch (error) {
+    return false;
+  }
+};
+
+export const addFileSubtitleForMedia = async (mediaId: string, mediaPath: string) => {
   try {
     const parseData = path.parse(mediaPath);
     const ext = parseData.ext;

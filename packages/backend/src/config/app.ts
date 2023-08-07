@@ -11,5 +11,5 @@ export const appInit = () => {
   makeDirectory(getResourcePath('_appdata/_temp'));
   makeDirectory(getResourcePath('_appdata/_subs'));
   makeDirectory(getResourcePath('_appdata/_videos'));
-  makeDirectory(getResourcePath('_appdata/_screenshots'));
+  makeDirectory(getResourcePath('_appdata/_images'));
 };
