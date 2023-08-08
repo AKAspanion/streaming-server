@@ -78,6 +78,7 @@ export const routes: RouteObject[] = [
         element: <VideoPlay />,
         handle: {
           hide: true,
+          full: true,
           name: 'Video Play',
         },
       },
@@ -86,6 +87,7 @@ export const routes: RouteObject[] = [
         element: <MediaPlay />,
         handle: {
           hide: true,
+          full: true,
           name: 'Media Play',
         },
       },

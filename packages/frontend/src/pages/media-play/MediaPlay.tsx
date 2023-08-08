@@ -102,7 +102,7 @@ function MediaPlay() {
   }, [loading, subData]);
 
   return (
-    <div className="fixed w-screen h-screen top-0 left-0">
+    <div className="fixed z-20 w-screen h-screen top-0 left-0">
       {loading && <Spinner full />}
       <div className="bg-black h-screen">
         {videoSrc ? (

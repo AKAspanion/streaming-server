@@ -16,6 +16,8 @@ declare type CrumbType = {
 declare type CrumbFunction = (data: any) => CrumbType;
 
 declare type RouterHandler = {
+  hide?: boolean;
+  full?: boolean;
   crumb: CrumbFunction[];
 };
 
