@@ -19,11 +19,11 @@ export const getffmpeg = () => {
   const ffmpeg = require('fluent-ffmpeg');
 
   if (os.platform() === 'win32') {
-    ffmpegLocal = getBinPath('.bin/ffmpeg/ffmpeg.exe');
-    ffmpegProbeLocal = getBinPath('.bin/ffprobe/ffprobe.exe');
+    ffmpegLocal = getBinPath('.bin/win/ffmpeg/ffmpeg.exe');
+    ffmpegProbeLocal = getBinPath('.bin/win/ffprobe/ffprobe.exe');
   } else {
-    ffmpegLocal = getBinPath('.bin/ffmpeg/ffmpeg');
-    ffmpegProbeLocal = getBinPath('.bin/ffprobe/ffprobe');
+    ffmpegLocal = getBinPath('.bin/mac/ffmpeg/ffmpeg');
+    ffmpegProbeLocal = getBinPath('.bin/mac/ffprobe/ffprobe');
   }
 
   ffmpeg.setFfmpegPath(ffmpegLocal);

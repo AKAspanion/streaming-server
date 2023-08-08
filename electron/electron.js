@@ -153,7 +153,6 @@ if (!gotTheLock) {
   app.on('ready', () => {
     log.info('App starting');
 
-    console.log(getIPv4Address());
     if (!isDev) {
       startBackend();
     }
@@ -192,7 +191,9 @@ function startBackend() {
     log.info('Backend starting');
     const appName = app.getPath('exe');
 
-    const { bePath, binPath, dataPath } = getPaths();
+    const { binPath, dataPath } = getPaths();
+    const bePath =
+      '/Users/ankitkumarpandit/Documents/stuff/streaming-server/packages/backend/dist/index';
 
     log.info('App Name', appName);
     log.info('Data Path', dataPath);
@@ -207,23 +208,26 @@ function startBackend() {
       },
     });
 
-    redirectOutput(expressAppProcess.stdout);
-    redirectOutput(expressAppProcess.stderr);
+    log.info('Process', expressAppProcess);
+    if (expressAppProcess) {
+      redirectOutput(expressAppProcess.stdout);
+      redirectOutput(expressAppProcess.stderr);
 
-    processes.push(expressAppProcess);
+      processes.push(expressAppProcess);
 
-    expressAppProcess.on('uncaughtException', function (err) {
-      log.error('Error running express app', err);
-    });
+      expressAppProcess.on('uncaughtException', function (err) {
+        log.error('Error running express app', err);
+      });
 
-    expressAppProcess.on('error', (error) => {
-      log.error('Backend error', error);
-    });
+      expressAppProcess.on('error', (error) => {
+        log.error('Backend error', error);
+      });
 
-    expressAppProcess.on('exit', (code) => {
-      log.info('Exit Server', code);
-      process.exit();
-    });
+      expressAppProcess.on('exit', (code) => {
+        log.info('Exit Server', code);
+        process.exit();
+      });
+    }
   } catch (error) {
     log.error('Server error', error);
   }
@@ -232,16 +236,21 @@ function startBackend() {
 async function exitBackend(callback) {
   log.info('Exit Backend');
 
-  processes.forEach(function (proc) {
-    proc.kill();
-  });
-
-  log.info('Exit Backend');
   const NODE_APP_PORT = 5708;
   try {
-    await fetch(`http://127.0.0.1:${NODE_APP_PORT}/server/quit`);
+    log.info('Exit Backend call');
+    const data = await fetch(`http://127.0.0.1:${NODE_APP_PORT}/server/quit`);
+    log.info('Exit Backend success', data);
   } catch (error) {
-    //
+    log.error(error);
+  }
+
+  try {
+    processes.forEach(function (proc) {
+      proc.kill();
+    });
+  } catch (error) {
+    log.error(error);
   }
 
   callback();
@@ -257,6 +266,7 @@ function appDataPath() {
 }
 
 function redirectOutput(x) {
+  if (!x) return;
   x.on('data', function (data) {
     data
       .toString()
@@ -310,17 +320,17 @@ function createTray() {
   tray.setContextMenu(contextMenu);
 }
 
-const getIPv4Address = () => {
-  const interfaces = os.networkInterfaces();
-  const allAddress = [{ type: 'Local', address: 'localhost' }];
-  for (const interfaceKey in interfaces) {
-    const addressList = interfaces[interfaceKey];
-    addressList?.forEach((address) => {
-      if (address.family === 'IPv4' && !address.internal) {
-        allAddress.push({ type: 'Network', address: `${address.address}` });
-      }
-    });
-  }
+// const getIPv4Address = () => {
+//   const interfaces = os.networkInterfaces();
+//   const allAddress = [{ type: 'Local', address: 'localhost' }];
+//   for (const interfaceKey in interfaces) {
+//     const addressList = interfaces[interfaceKey];
+//     addressList?.forEach((address) => {
+//       if (address.family === 'IPv4' && !address.internal) {
+//         allAddress.push({ type: 'Network', address: `${address.address}` });
+//       }
+//     });
+//   }
 
-  return allAddress;
-};
+//   return allAddress;
+// };
