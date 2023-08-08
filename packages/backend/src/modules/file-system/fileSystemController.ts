@@ -7,11 +7,17 @@ import os from 'os';
 import uniqBy from 'lodash.uniqby';
 import { getFileType } from '@utils/file';
 import { ALLOWED_VIDEO_FILES } from '@common/constants/app';
+import logger from '@utils/logger';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const drivelist = require('drivelist');
 
 export const getFilesInPath: RequestHandler = async (req, res) => {
-  const { dir } = req.body;
+  const { dir: dirInReq } = req.body;
+  let dir = String(dirInReq || '');
+  if (dir && dir.endsWith(`\\`)) {
+    dir = dir.slice(0, dir.length - 1);
+  }
+
   let drives: FileLocationType[] = [];
 
   try {
@@ -48,7 +54,7 @@ export const getFilesInPath: RequestHandler = async (req, res) => {
     try {
       let files: FileLocationType[] = [];
 
-      fs.readdirSync(dir).forEach((filename) => {
+      fs.readdirSync(path.join(dir)).forEach((filename) => {
         const isSystem = filename.includes('System Volume Information');
         const isHidden = filename.startsWith('.');
 
@@ -84,6 +90,7 @@ export const getFilesInPath: RequestHandler = async (req, res) => {
       ];
       return res.status(HttpCode.OK).send({ data: files });
     } catch (error) {
+      logger.error(error);
       throw new AppError({
         description: 'Failed to load directory',
         httpCode: HttpCode.BAD_REQUEST,

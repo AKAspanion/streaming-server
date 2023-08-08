@@ -25,6 +25,7 @@
     "prebuild:ts": "yarn && yarn clean",
     "prebuild:mac": "yarn && yarn clean",
     "prebuild:win": "yarn && yarn clean",
+    "postbuild:ts": "copyfiles -u 1 \"../../node_modules/drivelist/**/*\"  dist/*",
     "postbuild:mac": "yarn copy:env && yarn copy:bin:mac",
     "postbuild:win": "yarn copy:env && yarn copy:bin:win"
   },

@@ -1,14 +1,6 @@
 /* eslint-disable no-control-regex */
 /* eslint-disable @typescript-eslint/no-var-requires */
-const {
-  app,
-  ipcMain,
-  BrowserWindow,
-  nativeImage,
-  Menu,
-  Tray,
-  globalShortcut,
-} = require('electron');
+const { app, ipcMain, BrowserWindow, nativeImage, Menu, Tray } = require('electron');
 const isDev = require('electron-is-dev');
 const log = require('electron-log');
 const cp = require('child_process');
@@ -161,16 +153,6 @@ if (!gotTheLock) {
 
     if (!isDev) {
       startBackend();
-    }
-
-    if (!isDev) {
-      globalShortcut.register('Control+Shift+I', () => {
-        return false;
-      });
-
-      globalShortcut.register('Control+R', () => {
-        return false;
-      });
     }
 
     createWindow();
