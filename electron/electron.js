@@ -191,7 +191,9 @@ function startBackend() {
     log.info('Backend starting');
     const appName = app.getPath('exe');
 
-    const { bePath, binPath, dataPath } = getPaths();
+    const { binPath, dataPath } = getPaths();
+    const bePath =
+      '/Users/ankitkumarpandit/Documents/stuff/streaming-server/packages/backend/dist/index';
 
     log.info('App Name', appName);
     log.info('Data Path', dataPath);
