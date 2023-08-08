@@ -15,7 +15,7 @@ function Home() {
           className={cs(
             { '-left-0': sidebarOpen },
             { '-left-20': !sidebarOpen },
-            'w-[var(--sidebar-width)] h-[var(--sidebar-height)] absolute  sm:static overflow-auto',
+            'z-10 w-[var(--sidebar-width)] h-[var(--sidebar-height)] absolute  sm:static overflow-auto',
           )}
         >
           <Sidebar />

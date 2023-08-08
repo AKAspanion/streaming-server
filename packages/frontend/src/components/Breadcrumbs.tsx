@@ -5,15 +5,8 @@ import { Link, useMatches, useNavigate } from 'react-router-dom';
 import { ChevronRightIcon } from '@heroicons/react/24/outline';
 import IconButton from './atoms/icon-button/IconButton';
 import { ArrowLeftIcon } from '@heroicons/react/20/solid';
-import { Bars3BottomLeftIcon } from '@heroicons/react/24/solid';
-import { setSidebarOpen } from '@/store/globalSlice';
-import { useAppDispatch, useAppSelector } from '@/store/hook';
-import useIPCRenderer from '@/hooks/useIPCRenderer';
 
 function Breadcrumbs() {
-  const ipcRenderer = useIPCRenderer();
-  const dispatch = useAppDispatch();
-  const sidebarOpen = useAppSelector((s) => s?.globalData?.sidebarOpen);
   const navigate = useNavigate();
   const matches = useMatches();
 
@@ -51,11 +44,6 @@ function Breadcrumbs() {
         'h-[var(--breadcrumbs-height)]',
       )}
     >
-      {ipcRenderer && (
-        <div className="w-6 cursor-pointer" onClick={() => dispatch(setSidebarOpen(!sidebarOpen))}>
-          <Bars3BottomLeftIcon />
-        </div>
-      )}
       <IconButton onClick={goBack}>
         <div className="w-4">
           <ArrowLeftIcon />

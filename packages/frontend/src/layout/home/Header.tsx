@@ -40,21 +40,13 @@ const Header: React.FC<HeaderProps> = ({ title }) => {
         'border-slate-300 border-b dark:border-slate-700 h-[var(--header-height)]',
       )}
     >
-      {ipcRenderer && <div className="w-20"></div>}
-
-      <div
-        className={cs('header-text p-2 px-4 font-bold flex-1 flex gap-2 items-center', {
-          'text-left opacity-1': !ipcRenderer,
-          'text-center opacity-1': !!ipcRenderer,
-        })}
-      >
-        <div
-          className="w-5 h-5 sm:hidden block cursor-pointer"
-          onClick={() => dispatch(setSidebarOpen(!sidebarOpen))}
-        >
+      <div className={cs('p-2 px-4 font-bold flex flex-1 gap-3 items-center text-left')}>
+        <IconButton onClick={() => dispatch(setSidebarOpen(!sidebarOpen))}>
           <Bars3BottomLeftIcon />
+        </IconButton>
+        <div className="flex flex-1 header-text">
+          <div className="line-clamp-1">{title}</div>
         </div>
-        <div className="line-clamp-1">{title}</div>
       </div>
       <div className="flex gap-1 px-2">
         <IconButton onClick={switchTheme}>

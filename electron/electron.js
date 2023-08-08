@@ -37,8 +37,6 @@ function createWindow() {
     frame: false,
     title: 'Video Streaming Server',
     backgroundColor: '#020202',
-    titleBarStyle: 'hiddenInset',
-    autoHideMenuBar: true,
     icon: path.resolve('../packages/frontend/public/favicon.ico'),
     webPreferences: {
       nodeIntegration: true,
@@ -78,6 +76,21 @@ function createWindow() {
       log.error('render process crashed');
     }
   });
+
+  if (process.platform === 'darwin') {
+    let forceQuit = false;
+    app.on('before-quit', function () {
+      log.info('Force quit called');
+      forceQuit = true;
+    });
+    mainWindow.on('close', async function (event) {
+      log.info('App closing ' + forceQuit);
+      if (forceQuit) {
+        event.preventDefault();
+        await exitBackend();
+      }
+    });
+  }
 }
 
 app.whenReady().then(() => {
@@ -97,11 +110,8 @@ app.whenReady().then(() => {
 });
 
 app.on('window-all-closed', () => {
-  if (process.platform == 'darwin') {
-    app.hide();
-  }
-
-  mainWindow.hide();
+  log.info('Window all closed');
+  hideWindows();
 });
 
 app.on('activate', () => {
@@ -111,11 +121,7 @@ app.on('activate', () => {
 });
 
 ipcMain.on('close-app', () => {
-  if (process.platform == 'darwin') {
-    app.hide();
-  }
-
-  mainWindow.hide();
+  hideWindows();
 });
 
 ipcMain.on('maximize', () => {
@@ -141,7 +147,7 @@ ipcMain.on('app_version', (event) => {
 const gotTheLock = app.requestSingleInstanceLock();
 
 if (!gotTheLock) {
-  app.quit();
+  exitApp();
 } else {
   app.on('second-instance', () => {
     if (mainWindow) {
@@ -172,6 +178,26 @@ if (!gotTheLock) {
 }
 
 const processes = [];
+
+function hideWindows() {
+  log.info('Hidding Windows');
+  if (process.platform == 'darwin') {
+    app.hide();
+    app.dock.hide();
+  }
+
+  if (mainWindow) {
+    mainWindow.hide();
+  }
+}
+
+function showWindows() {
+  log.info('Showing Windows');
+  if (process.platform == 'darwin') {
+    app.show();
+    app.dock.show();
+  }
+}
 
 function getPaths() {
   const dataPath = path.join(appDataPath(), name);
@@ -206,7 +232,6 @@ function startBackend() {
       },
     });
 
-    log.info('Process', expressAppProcess);
     if (expressAppProcess) {
       redirectOutput(expressAppProcess.stdout);
       redirectOutput(expressAppProcess.stderr);
@@ -231,14 +256,20 @@ function startBackend() {
   }
 }
 
-async function exitBackend(callback) {
+async function exitApp() {
+  await exitBackend();
+  log.info('Exited Backend');
+  app.quit();
+}
+
+async function exitBackend() {
   log.info('Exit Backend');
 
   const NODE_APP_PORT = 5708;
   try {
     log.info('Exit Backend call');
-    const data = await fetch(`http://127.0.0.1:${NODE_APP_PORT}/server/quit`);
-    log.info('Exit Backend success', data);
+    await fetch(`http://127.0.0.1:${NODE_APP_PORT}/server/quit`);
+    log.info('Exit Backend success');
   } catch (error) {
     log.error(error);
   }
@@ -251,7 +282,7 @@ async function exitBackend(callback) {
     log.error(error);
   }
 
-  callback();
+  return true;
 }
 
 function appDataPath() {
@@ -302,15 +333,15 @@ function createTray() {
     {
       label: 'Open Server',
       click: () => {
+        showWindows();
         createWindow();
       },
     },
     {
       label: 'Exit',
+      accelerator: 'CmdOrCtrl+Q',
       click: () => {
-        exitBackend(() => {
-          app.quit();
-        });
+        exitApp();
       },
     },
   ]);
