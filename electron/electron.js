@@ -13,6 +13,8 @@ const isDev = require('electron-is-dev');
 const log = require('electron-log');
 const cp = require('child_process');
 const path = require('path');
+const os = require('os');
+
 const { name } = require('../package.json');
 
 let mainWindow;
@@ -151,6 +153,7 @@ if (!gotTheLock) {
   app.on('ready', () => {
     log.info('App starting');
 
+    console.log(getIPv4Address());
     if (!isDev) {
       startBackend();
     }
@@ -171,21 +174,35 @@ if (!gotTheLock) {
 
 const processes = [];
 
+function getPaths() {
+  const dataPath = path.join(appDataPath(), name);
+  const binPath = `${path.join(__dirname, '../../backend')}`;
+
+  if (os.platform() === 'win32') {
+    const bePath = `${path.join(__dirname, '../../backend/index.exe')}`;
+    return { bePath, binPath, dataPath };
+  } else {
+    const bePath = `${path.join(__dirname, '../../backend/index')}`;
+    return { bePath, binPath, dataPath };
+  }
+}
+
 function startBackend() {
   try {
     log.info('Backend starting');
     const appName = app.getPath('exe');
 
-    const expressPath = path.join('./resources/app.asar', './packages/backend/dist/index.js');
-
-    const dataPath = path.join(appDataPath(), name);
+    const { bePath, binPath, dataPath } = getPaths();
 
     log.info('App Name', appName);
-    log.info('Express Path', expressPath);
-    const expressAppProcess = cp.spawn(appName, [expressPath], {
+    log.info('Data Path', dataPath);
+    log.info('Executable Path', bePath);
+    const expressAppProcess = cp.spawn(bePath, {
+      stdio: 'pipe',
       env: {
         NODE_ENV: 'production',
         ELECTRON_RUN_AS_NODE: '1',
+        BIN_PATH_IN_ELECTRON: binPath,
         RESOURCE_PATH_IN_ELECTRON: dataPath,
       },
     });
@@ -218,6 +235,15 @@ async function exitBackend(callback) {
   processes.forEach(function (proc) {
     proc.kill();
   });
+
+  log.info('Exit Backend');
+  const NODE_APP_PORT = 5708;
+  try {
+    await fetch(`http://127.0.0.1:${NODE_APP_PORT}/server/quit`);
+  } catch (error) {
+    //
+  }
+
   callback();
 }
 
@@ -283,3 +309,18 @@ function createTray() {
 
   tray.setContextMenu(contextMenu);
 }
+
+const getIPv4Address = () => {
+  const interfaces = os.networkInterfaces();
+  const allAddress = [{ type: 'Local', address: 'localhost' }];
+  for (const interfaceKey in interfaces) {
+    const addressList = interfaces[interfaceKey];
+    addressList?.forEach((address) => {
+      if (address.family === 'IPv4' && !address.internal) {
+        allAddress.push({ type: 'Network', address: `${address.address}` });
+      }
+    });
+  }
+
+  return allAddress;
+};

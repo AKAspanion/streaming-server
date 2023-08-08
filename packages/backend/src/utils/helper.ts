@@ -12,6 +12,16 @@ export const getResourcePath = (folderPath: string, fallback = process.cwd()) =>
   return path.join(fallback, folderPath);
 };
 
+export const getBinPath = (folderPath: string, fallback = process.cwd()) => {
+  const electronRoot = process.env.BIN_PATH_IN_ELECTRON;
+
+  if (electronRoot) {
+    return path.join(electronRoot, folderPath);
+  }
+
+  return path.join(fallback, folderPath);
+};
+
 export const makeDirectory = (folderPath: string) => {
   mkdirp.sync(folderPath);
 };

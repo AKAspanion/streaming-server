@@ -5,14 +5,16 @@ import { getResourcePath, makeDirectory } from './helper';
 const getDate = () => new Date().toISOString();
 
 const logDir = getResourcePath(`_appdata/_logs`);
+
 makeDirectory(logDir);
 
-const timestamp = new Date().getTime();
+// const timestamp = new Date().getTime();
+const timestamp = 'test';
 
-const beLogPath = `_appdata/_logs/be-${timestamp}.txt`;
-const accessLogPath = `_appdata/_logs/access-${timestamp}.txt`;
-const ffmpegLogPath = `_appdata/_logs/ffmpeg-${timestamp}.txt`;
-const pocessLogPath = `_appdata/_logs/process-${timestamp}.txt`;
+const beLogPath = getResourcePath(`_appdata/_logs/be-${timestamp}.log`);
+const accessLogPath = getResourcePath(`_appdata/_logs/access-${timestamp}.log`);
+const ffmpegLogPath = getResourcePath(`_appdata/_logs/ffmpeg-${timestamp}.log`);
+const pocessLogPath = getResourcePath(`_appdata/_logs/process-${timestamp}.log`);
 
 const logFormat = format.combine(
   format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss.SSS' }),

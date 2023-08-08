@@ -11,6 +11,7 @@
     "prestart:electron": "yarn build",
     "prebuild:electron": "yarn build",
     "build": "tsc && vite build",
+    "package": "yarn build",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives",
     "preview": "vite preview",
     "prepreview": "yarn build",

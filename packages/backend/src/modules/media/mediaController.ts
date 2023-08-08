@@ -23,6 +23,7 @@ import {
   extractPosterForMedia,
 } from './mediaData';
 import { normalizeText } from '@common/utils/validate';
+import logger from '@utils/logger';
 
 export const getMedia: RequestHandler = async (req, res) => {
   const id = normalizeText(req.params.id);
@@ -282,6 +283,7 @@ export const streamMedia: RequestHandler = async (req, res) => {
     res.setHeader('Access-Control-Allow-Headers', '*');
     res.status(HttpCode.OK).download(filePath);
   } catch (error) {
+    logger.error(error);
     throw new AppError({ httpCode: HttpCode.NOT_FOUND, description: 'File not found' });
   }
 };

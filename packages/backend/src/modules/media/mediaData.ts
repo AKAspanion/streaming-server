@@ -12,6 +12,7 @@ import { randomUUID } from 'crypto';
 import path from 'path';
 import fs from 'fs';
 import { addOneMediaSubtitle } from '@modules/subtitle/subtitleData';
+import logger from '@utils/logger';
 
 export const addOneMedia = async (filePath: string, folderId?: string) => {
   try {
@@ -54,9 +55,10 @@ export const addOneMedia = async (filePath: string, folderId?: string) => {
 
     return { data: body };
   } catch (error) {
+    logger.error(error);
     throw new AppError({
       httpCode: HttpCode.INTERNAL_SERVER_ERROR,
-      description: 'Problem adding Video',
+      description: 'Problem adding Media',
     });
   }
 };
@@ -74,6 +76,7 @@ export const extractPosterForMedia = async (mediaId: string, mediaPath: string) 
 
     return true;
   } catch (error) {
+    logger.error(error);
     return false;
   }
 };
@@ -89,6 +92,7 @@ export const addFileSubtitleForMedia = async (mediaId: string, mediaPath: string
     await addOneSubtitleOfMedia(mediaId, name, srtFilePath);
     return true;
   } catch (error) {
+    logger.error(error);
     return false;
   }
 };
@@ -123,6 +127,7 @@ const addOneSubtitleOfMedia = async (
       return true;
     }
   } catch (error) {
+    logger.error(error);
     return false;
   }
 };
@@ -133,24 +138,21 @@ export const extractSubtitleForMedia = async (
   subtitleStreams: MediaStreamType[],
 ) => {
   try {
-    try {
-      const addPromises: Promise<boolean>[] = [];
-      const streamsLength = subtitleStreams.length;
-      for (let i = 0; i < streamsLength; i++) {
-        const { subPath, name, error } = await createSubtitle(mediaId, mediaPath, i);
-        if (!error) {
-          const stream = subtitleStreams[i];
-          const subName = stream?.tags?.title || name;
-          addPromises.push(addOneSubtitleOfMedia(mediaId, subName, subPath, true));
-        }
+    const addPromises: Promise<boolean>[] = [];
+    const streamsLength = subtitleStreams.length;
+    for (let i = 0; i < streamsLength; i++) {
+      const { subPath, name, error } = await createSubtitle(mediaId, mediaPath, i);
+      if (!error) {
+        const stream = subtitleStreams[i];
+        const subName = stream?.tags?.title || name;
+        addPromises.push(addOneSubtitleOfMedia(mediaId, subName, subPath, true));
       }
-
-      await Promise.all(addPromises);
-      return true;
-    } catch (error) {
-      return false;
     }
+
+    await Promise.all(addPromises);
+    return true;
   } catch (error) {
+    logger.error(error);
     return false;
   }
 };

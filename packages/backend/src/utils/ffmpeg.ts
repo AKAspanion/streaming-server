@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import mime from 'mime';
-import { deleteFile, getResourcePath, makeDirectory } from './helper';
+import { deleteFile, getBinPath, getResourcePath, makeDirectory } from './helper';
 import path from 'path';
 import Ffmpeg = require('fluent-ffmpeg');
 import { ffmpegLogger } from './logger';
@@ -19,11 +19,11 @@ export const getffmpeg = () => {
   const ffmpeg = require('fluent-ffmpeg');
 
   if (os.platform() === 'win32') {
-    ffmpegLocal = path.resolve('./src/.bin/ffmpeg/ffmpeg.exe');
-    ffmpegProbeLocal = path.resolve('./src/.bin/ffprobe/ffprobe.exe');
+    ffmpegLocal = getBinPath('.bin/ffmpeg/ffmpeg.exe');
+    ffmpegProbeLocal = getBinPath('.bin/ffprobe/ffprobe.exe');
   } else {
-    ffmpegLocal = path.resolve('./src/.bin/ffmpeg/ffmpeg');
-    ffmpegProbeLocal = path.resolve('./src/.bin/ffprobe/ffprobe');
+    ffmpegLocal = getBinPath('.bin/ffmpeg/ffmpeg');
+    ffmpegProbeLocal = getBinPath('.bin/ffprobe/ffprobe');
   }
 
   ffmpeg.setFfmpegPath(ffmpegLocal);
