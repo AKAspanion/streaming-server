@@ -34,6 +34,7 @@ import { Slider } from '../ui/slider';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '../ui/hover-card';
 import LazyImage from '../LazyImage';
+import { IS_DEV } from '@/config/app';
 
 type HLSPlayerProps = {
   hls?: boolean;
@@ -93,7 +94,7 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
     if (videoRef && src) {
       if (Hls.isSupported()) {
         hlsObj.current = new Hls({
-          debug: process.env.NODE_ENV !== 'production',
+          debug: IS_DEV,
           autoStartLoad: true,
           manifestLoadingTimeOut: 60000,
           manifestLoadingRetryDelay: 500,
@@ -642,13 +643,17 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
         )}
       >
         <div
-          className="w-screen p-6 px-8 flex gap-4 justify-between"
-          style={{ '--max-wasd': 'calc(100vw - 160px)' } as React.CSSProperties}
+          className="w-screen flex gap-4 justify-between"
+          style={{ '--max-wasd': 'calc(100vw - 32px)' } as React.CSSProperties}
         >
-          <div className="dark  flex items-center gap-2 w-[var(--max-wasd)]">
-            <Link to={backTo} className="w-6 scale-[1]">
-              <ArrowLeftIcon className=" w-6" />
-            </Link>
+          <div className="dark flex items-center gap-2 w-[var(--max-wasd)]">
+            <div className="p-6 px-8">
+              <Link to={backTo} className="w-6 scale-[1]">
+                <ArrowLeftIcon className="w-6" />
+              </Link>
+            </div>
+            <div className="w-full h-full header-electron" />
+            <div />
           </div>
         </div>
         <div className="h-5" />
