@@ -4,6 +4,7 @@
 import { ffmpegLogger } from '@utils/logger';
 import Transcoder from './transcoder';
 import { SEGMENT_TEMP_FOLDER } from '@constants/hls';
+import { getResourcePath } from '@utils/helper';
 
 declare global {
   var transcoders: Transcoder[] | undefined;
@@ -45,9 +46,12 @@ export default class HLSManager {
   }
 
   getVideoTranscoderOutputPath(group: string) {
-    if (!global.transcoders || !global.transcoders.length) return `${SEGMENT_TEMP_FOLDER}/${group}`;
+    if (!global.transcoders || !global.transcoders.length)
+      return getResourcePath(`${SEGMENT_TEMP_FOLDER}/${group}`);
     const transcoder = global.transcoders.find((transcoder) => transcoder.group === group);
-    return transcoder ? transcoder.getOutputFolder() : `${SEGMENT_TEMP_FOLDER}/${group}`;
+    return transcoder
+      ? transcoder.getOutputFolder()
+      : getResourcePath(`${SEGMENT_TEMP_FOLDER}/${group}`);
   }
 
   isTranscoderFinished(group: string) {
@@ -148,13 +152,13 @@ export default class HLSManager {
   ) {
     const output = Transcoder.createTempDir(groupHash);
 
-    const transcoderGroup = new Transcoder(groupHash, filePath, startSegment, duration);
+    const transcoder = new Transcoder(groupHash, filePath, startSegment, duration);
 
     if (!global.transcoders) {
       global.transcoders = [];
     }
-    global.transcoders.push(transcoderGroup);
-    const promises = await transcoderGroup.start(output, audioStreamIndex);
+    global.transcoders.push(transcoder);
+    const promises = await transcoder.start(output, audioStreamIndex);
 
     await Promise.all(promises);
 

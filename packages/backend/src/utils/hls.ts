@@ -107,7 +107,7 @@ export const waitUntilFileExists = (
           clearInterval(interval);
           resolve(true);
         } else if (err) {
-          processLogger.info(`[HLS]Couldn't find segment ${requestedSegment}, waiting...`);
+          processLogger.info(`[HLS]Couldn't find ${filePath}, waiting...`);
         }
       });
     }, 1000);

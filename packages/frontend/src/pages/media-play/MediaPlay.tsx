@@ -119,8 +119,8 @@ function MediaPlay() {
             thumbnailSrc={`${baseUrl}/media/${mediaData?.data?.id}/thumbnail/seek`}
             onUnmount={() => mediaData?.data?.id && stopMedia(mediaData?.data?.id)}
             onEnded={() => {
-              mediaData?.data?.id && stopMedia(mediaData?.data?.id);
               navigate(backTo);
+              mediaData?.data?.id && stopMedia(mediaData?.data?.id);
             }}
           />
         ) : null}
