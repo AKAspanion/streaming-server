@@ -39,6 +39,7 @@ import { IS_DEV } from '@/config/app';
 type HLSPlayerProps = {
   hls?: boolean;
   src: string;
+  subtitlesText?: string;
   thumbnailSrc?: string;
   nextLink?: string;
   name: string;
@@ -56,12 +57,13 @@ let lazyControlsTimeout: NodeJS.Timeout;
 export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, outerRef) => {
   const {
     src,
-    hls = true,
-    currentTime = 0,
     name,
-    thumbnailSrc,
-    backTo = '/',
     nextLink,
+    hls = true,
+    backTo = '/',
+    thumbnailSrc,
+    subtitlesText,
+    currentTime = 0,
     onEnded,
     onUnmount,
   } = props;
@@ -129,6 +131,37 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
     }
   };
 
+  const handleSubtitleLoad = (trackText?: string) => {
+    try {
+      const videoRef = ref.current;
+      if (videoRef && trackText) {
+        const hasTrack = videoRef.getElementsByTagName('track');
+
+        if (hasTrack && hasTrack.length > 0) {
+          for (const e of hasTrack) {
+            videoRef.removeChild(e);
+          }
+        }
+
+        const track = document.createElement('track');
+        track.src = trackText;
+        // if (mediaData?.data?.subs) {
+        //   track.label = normalizeText(
+        //     mediaData?.data?.subs[mediaData?.data?.selectedSubtitle || 0]?.name,
+        //   );
+        // }
+        track.default = true;
+        videoRef.appendChild(track);
+
+        videoRef.textTracks[0].mode = 'showing';
+
+        updateSubtitlePosition(10);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   const handleSourceLoad = () => {
     try {
       const videoRef = ref.current;
@@ -158,7 +191,7 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
   const initVideo = (levelData?: LevelLoadedData) => {
     const video = ref.current;
     if (video) {
-      setControlsVisible(true);
+      handleControlsVisibility(true);
       lazyControlsHide();
       const videoDuration = Math.round(video.duration);
 
@@ -170,13 +203,7 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
         setDuration(levelData?.details?.totalduration);
       }
 
-      const hasTrack = video.getElementsByTagName('track');
-
-      if (hasTrack && hasTrack.length > 0) {
-        setSubtitlesVisible(video.textTracks[0].mode === 'showing');
-      } else {
-        setSubtitlesVisible(false);
-      }
+      handleSubtitleLoad(subtitlesText);
 
       if (!('pictureInPictureEnabled' in document)) {
         setPipVisible(false);
@@ -250,6 +277,30 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
     }
     return false;
   };
+
+  const updateSubtitlePosition = (position?: number) =>
+    new Promise((resolve) => {
+      const video = ref.current;
+      if (video) {
+        Array.from(video.textTracks).forEach((track) => {
+          if (track.mode === 'showing') {
+            if (track.cues) {
+              for (let i = 0; i < track.cues.length; i++) {
+                const cue = track.cues[i];
+
+                if (isNaN(position)) {
+                  cue.line = 15;
+                } else {
+                  cue.line = position;
+                }
+              }
+            }
+            resolve(true);
+          }
+        });
+      }
+      resolve(false);
+    });
 
   const initPlayer = () => {
     if (hls) {
@@ -405,8 +456,18 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
   const lazyControlsHide = () => {
     clearTimeout(lazyControlsTimeout);
     lazyControlsTimeout = setTimeout(() => {
-      setControlsVisible(false);
+      handleControlsVisibility(false);
     }, 5000);
+  };
+
+  const handleControlsVisibility = (value: boolean) => {
+    setControlsVisible(value);
+
+    if (value) {
+      updateSubtitlePosition(10);
+    } else {
+      updateSubtitlePosition(15);
+    }
   };
 
   useEffect(() => {
@@ -443,10 +504,10 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
       }
 
       if (e.clientY > offset) {
-        setControlsVisible(true);
+        handleControlsVisibility(true);
         lazyControlsHide();
       } else {
-        setControlsVisible(false);
+        handleControlsVisibility(false);
       }
     };
     document.addEventListener('mousemove', onMove, false);
@@ -454,7 +515,13 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
     return () => {
       document.removeEventListener('mousemove', onMove, false);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    handleSubtitleLoad(subtitlesText);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [subtitlesText]);
 
   useVideoControls(ref, { toggleFullScreen, togglePlay, updateSeekTime, updateVolume });
 
@@ -586,6 +653,22 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
                   </div>
                 </PopoverTrigger>
                 <PopoverContent align="end" side="top">
+                  <div className="flex gap-3 items-center justify-between pb-3">
+                    <div>Subtitle Position</div>
+                    <div className="flex gap-1 items-center">
+                      <div className="p-2 cursor-pointer">
+                        <div className="w-5" onClick={() => updateSubtitlePosition(10)}>
+                          <MinusIcon />
+                        </div>
+                      </div>
+                      <div className="p-1 rounded opacity-50">{subtitleOffset.toFixed(1)}s</div>
+                      <div className="p-2 cursor-pointer">
+                        <div className="w-5" onClick={() => updateSubtitlePosition()}>
+                          <PlusIcon />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                   <div className="flex gap-3 items-center justify-between pb-3">
                     <div>Subtitle Delay</div>
                     <div className="flex gap-1 items-center">

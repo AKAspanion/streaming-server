@@ -1,6 +1,6 @@
 import { baseUrl } from '@config/api';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { useEffect, useMemo, useRef } from 'react';
+import { useMemo, useRef } from 'react';
 import Spinner from '@components/atoms/spinner/Spinner';
 import useToastStatus from '@hooks/useToastStatus';
 import { useGetMediaSubtitleByIdQuery, usePlayMediaByIdQuery } from '@services/media';
@@ -50,35 +50,6 @@ function MediaPlay() {
 
   const loading = isFetching || subLoading;
 
-  const handleSubtitleLoad = (trackText: string) => {
-    try {
-      const videoRef = ref.current;
-      if (videoRef && trackText) {
-        const hasTrack = videoRef.getElementsByTagName('track');
-
-        if (hasTrack && hasTrack.length > 0) {
-          for (const e of hasTrack) {
-            videoRef.removeChild(e);
-          }
-        }
-
-        const track = document.createElement('track');
-        track.src = trackText;
-        if (mediaData?.data?.subs) {
-          track.label = normalizeText(
-            mediaData?.data?.subs[mediaData?.data?.selectedSubtitle || 0]?.name,
-          );
-        }
-        track.default = true;
-        videoRef.appendChild(track);
-
-        videoRef.textTracks[0].mode = 'showing';
-      }
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
   useToastStatus(status, {
     errorMessage: 'Failed to fetch video details',
   });
@@ -95,18 +66,11 @@ function MediaPlay() {
     currentTime = Number(resume);
   }
 
-  useEffect(() => {
-    if (!loading && subData) {
-      handleSubtitleLoad(subData);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loading, subData]);
-
   const backTo = folderId ? `/manage-media/${folderId}/folder` : '/manage-media';
 
   return (
     <div className="fixed z-20 w-screen h-screen top-0 left-0">
-      {loading && <Spinner full />}
+      {loading && <Spinner full large />}
       <div className="bg-black h-screen">
         {videoSrc ? (
           <HLSPlayer
@@ -114,6 +78,7 @@ function MediaPlay() {
             src={videoSrc}
             backTo={backTo}
             nextLink={nextLink}
+            subtitlesText={subData}
             currentTime={currentTime}
             name={normalizeText(mediaData?.data?.originalName)}
             thumbnailSrc={`${baseUrl}/media/${mediaData?.data?.id}/thumbnail/seek`}
