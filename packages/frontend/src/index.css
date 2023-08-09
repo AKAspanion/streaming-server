@@ -135,3 +135,9 @@ video {
 video:active {
   outline: none;
 }
+
+/*style header for electron */
+.header-electron {
+  -webkit-user-select: none;
+  -webkit-app-region: drag;
+}

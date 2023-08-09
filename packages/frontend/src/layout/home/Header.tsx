@@ -10,7 +10,6 @@ import {
 
 import IconButton from '@components/atoms/icon-button/IconButton';
 import { cs } from '@utils/helpers';
-import './Header.css';
 import useIPCRenderer from '@hooks/useIPCRenderer';
 import { useAppDispatch, useAppSelector } from '@/store/hook';
 import { setSidebarOpen } from '@/store/globalSlice';
@@ -44,7 +43,7 @@ const Header: React.FC<HeaderProps> = ({ title }) => {
         <IconButton onClick={() => dispatch(setSidebarOpen(!sidebarOpen))}>
           <Bars3BottomLeftIcon />
         </IconButton>
-        <div className="flex flex-1 header-text">
+        <div className="flex flex-1 header-electron">
           <div className="line-clamp-1">{title}</div>
         </div>
       </div>
