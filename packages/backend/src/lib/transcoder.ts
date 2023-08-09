@@ -9,7 +9,7 @@ import {
 import { timestampToSeconds } from '@utils/date-time';
 import { getffmpeg } from '@utils/ffmpeg';
 import { deleteDirectory, getResourcePath, makeDirectory } from '@utils/helper';
-import { ffmpegLogger, processLogger } from '@utils/logger';
+import { ffmpegBinLogger, ffmpegLogger, processLogger } from '@utils/logger';
 import { FfmpegCommand } from 'fluent-ffmpeg';
 import path from 'path';
 
@@ -97,7 +97,7 @@ export default class Transcoder {
 
       const ffmpeg = getffmpeg();
       try {
-        this.ffmpegProc = ffmpeg(this.filePath, { timeout: 432000 })
+        this.ffmpegProc = ffmpeg(this.filePath, { timeout: 432000, logger: ffmpegBinLogger })
           .inputOptions(inputOptions)
           .outputOptions(outputOptions)
           .on('end', () => {
@@ -132,10 +132,9 @@ export default class Transcoder {
               this.removeTempFolder();
             }
             ffmpegLogger.error(err.message);
-            ffmpegLogger.error(stdout);
             ffmpegLogger.error(stderr);
           })
-          .output(this.output);
+          .output(path.resolve(`${this.output}/${this.group}${SEGMENT_FILE_NO_SEPERATOR}%01d.ts`));
       } catch (error) {
         // err
       }
@@ -148,6 +147,7 @@ export default class Transcoder {
       '-y',
       '-loglevel verbose',
       '-copyts',
+      '-start_at_zero',
       this.getSeekParameter(),
       '-hwaccel auto',
     ];
@@ -182,17 +182,15 @@ export default class Transcoder {
       '-c:a:0 libmp3lame',
       '-ab:a:0 192000',
       '-ac:a:0 2',
+      '-f segment',
       '-map_metadata -1',
       '-map_chapters -1',
       '-segment_format mpegts',
-      '-f hls',
-      `-hls_time ${SEGMENT_TARGET_DURATION}`,
+      `-segment_time ${SEGMENT_TARGET_DURATION}`,
       '-force_key_frames expr:gte(t,n_forced*2)',
-      '-hls_playlist_type vod',
-      '-hls_list_size 100',
-      '-hls_flags +temp_file+split_by_time',
-      `-start_number ${this.startSegment}`,
-      `-hls_segment_filename ${this.output}/${this.group}${SEGMENT_FILE_NO_SEPERATOR}%01d.ts`,
+      `-segment_start_number ${this.startSegment}`,
+      '-individual_header_trailer 0',
+      '-write_header_trailer 0',
       '-strict 1',
       '-ac 2',
       '-b:a 320k',

@@ -15,6 +15,7 @@ const beLogPath = getResourcePath(`_appdata/_logs/be-${timestamp}.log`);
 const accessLogPath = getResourcePath(`_appdata/_logs/access-${timestamp}.log`);
 const ffmpegLogPath = getResourcePath(`_appdata/_logs/ffmpeg-${timestamp}.log`);
 const pocessLogPath = getResourcePath(`_appdata/_logs/process-${timestamp}.log`);
+const ffmpegBinLogPath = getResourcePath(`_appdata/_logs/ffmpeg-bin-${timestamp}.log`);
 
 const logFormat = format.combine(
   format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss.SSS' }),
@@ -71,6 +72,16 @@ export const ffmpegLogger = winston.createLogger({
   format: logFormat,
   defaultMeta: { service: 'ffmpeg' },
   transports: [new transports.Console(), new winston.transports.File({ filename: ffmpegLogPath })],
+});
+
+export const ffmpegBinLogger = winston.createLogger({
+  level: 'info',
+  format: logFormat,
+  defaultMeta: { service: 'ffmpeg-bin' },
+  transports: [
+    new transports.Console(),
+    new winston.transports.File({ filename: ffmpegBinLogPath }),
+  ],
 });
 
 export const processLogger = winston.createLogger({

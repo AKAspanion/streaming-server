@@ -34,6 +34,7 @@ import { Slider } from '../ui/slider';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '../ui/hover-card';
 import LazyImage from '../LazyImage';
+import { IS_DEV } from '@/config/app';
 
 type HLSPlayerProps = {
   hls?: boolean;
@@ -93,7 +94,7 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
     if (videoRef && src) {
       if (Hls.isSupported()) {
         hlsObj.current = new Hls({
-          debug: process.env.NODE_ENV !== 'production',
+          debug: IS_DEV,
           autoStartLoad: true,
           manifestLoadingTimeOut: 60000,
           manifestLoadingRetryDelay: 500,

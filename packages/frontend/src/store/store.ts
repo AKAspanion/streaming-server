@@ -8,6 +8,7 @@ import { videoApi } from '@services/video';
 import { mediaApi } from '@services/media';
 import globalReducer from './globalSlice';
 import { folderApi } from '@/services/folder';
+import { IS_DEV } from '@/config/app';
 
 const persistConfig = { key: 'streamin-server', storage };
 
@@ -27,7 +28,7 @@ export const store = configureStore({
       .concat(videoApi.middleware)
       .concat(folderApi.middleware)
       .concat(fileSystemApi.middleware),
-  devTools: process.env.NODE_ENV !== 'production',
+  devTools: IS_DEV,
 });
 
 setupListeners(store.dispatch);

@@ -5,7 +5,7 @@ import mime from 'mime';
 import { deleteFile, getBinPath, getResourcePath, makeDirectory } from './helper';
 import path from 'path';
 import Ffmpeg = require('fluent-ffmpeg');
-import { ffmpegLogger } from './logger';
+import { ffmpegBinLogger, ffmpegLogger } from './logger';
 import { SEGMENT_FILE_NO_SEPERATOR, SEGMENT_TARGET_DURATION } from '@constants/hls';
 import { secToTime } from './date-time';
 import fs from 'fs';
@@ -43,7 +43,7 @@ export const createVideoThumbnail = (id: string, pathToFile: string, metadata: M
 
     const time = secToTime(metadata?.format?.duration ? Number(metadata?.format?.duration) / 2 : 2);
 
-    ffmpeg(pathToFile)
+    ffmpeg(pathToFile, { timeout: 432000, logger: ffmpegBinLogger })
       .on('error', (err: any) => {
         return reject(new Error(err));
       })
@@ -75,7 +75,7 @@ export const createSeekThumbnail = (id: string, pathToFile: string, time: number
       if (!err) {
         resolve({ path: thumbnailPath, name: thumbnailFile });
       } else {
-        ffmpeg(pathToFile)
+        ffmpeg(pathToFile, { timeout: 432000, logger: ffmpegBinLogger })
           .on('start', async (commandLine) => {
             ffmpegLogger.info(`Spawned Ffmpeg with command: ${commandLine})`);
           })
@@ -103,7 +103,7 @@ export const createSubtitle = (id: string, pathToFile: string, index: number) =>
 
     makeDirectory(pathToSub);
 
-    ffmpeg(pathToFile)
+    ffmpeg(pathToFile, { timeout: 432000, logger: ffmpegBinLogger })
       .outputOptions([`-map 0:s:${index}?`])
       .output(subPath)
       .on('start', (commandLine) => {
@@ -129,7 +129,7 @@ export const createPoster = (id: string, pathToFile: string) =>
 
     makeDirectory(pathToPoster);
 
-    ffmpeg(pathToFile)
+    ffmpeg(pathToFile, { timeout: 432000, logger: ffmpegBinLogger })
       .outputOptions([`-map 0:v`, '-map -0:V', '-c copy'])
       .output(posterPath)
       .on('start', (commandLine) => {
@@ -173,7 +173,7 @@ export const createHLSStream = (pathToFile: string, id: string) =>
     deleteFile(outputFile);
     makeDirectory(pathToManifest);
 
-    ffmpeg(pathToFile, { timeout: 432000 })
+    ffmpeg(pathToFile, { timeout: 432000, logger: ffmpegBinLogger })
       .addOptions([
         '-f hls',
         `-hls_time ${SEGMENT_TARGET_DURATION}`,
