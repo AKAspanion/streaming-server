@@ -11,7 +11,7 @@ function Progress(props: ProgressProps) {
   const { value, className, full, rounded } = props;
   return (
     <div
-      className={cs('h-1 w-full bg-slate-200 dark:bg-slate-800 transition-all', {
+      className={cs('h-1 w-full bg-slate-300 dark:bg-slate-700 transition-all', {
         'absolute w-full h-full flex items-center justify-center': full,
         'rounded-md overflow-hidden': rounded,
         className,

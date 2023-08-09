@@ -9,8 +9,9 @@ import { mediaApi } from '@services/media';
 import globalReducer from './globalSlice';
 import { folderApi } from '@/services/folder';
 import { IS_DEV } from '@/config/app';
+import { dashboardApi } from '@/services/dashboard';
 
-const persistConfig = { key: 'streamin-server', storage };
+const persistConfig = { key: 'streaming-server', storage };
 
 export const store = configureStore({
   reducer: {
@@ -20,6 +21,7 @@ export const store = configureStore({
     [mediaApi.reducerPath]: mediaApi.reducer,
     [videoApi.reducerPath]: videoApi.reducer,
     [folderApi.reducerPath]: folderApi.reducer,
+    [dashboardApi.reducerPath]: dashboardApi.reducer,
     [fileSystemApi.reducerPath]: fileSystemApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
@@ -27,6 +29,7 @@ export const store = configureStore({
       .concat(mediaApi.middleware)
       .concat(videoApi.middleware)
       .concat(folderApi.middleware)
+      .concat(dashboardApi.middleware)
       .concat(fileSystemApi.middleware),
   devTools: IS_DEV,
 });

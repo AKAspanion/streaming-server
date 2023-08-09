@@ -28,9 +28,17 @@ export const routes: RouteObject[] = [
         handle: {
           name: 'Home',
           icon: <HomeIcon />,
-          handle: {
-            crumb: [() => ({ to: '/', label: 'Home' })],
-          },
+          crumb: [() => ({ to: '/dashboard', label: 'Home' })],
+        },
+      },
+      {
+        path: '/dashboard',
+        element: <Home />, // Home
+        handle: {
+          hide: true,
+          name: 'Dashboard',
+          icon: <HomeIcon />,
+          crumb: [() => ({ to: '/dashboard', label: 'Home' })],
         },
       },
       {

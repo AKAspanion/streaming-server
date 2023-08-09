@@ -47,6 +47,7 @@ type HLSPlayerProps = {
   showHeader?: boolean;
   currentTime?: number;
   children?: React.ReactNode;
+  onNext?: () => void;
   onEnded?: () => void;
   onUnmount?: () => void;
 };
@@ -64,6 +65,7 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
     thumbnailSrc,
     subtitlesText,
     currentTime = 0,
+    onNext,
     onEnded,
     onUnmount,
   } = props;
@@ -286,9 +288,10 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
           if (track.mode === 'showing') {
             if (track.cues) {
               for (let i = 0; i < track.cues.length; i++) {
-                const cue = track.cues[i];
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const cue = track.cues[i] as any;
 
-                if (isNaN(position)) {
+                if (position && isNaN(position)) {
                   cue.line = 15;
                 } else {
                   cue.line = position;
@@ -557,7 +560,7 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
             {name}
           </div>
           {nextLink && (
-            <div className="w-5 mr-4">
+            <div className="w-5 mr-4" onClick={onNext}>
               <Link className="p-2" to={nextLink}>
                 <SkipForwardIcon />
               </Link>
@@ -586,7 +589,10 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
               className="transition-opacity group-hover:opacity-100 pointer-events-none opacity-0 w-[150px] text-xs py-4 z-20"
             >
               {thumbnailSrc && (
-                <LazyImage src={getThumbnailSrc()} className="h-full object-cover drop-shadow" />
+                <LazyImage
+                  src={getThumbnailSrc()}
+                  className="w-full max-h-[100px] object-cover drop-shadow"
+                />
               )}
               <div className="text-center pt-2 drop-shadow">{secToTime(seekValue, true)}</div>
             </div>

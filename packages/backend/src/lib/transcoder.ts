@@ -6,7 +6,7 @@ import {
   SEGMENT_TARGET_DURATION,
   SEGMENT_TEMP_FOLDER,
 } from '@constants/hls';
-import { timestampToSeconds } from '@utils/date-time';
+import { timestampToSeconds } from '@common/utils/date-time';
 import { getffmpeg } from '@utils/ffmpeg';
 import { deleteDirectory, getResourcePath, makeDirectory } from '@utils/helper';
 import { ffmpegBinLogger, ffmpegLogger, processLogger } from '@utils/logger';

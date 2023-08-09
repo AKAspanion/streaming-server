@@ -24,11 +24,13 @@ function MediaPlay() {
   const { data: mediaData, isFetching, status } = usePlayMediaByIdQuery(mediaId);
   const { data: subData, isLoading: subLoading } = useGetMediaSubtitleByIdQuery(mediaId);
 
+  const stopVideo = () => mediaData?.data?.id && stopMedia(mediaData?.data?.id);
+
   const nextLink = useMemo(() => {
     let path = '';
     if (folderId && mediaList?.data && mediaList?.data.length) {
       const index = mediaList?.data?.findIndex((m) => m.id === mediaData?.data?.id);
-      if (index && index > -1 && mediaList?.data[index + 1]) {
+      if (index > -1 && mediaList?.data[index + 1]) {
         const nextId = mediaList?.data[index + 1].id;
         path = `/media-play/${nextId}?back=${folderId}`;
       }
@@ -82,10 +84,11 @@ function MediaPlay() {
             currentTime={currentTime}
             name={normalizeText(mediaData?.data?.originalName)}
             thumbnailSrc={`${baseUrl}/media/${mediaData?.data?.id}/thumbnail/seek`}
-            onUnmount={() => mediaData?.data?.id && stopMedia(mediaData?.data?.id)}
+            onNext={() => stopVideo()}
+            onUnmount={() => stopVideo()}
             onEnded={() => {
               navigate(backTo);
-              mediaData?.data?.id && stopMedia(mediaData?.data?.id);
+              stopVideo();
             }}
           />
         ) : null}

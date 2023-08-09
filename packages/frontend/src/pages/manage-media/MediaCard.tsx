@@ -3,6 +3,7 @@ import { baseUrl } from '@config/api';
 import {
   ChatBubbleBottomCenterTextIcon,
   EllipsisVerticalIcon,
+  HeartIcon,
   LinkIcon,
   PlayIcon,
   TrashIcon,
@@ -16,10 +17,9 @@ import useMediaMutation from '@/hooks/useMediaMutation';
 import Spinner from '@components/atoms/spinner/Spinner';
 import React from 'react';
 import Progress from '@/components/atoms/progress/Progress';
-import { formatPercentage } from '@/utils/helpers';
+import { cs, formatPercentage } from '@/utils/helpers';
 import { Card } from '@/components/ui/card';
 import CoverButton from '@/components/CoverButton';
-import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent } from '@/components/ui/popover';
 import { PopoverTrigger } from '@radix-ui/react-popover';
 import { normalizeText } from '@common/utils/validate';
@@ -45,46 +45,59 @@ const MediaCard: FC<MediaCardProps> = ({ media, folderId }) => {
   const progressValue = totalDuration ? formatPercentage(currentDuration, totalDuration) : 0;
 
   const hasSub = media?.subs && media?.subs.length;
+  const isFavourite = media?.isFavourite;
 
   return (
-    <Card className="h-full ">
-      <div className="transition-all h-full flex flex-col rounded-lg overflow-hidden">
+    <Card className="h-full relative group">
+      <div className="h-full flex flex-col rounded-lg overflow-hidden">
         <CoverButton
           button={
             <Link
-              className="hover:text-green-500"
+              className={cs(
+                'text-green-500 group-hover:opacity-100 transition-opacity duration-300',
+                'opacity-0  w-full h-full flex items-center justify-center',
+              )}
               to={`/media-play/${media.id}?resume=${currentDuration}&back=${normalizeText(
                 folderId,
               )}`}
             >
-              <Button variant={'ghost'} className="hover:text-green-500">
-                <div className="w-10">
-                  <PlayIcon />
-                </div>
-              </Button>
+              <div className="w-10">
+                <PlayIcon />
+              </div>
             </Link>
           }
         >
+          {isFavourite && (
+            <div className="dark:text-white text-black absolute right-3 top-3 shadow-lg">
+              <div className="w-5 drop-shadow">
+                <HeartIcon className="drop-shadow " />
+              </div>
+            </div>
+          )}
           {hasSub && (
-            <div className="absolute right-3 top-3 drop-shadow text-foreground">
-              <div className="w-5 ">
-                <ChatBubbleBottomCenterTextIcon />
+            <div className="dark:text-white text-black absolute left-3 top-3 shadow-lg">
+              <div className="w-5 drop-shadow">
+                <ChatBubbleBottomCenterTextIcon className="drop-shadow " />
               </div>
             </div>
           )}
           <div className="h-40 rounded-lg overflow-hidden">
             <img
               src={`${baseUrl}/media/${media.id}/thumbnail`}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
             />
-            {currentDuration ? (
-              <div className="absolute w-full bottom-0">
-                <Progress value={progressValue} />
-              </div>
-            ) : null}
           </div>
         </CoverButton>
-        <div className="flex gap-4 justify-between items-start p-4">
+        <div
+          className={cs(
+            'group-hover:dark:text-white',
+            'drop-shadow-xl group-hover:bg-slate-200 text-white group-hover:text-black',
+            'group-hover:to-transparent group-hover:dark:bg-slate-900 overflow-hidden',
+            'bg-gradient-to-b from-transparent to-slate-900 group-hover:to-transparent',
+            'group-hover:translate-y-[48px] transition-colors transition-transform duration-300',
+            'absolute bottom-0 flex gap-4 justify-between items-center rounded-b-lg w-full h-[52px] z-20',
+          )}
+        >
           <Link
             className="flex-1"
             to={
@@ -93,13 +106,24 @@ const MediaCard: FC<MediaCardProps> = ({ media, folderId }) => {
                 : `/manage-media/${media.id}/details`
             }
           >
-            <div title={media.originalName} className="break-all text-sm">
-              {media.originalName}
+            <div className="p-4">
+              <div
+                title={media.originalName}
+                className="break-all drop-shadow-2xl line-clamp-1 text-sm font-semibold"
+              >
+                {media.originalName}
+              </div>
             </div>
+
+            {currentDuration ? (
+              <div className="absolute w-full bottom-0 z-[21]">
+                <Progress value={progressValue} />
+              </div>
+            ) : null}
           </Link>
           <Popover>
             <PopoverTrigger>
-              <div className="w-5">
+              <div className="w-8 py-4 pr-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <EllipsisVerticalIcon />
               </div>
             </PopoverTrigger>
@@ -128,6 +152,7 @@ const MediaCard: FC<MediaCardProps> = ({ media, folderId }) => {
             </PopoverContent>
           </Popover>
         </div>
+        <div className={cs('h-[0px] -bottom-[52px] absolute w-full group-hover:h-[52px]')}></div>
       </div>
     </Card>
   );

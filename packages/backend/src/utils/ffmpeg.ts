@@ -5,9 +5,9 @@ import mime from 'mime';
 import { deleteFile, getBinPath, getResourcePath, makeDirectory } from './helper';
 import path from 'path';
 import Ffmpeg = require('fluent-ffmpeg');
+import { secToTime } from '@common/utils/date-time';
 import { ffmpegBinLogger, ffmpegLogger } from './logger';
 import { SEGMENT_FILE_NO_SEPERATOR, SEGMENT_TARGET_DURATION } from '@constants/hls';
-import { secToTime } from './date-time';
 import fs from 'fs';
 import os from 'os';
 

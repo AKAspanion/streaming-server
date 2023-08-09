@@ -31,7 +31,7 @@ function HomeLayout() {
               className={cs(
                 { '-left-0': sidebarOpen },
                 { '-left-20': !sidebarOpen },
-                'z-10 w-[var(--sidebar-width)] h-[var(--sidebar-height)] absolute  sm:static overflow-auto',
+                'z-30 w-[var(--sidebar-width)] h-[var(--sidebar-height)] absolute  sm:static overflow-auto',
               )}
             >
               <Sidebar />

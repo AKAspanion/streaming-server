@@ -6,6 +6,7 @@ import { useGetFolderQuery } from '@/services/folder';
 import { Link } from 'react-router-dom';
 import ManageMediaHeader from './ManageMediaHeader';
 import NoData from '@/components/NoData';
+import SectionGrid from '@/components/SectionGrid';
 
 const ManageMedia = () => {
   const { data, isFetching } = useGetMediaQuery('');
@@ -54,7 +55,7 @@ const ManageMedia = () => {
         {folderList.length ? (
           <div className="px-4 pb-4">
             <div className="pt-4 font-bold">Folders</div>
-            <div className="grid xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-2 gap-4 pt-4">
+            <SectionGrid>
               {(folderData?.data || []).map((f) => (
                 <Link key={f.id} to={`/manage-media/${f.id}/folder`}>
                   <div className="flex gap-3 items-center rounded-md w-full cursor-pointer">
@@ -70,13 +71,13 @@ const ManageMedia = () => {
                   </div>
                 </Link>
               ))}
-            </div>
+            </SectionGrid>
           </div>
         ) : null}
         {mediaList.length ? (
           <div className="px-4 pb-4">
             <div className="pt-4 font-bold">Videos</div>
-            <div className="grid xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-2 gap-4 pt-4">
+            <SectionGrid>
               {mediaList?.map((m) => {
                 return (
                   <div key={m.id}>
@@ -84,7 +85,7 @@ const ManageMedia = () => {
                   </div>
                 );
               })}
-            </div>
+            </SectionGrid>
           </div>
         ) : null}
       </div>
