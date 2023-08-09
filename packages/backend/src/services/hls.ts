@@ -1,6 +1,6 @@
 import HLSManager from '@lib/hls-manager';
 import { checkIfFileExists } from '@utils/file';
-import { waitUntilFileExists } from '@utils/hls';
+import { getTotalSegments, waitUntilFileExists } from '@utils/hls';
 import { processLogger } from '@utils/logger';
 import pathLib from 'path';
 import fsLib from 'fs';
@@ -76,12 +76,16 @@ export const processHLSStream = (options: ProcessStreamOptions) => {
 
       const startedNewTranscoder = promises.length > 0;
       Promise.all(promises).then(() => {
-        const waitForSegment = startedNewTranscoder ? segment + 2 : segment;
+        const totalSegment = getTotalSegments(duration);
+        const lookaheadSegment = segment + 2 > totalSegment ? totalSegment : segment + 2;
+        const waitForSegment = startedNewTranscoder ? lookaheadSegment : segment;
         waitUntilFileExists(filePath, waitForSegment, hlsManager, group)
           .then(() => {
+            // processLogger.info(`[HLS]Found segment ${waitForSegment}, returning to server`);
             resolve(filePath);
           })
           .catch(() => {
+            // processLogger.error(`[HLS] Transcoder was stopped`);
             reject(new Error(`[HLS] Transcoder was stopped for group ${group}`));
           });
       });

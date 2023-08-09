@@ -45,6 +45,7 @@ type HLSPlayerProps = {
   showHeader?: boolean;
   currentTime?: number;
   children?: React.ReactNode;
+  onEnded?: () => void;
   onUnmount?: () => void;
 };
 
@@ -60,6 +61,7 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
     thumbnailSrc,
     backTo = '/',
     nextLink,
+    onEnded,
     onUnmount,
   } = props;
   const [volume, setVolume] = useState(1);
@@ -91,7 +93,15 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
     if (videoRef && src) {
       if (Hls.isSupported()) {
         hlsObj.current = new Hls({
-          debug: true,
+          debug: process.env.NODE_ENV !== 'production',
+          autoStartLoad: true,
+          manifestLoadingTimeOut: 60000,
+          manifestLoadingRetryDelay: 500,
+          levelLoadingTimeOut: 60000,
+          levelLoadingRetryDelay: 500,
+          fragLoadingTimeOut: 60000,
+          fragLoadingRetryDelay: 250,
+          startFragPrefetch: true,
           startPosition: currentTime,
         });
 
@@ -455,6 +465,7 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
         id="myVideo"
         onClick={togglePlay}
         onPlay={onPlay}
+        onEnded={onEnded}
         onPause={onPause}
         onWaiting={onWaiting}
         onProgress={onProgress}

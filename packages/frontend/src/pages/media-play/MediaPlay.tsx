@@ -1,5 +1,5 @@
 import { baseUrl } from '@config/api';
-import { useParams, useSearchParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useEffect, useMemo, useRef } from 'react';
 import Spinner from '@components/atoms/spinner/Spinner';
 import useToastStatus from '@hooks/useToastStatus';
@@ -12,6 +12,7 @@ import { useGetMediaInFolderQuery } from '@/services/folder';
 
 function MediaPlay() {
   const ref = useRef<HTMLVideoElement>(null);
+  const navigate = useNavigate();
   const { mediaId = '' } = useParams();
   const [searchParams] = useSearchParams();
 
@@ -101,6 +102,8 @@ function MediaPlay() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading, subData]);
 
+  const backTo = folderId ? `/manage-media/${folderId}/folder` : '/manage-media';
+
   return (
     <div className="fixed z-20 w-screen h-screen top-0 left-0">
       {loading && <Spinner full />}
@@ -109,12 +112,16 @@ function MediaPlay() {
           <HLSPlayer
             ref={ref}
             src={videoSrc}
+            backTo={backTo}
             nextLink={nextLink}
             currentTime={currentTime}
             name={normalizeText(mediaData?.data?.originalName)}
             thumbnailSrc={`${baseUrl}/media/${mediaData?.data?.id}/thumbnail/seek`}
-            backTo={folderId ? `/manage-media/${folderId}/folder` : '/manage-media'}
             onUnmount={() => mediaData?.data?.id && stopMedia(mediaData?.data?.id)}
+            onEnded={() => {
+              mediaData?.data?.id && stopMedia(mediaData?.data?.id);
+              navigate(backTo);
+            }}
           />
         ) : null}
       </div>

@@ -19,7 +19,12 @@ const pocessLogPath = getResourcePath(`_appdata/_logs/process-${timestamp}.log`)
 const logFormat = format.combine(
   format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss.SSS' }),
   format.printf((info) => {
-    return JSON.stringify({ timestamp: info.timestamp, level: info.level, message: info.message });
+    const serverLogEntry = (info?.message || '').replace(
+      // eslint-disable-next-line no-control-regex
+      /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
+      '',
+    );
+    return `[${info.timestamp}][${info.service}][${info.level}]${serverLogEntry}`;
   }),
 );
 
@@ -50,14 +55,14 @@ export const warn = (message?: any, ...optionalParams: any[]): void => {
 export const logger = winston.createLogger({
   level: 'info',
   format: logFormat,
-  defaultMeta: { service: 'ffmpeg' },
+  defaultMeta: { service: 'backend' },
   transports: [new transports.Console(), new winston.transports.File({ filename: beLogPath })],
 });
 
 export const accessLoggger = winston.createLogger({
   level: 'info',
   format: logFormat,
-  defaultMeta: { service: 'ffmpeg' },
+  defaultMeta: { service: 'access' },
   transports: [new winston.transports.File({ filename: accessLogPath })],
 });
 

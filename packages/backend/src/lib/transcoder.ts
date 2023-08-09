@@ -9,10 +9,8 @@ import {
 import { timestampToSeconds } from '@utils/date-time';
 import { getffmpeg } from '@utils/ffmpeg';
 import { deleteDirectory, getResourcePath, makeDirectory } from '@utils/helper';
-import { getTotalSegments } from '@utils/hls';
 import { ffmpegLogger, processLogger } from '@utils/logger';
 import { FfmpegCommand } from 'fluent-ffmpeg';
-import { waitForFileAccess } from '@utils/file';
 import path from 'path';
 
 export default class Transcoder {
@@ -108,32 +106,21 @@ export default class Transcoder {
           .on('progress', (progress) => {
             const seconds = timestampToSeconds(progress.timemark);
             if (seconds > 0) {
-              const latestSegment = Math.max(Math.floor(seconds / SEGMENT_TARGET_DURATION) - 1); // - 1 because the first segment is 0
-              this.latestSegment = latestSegment;
+              const latestTimedSegment = Math.max(
+                Math.floor(seconds / SEGMENT_TARGET_DURATION) - 1,
+              );
+              const computedSegemnt = latestTimedSegment + this.startSegment || 0;
+              // processLogger.info(
+              //   `[Transcoder] Latest computed segment ${computedSegemnt}. timedSegment ${latestTimedSegment} startSegment:${this.startSegment}`,
+              // );
+              this.latestSegment = computedSegemnt;
             }
           })
           .on('start', async (commandLine) => {
             processLogger.info(
-              `[HLS] Spawned Ffmpeg (startSegment: ${this.startSegment} with command: ${commandLine})`,
+              `[Transcoder] Spawned Ffmpeg (Start Segment: ${this.startSegment})\n${commandLine}`,
             );
             ffmpegLogger.info(commandLine);
-            const totalSegment = getTotalSegments(this.duration);
-            const lookaheadSegment =
-              this.startSegment + 5 > totalSegment ? totalSegment : this.startSegment + 5;
-            const filePath = path.join(
-              this.output,
-              `${this.group}${SEGMENT_FILE_NO_SEPERATOR}${lookaheadSegment}.ts`,
-            );
-            processLogger.info(`[HLS]Waiting for Segment ${lookaheadSegment}`);
-            waitForFileAccess(
-              { filePath },
-              () => {
-                resolve(true);
-                processLogger.info(`[HLS]Found Segment ${lookaheadSegment}`);
-              },
-              () => resolve(false),
-            );
-
             resolve(true);
           })
           .on('error', (err, stdout, stderr) => {
@@ -141,14 +128,12 @@ export default class Transcoder {
               err.message != 'Output stream closed' &&
               err.message != 'ffmpeg was killed with signal SIGKILL'
             ) {
-              ffmpegLogger.error(`Cannot process video: ${err.message}`);
-            }
-            if (err.message === 'ffmpeg was killed with signal SIGKILL') {
-              // delete data;
+              processLogger.error(`[Transcoder] Cannot process video: ${err.message}`);
               this.removeTempFolder();
             }
+            ffmpegLogger.error(err.message);
+            ffmpegLogger.error(stdout);
             ffmpegLogger.error(stderr);
-            console.error(err);
           })
           .output(this.output);
       } catch (error) {
@@ -192,7 +177,7 @@ export default class Transcoder {
       '-level:v:0 4.0',
       '-crf:v:0 23',
       '-x264opts:v:0 subme=0:me_range=4:rc_lookahead=10:partitions=none',
-      // '-max_delay 5000000',
+      '-max_delay 5000000',
       '-avoid_negative_ts disabled',
       '-c:a:0 libmp3lame',
       '-ab:a:0 192000',
@@ -205,12 +190,11 @@ export default class Transcoder {
       '-force_key_frames expr:gte(t,n_forced*2)',
       '-hls_playlist_type vod',
       '-hls_list_size 100',
-      // '-hls_flags +temp_file+split_by_time',
+      '-hls_flags +temp_file+split_by_time',
       `-start_number ${this.startSegment}`,
-      `-segment_list ${this.output}/${this.group}${SEGMENT_FILE_NO_SEPERATOR}_temp.m3u8`,
       `-hls_segment_filename ${this.output}/${this.group}${SEGMENT_FILE_NO_SEPERATOR}%01d.ts`,
-      // '-strict 1',
-      // '-ac 2',
+      '-strict 1',
+      '-ac 2',
       '-b:a 320k',
       '-muxdelay 0',
     ];
