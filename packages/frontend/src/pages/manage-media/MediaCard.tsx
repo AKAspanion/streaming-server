@@ -23,6 +23,7 @@ import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent } from '@/components/ui/popover';
 import { PopoverTrigger } from '@radix-ui/react-popover';
 import { normalizeText } from '@common/utils/validate';
+import { feBaseUrl } from '@/config/app';
 
 interface MediaCardProps {
   folderId?: string;
@@ -33,7 +34,7 @@ const MediaCard: FC<MediaCardProps> = ({ media, folderId }) => {
   const { deleteMedia, isDeleteLoading } = useMediaMutation();
 
   const copyLink = async (txt: string) => {
-    const res = await copyTextToClipboard(baseUrl + '/#' + txt);
+    const res = await copyTextToClipboard(feBaseUrl + '/#' + txt);
     if (res) toast.success('Network link copied');
     else toast.error('Failed to copy link');
   };

@@ -577,49 +577,51 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
                 <ClosedCaptionIcon />
               </div>
             </div>
-            <Popover>
-              <PopoverTrigger>
-                <div className="w-7">
-                  <SettingsIcon />
-                </div>
-              </PopoverTrigger>
-              <PopoverContent align="end" side="top">
-                <div className="flex gap-3 items-center justify-between pb-3">
-                  <div>Subtitle Delay</div>
-                  <div className="flex gap-1 items-center">
-                    <div className="p-2 cursor-pointer">
-                      <div className="w-5" onClick={() => updateSubtitleOffset(-1)}>
-                        <MinusIcon />
+            {!maximized ? (
+              <Popover>
+                <PopoverTrigger>
+                  <div className="w-7">
+                    <SettingsIcon />
+                  </div>
+                </PopoverTrigger>
+                <PopoverContent align="end" side="top">
+                  <div className="flex gap-3 items-center justify-between pb-3">
+                    <div>Subtitle Delay</div>
+                    <div className="flex gap-1 items-center">
+                      <div className="p-2 cursor-pointer">
+                        <div className="w-5" onClick={() => updateSubtitleOffset(-1)}>
+                          <MinusIcon />
+                        </div>
                       </div>
-                    </div>
-                    <div className="p-1 rounded opacity-50">{subtitleOffset.toFixed(1)}s</div>
-                    <div className="p-2 cursor-pointer">
-                      <div className="w-5" onClick={() => updateSubtitleOffset(1)}>
-                        <PlusIcon />
+                      <div className="p-1 rounded opacity-50">{subtitleOffset.toFixed(1)}s</div>
+                      <div className="p-2 cursor-pointer">
+                        <div className="w-5" onClick={() => updateSubtitleOffset(1)}>
+                          <PlusIcon />
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="whitespace-nowrap">Playback Speed </div>
-                  <Select value={playbackRate} onValueChange={(v) => updatePlaybackRate(v)}>
-                    <SelectTrigger className="border-none">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectLabel>Playback speed</SelectLabel>
-                        {PLAYBACK_SPEEDS.map(({ value, name }) => (
-                          <SelectItem key={value} value={value}>
-                            {name}
-                          </SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </PopoverContent>
-            </Popover>
+                  <div className="flex items-center gap-3">
+                    <div className="whitespace-nowrap">Playback Speed </div>
+                    <Select value={playbackRate} onValueChange={(v) => updatePlaybackRate(v)}>
+                      <SelectTrigger className="border-none">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectLabel>Playback speed</SelectLabel>
+                          {PLAYBACK_SPEEDS.map(({ value, name }) => (
+                            <SelectItem key={value} value={value}>
+                              {name}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </PopoverContent>
+              </Popover>
+            ) : null}
             <div className="p-2 cursor-pointer" onClick={togglePip}>
               <div className={cs('', { 'opacity-50': !pipVisible })}>
                 <PictureInPicture2 className="scale-[1.2]" />
