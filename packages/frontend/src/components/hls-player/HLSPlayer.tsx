@@ -286,9 +286,10 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
           if (track.mode === 'showing') {
             if (track.cues) {
               for (let i = 0; i < track.cues.length; i++) {
-                const cue = track.cues[i];
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const cue = track.cues[i] as any;
 
-                if (isNaN(position)) {
+                if (position && isNaN(position)) {
                   cue.line = 15;
                 } else {
                   cue.line = position;
