@@ -156,3 +156,7 @@ video:active {
   -webkit-user-select: none;
   -webkit-app-region: drag;
 }
+
+.scroller-children::-webkit-scrollbar {
+  display: none;
+}

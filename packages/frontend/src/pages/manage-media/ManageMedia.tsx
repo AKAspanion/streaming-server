@@ -81,7 +81,7 @@ const ManageMedia = () => {
               {mediaList?.map((m) => {
                 return (
                   <div key={m.id}>
-                    <MediaCard media={m} />
+                    <MediaCard media={m} backTo="/manage-media" />
                   </div>
                 );
               })}

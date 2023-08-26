@@ -27,10 +27,11 @@ import { feBaseUrl } from '@/config/app';
 
 interface MediaCardProps {
   folderId?: string;
+  backTo?: string;
   media: MediaType;
 }
 
-const MediaCard: FC<MediaCardProps> = ({ media, folderId }) => {
+const MediaCard: FC<MediaCardProps> = ({ media, backTo, folderId }) => {
   const { deleteMedia, isDeleteLoading } = useMediaMutation();
 
   const copyLink = async (txt: string) => {
@@ -57,9 +58,9 @@ const MediaCard: FC<MediaCardProps> = ({ media, folderId }) => {
                 'text-green-500 group-hover:opacity-100 transition-opacity duration-300',
                 'opacity-0  w-full h-full flex items-center justify-center',
               )}
-              to={`/media-play/${media.id}?resume=${currentDuration}&back=${normalizeText(
-                folderId,
-              )}`}
+              to={`/media-play/${
+                media.id
+              }?resume=${currentDuration}&folderId=${folderId}&back=${normalizeText(backTo)}`}
             >
               <div className="w-10">
                 <PlayIcon />
@@ -90,11 +91,9 @@ const MediaCard: FC<MediaCardProps> = ({ media, folderId }) => {
         </CoverButton>
         <div
           className={cs(
-            'group-hover:dark:text-white',
-            'drop-shadow-xl group-hover:bg-slate-200 text-white group-hover:text-black',
-            'group-hover:to-transparent group-hover:dark:bg-slate-900 overflow-hidden',
+            'drop-shadow-xl text-white',
+            'group-hover:to-transparent  overflow-hidden',
             'bg-gradient-to-b from-transparent to-slate-900 group-hover:to-transparent',
-            'group-hover:translate-y-[48px] transition-colors transition-transform duration-300',
             'absolute bottom-0 flex gap-4 justify-between items-center rounded-b-lg w-full h-[52px] z-20',
           )}
         >
@@ -109,7 +108,7 @@ const MediaCard: FC<MediaCardProps> = ({ media, folderId }) => {
             <div className="p-4">
               <div
                 title={media.originalName}
-                className="break-all drop-shadow-2xl line-clamp-1 text-sm font-semibold"
+                className="group-hover:invisible break-all drop-shadow-2xl line-clamp-1 text-sm font-semibold"
               >
                 {media.originalName}
               </div>

@@ -17,7 +17,8 @@ function MediaPlay() {
   const [searchParams] = useSearchParams();
 
   const resume = searchParams.get('resume');
-  const folderId = searchParams.get('back');
+  const folderId = searchParams.get('folderId');
+  const back = searchParams.get('back') || '/';
 
   const { updateMediaStatus, stopMedia } = useMediaMutation();
   const { data: mediaList } = useGetMediaInFolderQuery(folderId || '');
@@ -68,7 +69,7 @@ function MediaPlay() {
     currentTime = Number(resume);
   }
 
-  const backTo = folderId ? `/manage-media/${folderId}/folder` : '/manage-media';
+  const backTo = folderId ? `/manage-media/${folderId}/folder` : back;
 
   return (
     <div className="fixed z-20 w-screen h-screen top-0 left-0">

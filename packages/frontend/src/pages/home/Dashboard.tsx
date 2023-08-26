@@ -6,6 +6,7 @@ import {
 import { FC } from 'react';
 import MediaCard from '../manage-media/MediaCard';
 import SectionHeader from '@/components/SectionHeader';
+import Scroller from '@/components/Scroller';
 
 interface DashboardProps {}
 
@@ -21,15 +22,15 @@ const Dashboard: FC<DashboardProps> = () => {
   return (
     <div>
       {recentWatchedList?.length ? (
-        <div className="p-4">
-          <SectionHeader className="pb-4" title="Continue Watching" />
-          <div className="flex gap-4">
+        <div className="py-4">
+          <SectionHeader className="pb-4 px-4" title="Continue Watching" />
+          <Scroller width="100%">
             {recentWatchedList.map((m) => (
               <div key={m.id} className="min-w-[300px]">
-                <MediaCard media={m} />
+                <MediaCard media={m} backTo="/" />
               </div>
             ))}
-          </div>
+          </Scroller>
         </div>
       ) : null}
       {favouritesList?.length ? (
@@ -38,7 +39,7 @@ const Dashboard: FC<DashboardProps> = () => {
           <div className="flex gap-4">
             {favouritesList.map((m) => (
               <div key={m.id} className="min-w-[300px]">
-                <MediaCard media={m} />
+                <MediaCard media={m} backTo="/" />
               </div>
             ))}
           </div>
@@ -50,7 +51,7 @@ const Dashboard: FC<DashboardProps> = () => {
           <div className="flex gap-4">
             {recentAddedList.map((m) => (
               <div key={m.id} className="min-w-[300px]">
-                <MediaCard media={m} />
+                <MediaCard media={m} backTo="/" />
               </div>
             ))}
           </div>
