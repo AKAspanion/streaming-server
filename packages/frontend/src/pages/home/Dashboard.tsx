@@ -34,27 +34,27 @@ const Dashboard: FC<DashboardProps> = () => {
         </div>
       ) : null}
       {favouritesList?.length ? (
-        <div className="p-4">
-          <SectionHeader className="pb-4" title="Favourites" />
-          <div className="flex gap-4">
+        <div className="py-4">
+          <SectionHeader className="pb-4 px-4" title="Favourites" />
+          <Scroller width="100%">
             {favouritesList.map((m) => (
               <div key={m.id} className="min-w-[300px]">
                 <MediaCard media={m} backTo="/" />
               </div>
             ))}
-          </div>
+          </Scroller>
         </div>
       ) : null}
       {recentAddedList?.length ? (
-        <div className="p-4">
-          <SectionHeader className="pb-4" title="Recently Added" />
-          <div className="flex gap-4">
+        <div className="py-4">
+          <SectionHeader className="pb-4 px-4" title="Recently Added" />
+          <Scroller width="100%">
             {recentAddedList.map((m) => (
               <div key={m.id} className="min-w-[300px]">
                 <MediaCard media={m} backTo="/" />
               </div>
             ))}
-          </div>
+          </Scroller>
         </div>
       ) : null}
     </div>

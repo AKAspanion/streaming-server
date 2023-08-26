@@ -18,13 +18,17 @@ export const getRecentWatched: RequestHandler = async (req, res) => {
   const { data: mediaList } = await getAllMediaData();
 
   const currDate = new Date().getTime();
-  const recent = mediaList.filter(
-    (m) =>
-      m?.currentTime &&
-      m?.lastPlayedDate &&
-      !isNaN(m?.lastPlayedDate) &&
-      msToHour(currDate - m?.lastPlayedDate) < 48,
-  );
+  const recent = mediaList
+    .filter(
+      (m) =>
+        m?.currentTime &&
+        m?.lastPlayedDate &&
+        !isNaN(m?.lastPlayedDate) &&
+        msToHour(currDate - m?.lastPlayedDate) < 48,
+    )
+    .sort((a, b) =>
+      a.lastPlayedDate && b.lastPlayedDate ? (a.lastPlayedDate > b.lastPlayedDate ? -1 : 1) : -1,
+    );
 
   return res.status(HttpCode.OK).send({ data: recent });
 };

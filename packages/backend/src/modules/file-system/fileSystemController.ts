@@ -13,10 +13,10 @@ const drivelist = require('drivelist');
 
 export const getFilesInPath: RequestHandler = async (req, res) => {
   const { dir: dirInReq } = req.body;
-  let dir = String(dirInReq || '');
-  if (dir && dir.endsWith(`\\`)) {
-    dir = dir.slice(0, dir.length - 1);
-  }
+  const dir = String(dirInReq || '');
+  // if (dir && dir.endsWith(`\\`)) {
+  //   dir = dir.slice(0, dir.length - 1);
+  // }
 
   let drives: FileLocationType[] = [];
 
@@ -54,8 +54,9 @@ export const getFilesInPath: RequestHandler = async (req, res) => {
     try {
       let files: FileLocationType[] = [];
 
-      fs.readdirSync(path.join(dir)).forEach((filename) => {
-        const isSystem = filename.includes('System Volume Information');
+      fs.readdirSync(path.join(dirInReq)).forEach((filename) => {
+        const isSystem =
+          filename.includes('System Volume Information') || filename.includes('$RECYCLE.BIN');
         const isHidden = filename.startsWith('.');
 
         const canShow = !isSystem && !isHidden;
@@ -82,7 +83,7 @@ export const getFilesInPath: RequestHandler = async (req, res) => {
       });
 
       const isRootDrive = drives.findIndex((d) => path.resolve(d.path) === path.resolve(dir));
-      const prevDir = isRootDrive !== -1 ? '' : path.resolve(dir, '..');
+      const prevDir = isRootDrive !== -1 ? '' : path.resolve(dirInReq, '..');
 
       files = [
         { name: '...', path: prevDir, type: 'directory', isFile: false },
