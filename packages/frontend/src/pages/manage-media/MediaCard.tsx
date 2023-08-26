@@ -58,9 +58,9 @@ const MediaCard: FC<MediaCardProps> = ({ media, backTo, folderId }) => {
                 'text-green-500 group-hover:opacity-100 transition-opacity duration-300',
                 'opacity-0  w-full h-full flex items-center justify-center',
               )}
-              to={`/media-play/${
-                media.id
-              }?resume=${currentDuration}&folderId=${folderId}&back=${normalizeText(backTo)}`}
+              to={`/media-play/${media.id}?resume=${currentDuration}&folderId=${normalizeText(
+                folderId,
+              )}&back=${normalizeText(backTo)}`}
             >
               <div className="w-10">
                 <PlayIcon />
@@ -69,14 +69,14 @@ const MediaCard: FC<MediaCardProps> = ({ media, backTo, folderId }) => {
           }
         >
           {isFavourite && (
-            <div className="dark:text-white text-black absolute right-3 top-3 shadow-lg">
+            <div className="text-white absolute right-3 top-3 shadow-lg">
               <div className="w-5 drop-shadow">
                 <HeartIcon className="drop-shadow " />
               </div>
             </div>
           )}
           {hasSub && (
-            <div className="dark:text-white text-black absolute left-3 top-3 shadow-lg">
+            <div className="text-white absolute left-3 top-3 shadow-lg">
               <div className="w-5 drop-shadow">
                 <ChatBubbleBottomCenterTextIcon className="drop-shadow " />
               </div>

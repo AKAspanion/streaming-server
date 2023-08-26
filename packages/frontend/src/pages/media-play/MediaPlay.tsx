@@ -16,8 +16,8 @@ function MediaPlay() {
   const { mediaId = '' } = useParams();
   const [searchParams] = useSearchParams();
 
-  const resume = searchParams.get('resume');
-  const folderId = searchParams.get('folderId');
+  const resume = searchParams.get('resume') || '0';
+  const folderId = searchParams.get('folderId') || '';
   const back = searchParams.get('back') || '/';
 
   const { updateMediaStatus, stopMedia } = useMediaMutation();

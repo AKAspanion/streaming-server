@@ -32,9 +32,9 @@ const Sidebar: FC<SidebarProps> = () => {
   const renderRoute = (route: RouteObject, level = 0): React.ReactElement => {
     const canShow = route?.handle?.name && !route?.handle?.hide;
     return (
-      <div key={`${level}+${normalizeText(route.path)}`} className={classNames()}>
+      <div key={`${level}+${normalizeText(route.path)}`}>
         {canShow && (
-          <NavLink to={route.path || '/'} onClick={() => dispatch(setSidebarOpen(false))}>
+          <NavLink to={route.path || '/'}>
             {({ isActive }) => (
               <div
                 className={classNames('flex items-center cursor-pointer rounded-lg p-3', {
