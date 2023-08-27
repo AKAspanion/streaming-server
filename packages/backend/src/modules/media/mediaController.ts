@@ -1,8 +1,7 @@
 import { MANIFEST_TEMP_FOLDER } from '@constants/hls';
-import { deleteMediaDB, pushMediaDB } from '@database/json';
+import { pushMediaDB } from '@database/json';
 import HLSManager from '@lib/hls-manager';
 import { processHLSStream } from '@services/hls';
-import { handleJSONDBDataError } from '@utils/error';
 import { AppError, HttpCode } from '@utils/exceptions';
 import {
   createHLSStream,
@@ -11,7 +10,7 @@ import {
   getVideoMetaData,
 } from '@utils/ffmpeg';
 import { getFileType } from '@utils/file';
-import { deleteFilesSilently, getResourcePath, makeDirectory } from '@utils/helper';
+import { getResourcePath, makeDirectory } from '@utils/helper';
 import { extractHLSFileInfo, generateManifest } from '@utils/hls';
 import { RequestHandler } from 'express';
 import {
@@ -21,6 +20,7 @@ import {
   getAllMediaData,
   getOneMediaData,
   extractPosterForMedia,
+  deleteMediaData,
 } from './mediaData';
 import { normalizeText } from '@common/utils/validate';
 import logger from '@utils/logger';
@@ -35,7 +35,9 @@ export const getMedia: RequestHandler = async (req, res) => {
 export const getAllMedia: RequestHandler = async (req, res) => {
   const { data } = await getAllMediaData();
 
-  return res.status(HttpCode.OK).send({ data });
+  const mediaList = data.filter((m) => !m.folderId);
+
+  return res.status(HttpCode.OK).send({ data: mediaList });
 };
 
 export const addMedia: RequestHandler = async (req, res) => {
@@ -52,9 +54,9 @@ export const addMedia: RequestHandler = async (req, res) => {
   }
 
   const { data } = await addOneMedia(file?.path, folderId);
+  extractPosterForMedia(data?.id, file?.path);
 
   await Promise.all([
-    extractPosterForMedia(data?.id, file?.path),
     addFileSubtitleForMedia(data?.id, file?.path),
     extractSubtitleForMedia(data?.id, file?.path, data.subtitleStreams),
   ]);
@@ -67,21 +69,7 @@ export const deleteMedia: RequestHandler = async (req, res) => {
 
   const { data } = await getOneMediaData(id);
 
-  const filesToDelete: string[] = [data?.thumbnail?.path];
-
-  (data?.subs || []).forEach((s) => {
-    if (s.copied) {
-      filesToDelete.push(s.path);
-    }
-  });
-
-  deleteFilesSilently(filesToDelete);
-
-  const { error: deleteError } = await deleteMediaDB(`/${id}`);
-
-  if (deleteError) {
-    handleJSONDBDataError(deleteError, id);
-  }
+  await deleteMediaData(data);
 
   return res.status(HttpCode.OK).send({ data: { message: 'Media deleted successfully' } });
 };
@@ -320,7 +308,7 @@ export const getSeekThumbnail: RequestHandler = async (req, res) => {
 
   if (data?.path) {
     const thumbnail = await createSeekThumbnail(id, data?.path, time);
-    res.download(thumbnail?.path, thumbnail.name || 'thumbnail.png');
+    res.download(thumbnail?.path, thumbnail.name || 'thumb_seek.png');
   } else {
     throw new AppError({ httpCode: HttpCode.NOT_FOUND, description: 'Thumbnail not found' });
   }

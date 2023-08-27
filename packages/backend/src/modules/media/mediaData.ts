@@ -1,4 +1,4 @@
-import { getMediaDataDB, pushMediaDB } from '@database/json';
+import { deleteMediaDB, getMediaDataDB, pushMediaDB } from '@database/json';
 import { handleJSONDBDataError } from '@utils/error';
 import { AppError, HttpCode } from '@utils/exceptions';
 import {
@@ -13,6 +13,7 @@ import path from 'path';
 import fs from 'fs';
 import { addOneMediaSubtitle } from '@modules/subtitle/subtitleData';
 import logger from '@utils/logger';
+import { deleteDirectory, deleteFilesSilently, getResourcePath } from '@utils/helper';
 
 export const addOneMedia = async (filePath: string, folderId?: string) => {
   try {
@@ -89,7 +90,7 @@ export const addFileSubtitleForMedia = async (mediaId: string, mediaPath: string
 
     const srtFilePath = mediaPath.replace(ext, '.srt');
 
-    await addOneSubtitleOfMedia(mediaId, name, srtFilePath);
+    addOneSubtitleOfMedia(mediaId, name, srtFilePath);
     return true;
   } catch (error) {
     logger.error(error);
@@ -149,7 +150,7 @@ export const extractSubtitleForMedia = async (
       }
     }
 
-    await Promise.all(addPromises);
+    Promise.all(addPromises);
     return true;
   } catch (error) {
     logger.error(error);
@@ -178,7 +179,7 @@ export const getOneMediaData = async (mediaId: string) => {
     throw new AppError({ httpCode: HttpCode.BAD_REQUEST, description: 'Media not found' });
   }
 
-  return { data: { ...data, id: mediaId } };
+  return { data: { ...data, id: mediaId } as MediaTypeJSONDB };
 };
 
 export const getAllMediaData = async () => {
@@ -209,4 +210,29 @@ export const getAllMediaData = async () => {
     );
 
   return { data };
+};
+
+export const deleteMediaData = async (media: MediaType) => {
+  const filesToDelete = [media?.poster?.path, media?.thumbnail?.path];
+
+  (media?.subs || []).forEach((s) => {
+    if (s.copied) {
+      filesToDelete.push(s.path);
+    }
+  });
+
+  const pathToImages = getResourcePath(`_appdata/_images/${media.id}`);
+  const pathToSubs = getResourcePath(`_appdata/_subs/${media.id}`);
+  deleteDirectory(pathToImages);
+  deleteDirectory(pathToSubs);
+
+  deleteFilesSilently(filesToDelete);
+
+  const { error: deleteError } = await deleteMediaDB(`/${media.id}`);
+
+  if (deleteError) {
+    handleJSONDBDataError(deleteError, media.id);
+  }
+
+  return true;
 };

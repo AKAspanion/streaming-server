@@ -2,7 +2,7 @@ import { AppError, HttpCode } from '@utils/exceptions';
 import { randomUUID } from 'crypto';
 import { RequestHandler } from 'express';
 import { addOneFolder, getAllFolderData, getOneFolderData } from './folderData';
-import { getAllMediaData, updateOneMedia } from '@modules/media/mediaData';
+import { deleteMediaData, getAllMediaData } from '@modules/media/mediaData';
 import { deleteFolderDB } from '@database/json';
 import { handleJSONDBDataError } from '@utils/error';
 import { normalizeText } from '@common/utils/validate';
@@ -49,19 +49,9 @@ export const deleteFolder: RequestHandler = async (req, res) => {
 
   const { data: mediaList } = await getAllMediaData();
 
-  const promises = [];
-
-  mediaList.forEach((m) => {
-    if (m.folderId === data?.id) {
-      promises.push(updateOneMedia(m.id, { ...m, folderId: undefined }));
-    }
-  });
-
   try {
     await Promise.all(
-      mediaList
-        .filter((m) => m.folderId === data.id)
-        .map((media) => updateOneMedia(media.id, { ...media, folderId: undefined })),
+      mediaList.filter((m) => m.folderId === data.id).map((media) => deleteMediaData(media)),
     );
   } catch (error) {
     throw new AppError({

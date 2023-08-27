@@ -36,6 +36,7 @@ import CoverButton from '@/components/CoverButton';
 import { useGetFolderByIdQuery } from '@/services/folder';
 import { normalizeText } from '@common/utils/validate';
 import FullError from '@/components/FullError';
+import Image from '@/components/atoms/image/Image';
 
 interface MediaDetailsProps {}
 
@@ -121,7 +122,7 @@ const MediaDetails: FC<MediaDetailsProps> = () => {
             >
               <Card className="h-full md:w-[336px]">
                 {media.id && (
-                  <img
+                  <Image
                     src={`${baseUrl}/media/${media.id}/poster`}
                     className="w-full h-full object-cover"
                   />

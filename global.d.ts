@@ -119,8 +119,6 @@ declare type MediaTypeJSONDB = MediaType & {
   subtitleStreams: MediaStreamType[];
   format: MediaFormatType;
   chapters: MediaChapterType[];
-  thumbnail: ThumbnailType;
-  poster: PosterType;
 };
 
 declare type MediaTypeFull = MediaTypeJSONDB & {
@@ -143,5 +141,7 @@ declare type MediaType = {
   selectedAudio: string;
   selectedSubtitle: number;
   sub?: SubtitleType;
+  thumbnail?: ThumbnailType;
+  poster?: PosterType;
   subs?: SubtitleType[];
 };

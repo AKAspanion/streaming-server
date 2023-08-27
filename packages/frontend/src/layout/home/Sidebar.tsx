@@ -1,3 +1,4 @@
+import Image from '@/components/atoms/image/Image';
 import { cs } from '@/utils/helpers';
 import { normalizeText } from '@common/utils/validate';
 import IconButton from '@components/atoms/icon-button/IconButton';
@@ -72,7 +73,7 @@ const Sidebar: FC<SidebarProps> = () => {
     >
       <div className={classNames('flex items-center justify-between mb-4 ml-1.5 w-10', {})}>
         <div className="w-8 h-8 p-1 rounded dark:bg-slate-500 bg-slate-50">
-          <img src="./logo.png" />
+          <Image src="./logo.png" />
         </div>
         <div className="fixed left-5 bottom-3 sm:block">
           <IconButton onClick={() => dispatch(setSidebarOpen(!sidebarOpen))}>

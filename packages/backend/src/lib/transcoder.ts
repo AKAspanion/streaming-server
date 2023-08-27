@@ -175,7 +175,7 @@ export default class Transcoder {
       '-pix_fmt:v:0 yuv420p',
       '-preset:v:0 veryfast',
       '-level:v:0 4.0',
-      '-crf:v:0 23',
+      '-crf:v:0 18',
       '-x264opts:v:0 subme=0:me_range=4:rc_lookahead=10:partitions=none',
       '-max_delay 5000000',
       '-avoid_negative_ts disabled',

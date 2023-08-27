@@ -24,6 +24,7 @@ import { Popover, PopoverContent } from '@/components/ui/popover';
 import { PopoverTrigger } from '@radix-ui/react-popover';
 import { normalizeText } from '@common/utils/validate';
 import { feBaseUrl } from '@/config/app';
+import Image from './atoms/image/Image';
 
 interface MediaCardProps {
   folderId?: string;
@@ -83,7 +84,7 @@ const MediaCard: FC<MediaCardProps> = ({ media, backTo, folderId }) => {
             </div>
           )}
           <div className="h-40 rounded-lg overflow-hidden">
-            <img
+            <Image
               src={`${baseUrl}/media/${media.id}/thumbnail`}
               className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
             />
