@@ -1,7 +1,7 @@
 import Spinner from '@components/atoms/spinner/Spinner';
 import { FolderIcon } from '@heroicons/react/24/solid';
 import { useAddMediaMutation, useGetMediaQuery } from '@services/media';
-import MediaCard from './MediaCard';
+import MediaCard from '@/components/MediaCard';
 import { useGetFolderQuery } from '@/services/folder';
 import { Link } from 'react-router-dom';
 import ManageMediaHeader from './ManageMediaHeader';

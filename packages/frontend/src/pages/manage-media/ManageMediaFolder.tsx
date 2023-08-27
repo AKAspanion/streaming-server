@@ -4,7 +4,7 @@ import { folderApi, useGetFolderByIdQuery, useGetMediaInFolderQuery } from '@/se
 import { useParams } from 'react-router-dom';
 import Spinner from '@/components/atoms/spinner/Spinner';
 import { useAddMediaMutation } from '@/services/media';
-import MediaCard from './MediaCard';
+import MediaCard from '@/components/MediaCard';
 import { useDispatch } from 'react-redux';
 import { FilmIcon, TvIcon, VideoCameraIcon } from '@heroicons/react/24/outline';
 import { normalizeText } from '@common/utils/validate';

@@ -4,7 +4,7 @@ import {
   useGetRecentWatchedQuery,
 } from '@/services/dashboard';
 import { FC } from 'react';
-import MediaCard from '../manage-media/MediaCard';
+import MediaCard from '@/components/MediaCard';
 import SectionHeader from '@/components/SectionHeader';
 import Scroller from '@/components/Scroller';
 
