@@ -11,7 +11,7 @@ export const getRecentAdded: RequestHandler = async (req, res) => {
     .filter((m) => !isNaN(m?.addDate) && msToHour(currDate - m?.addDate) < 48)
     .sort((a, b) => (a.addDate > b.addDate ? -1 : 1));
 
-  return res.status(HttpCode.OK).send({ data: recent.slice(0, 4) });
+  return res.status(HttpCode.OK).send({ data: recent.slice(0, 10) });
 };
 
 export const getRecentWatched: RequestHandler = async (req, res) => {
@@ -30,7 +30,7 @@ export const getRecentWatched: RequestHandler = async (req, res) => {
       a.lastPlayedDate && b.lastPlayedDate ? (a.lastPlayedDate > b.lastPlayedDate ? -1 : 1) : -1,
     );
 
-  return res.status(HttpCode.OK).send({ data: recent });
+  return res.status(HttpCode.OK).send({ data: recent.slice(0, 10) });
 };
 
 export const getFavourites: RequestHandler = async (req, res) => {
@@ -38,5 +38,5 @@ export const getFavourites: RequestHandler = async (req, res) => {
 
   const favourites = mediaList.filter((m) => !!m?.isFavourite);
 
-  return res.status(HttpCode.OK).send({ data: favourites });
+  return res.status(HttpCode.OK).send({ data: favourites.slice(0, 10) });
 };

@@ -8,6 +8,7 @@ export declare type ScrollerProps = {
   children: React.ReactNode;
   width: string;
   wrap?: boolean;
+  top?: boolean;
   padded?: boolean;
   className?: string;
 };
@@ -15,6 +16,7 @@ export declare type ScrollerProps = {
 const Scroller: React.FC<ScrollerProps> = ({
   children,
   width,
+  top = false,
   wrap = false,
   padded = true,
   className,
@@ -76,7 +78,7 @@ const Scroller: React.FC<ScrollerProps> = ({
   useResize(handleULUpdate, divRef);
 
   if (!children) {
-    console.warn('Tab component requires children');
+    console.warn('Scroller component requires children');
     return null;
   }
 
@@ -89,7 +91,7 @@ const Scroller: React.FC<ScrollerProps> = ({
         <div
           ref={divRef}
           className={cs(
-            'scroller-children flex items-center gap-4 overflow-x-auto overflow-y-hidden scroll-smooth',
+            'scroller-children flex items-start gap-4 overflow-x-auto overflow-y-hidden scroll-smooth',
             { 'px-4': padded, wrap: wrap },
           )}
           style={{ width: width, 'scrollbar-height': 'none' } as React.CSSProperties}
@@ -99,12 +101,15 @@ const Scroller: React.FC<ScrollerProps> = ({
         {showRightScroller && !wrap ? (
           <div
             className={cs(
-              'bg-gradient-to-r from-transparent to-slate-50 dark:to-slate-950 ',
-              'z-20 absolute right-0 p-4 inline-flex cursor-pointer items-center h-full justify-center',
+              'z-20 right-0 absolute inline-flex cursor-pointer items-center justify-center',
+              {
+                'h-14 w-14 shadow-lg  bg-slate-50 dark:bg-slate-950 rounded-full': top,
+                'h-full bg-gradient-to-r from-transparent to-slate-50 dark:to-slate-950': !top,
+              },
             )}
             onClick={handleScroll(1)}
           >
-            <div className="w-8">
+            <div className={cs(top ? 'w-6' : 'w-8')}>
               <ChevronDoubleRightIcon />
             </div>
           </div>
@@ -112,12 +117,15 @@ const Scroller: React.FC<ScrollerProps> = ({
         {showLeftScroller && !wrap ? (
           <div
             className={cs(
-              'bg-gradient-to-l from-transparent to-slate-50 dark:to-slate-950 ',
-              'z-20 absolute left-0 p-4 inline-flex cursor-pointer items-center h-full justify-center',
+              'z-20 left-0 absolute inline-flex cursor-pointer items-center justify-center',
+              {
+                'h-14 w-14 shadow-lg bg-slate-50 dark:bg-slate-950 rounded-full': top,
+                'h-full bg-gradient-to-l from-transparent to-slate-50 dark:to-slate-950': !top,
+              },
             )}
             onClick={handleScroll(-1)}
           >
-            <div className="w-8">
+            <div className={cs(top ? 'w-6' : 'w-8')}>
               <ChevronDoubleLeftIcon />
             </div>
           </div>

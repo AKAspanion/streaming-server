@@ -1,3 +1,4 @@
+import Scroller from '@/components/Scroller';
 import { Card } from '@/components/ui/card';
 import { normalizeText } from '@common/utils/validate';
 import ClosedCaptionIcon from '@components/icons/ClosedCaptionIcon';
@@ -65,7 +66,7 @@ const MediaStreamDetails: FC<MediaStreamDetailsProps> = ({ streams }) => {
   }, [streams]);
 
   return (
-    <div className="flex gap-4 overflow-x-auto">
+    <Scroller width="100%" top>
       {allStreams.map(({ title, icon, list }) => {
         return list.length ? (
           <div key={title} className="flex flex-col gap-4 pt-4">
@@ -79,7 +80,7 @@ const MediaStreamDetails: FC<MediaStreamDetailsProps> = ({ streams }) => {
           </div>
         ) : null;
       })}
-    </div>
+    </Scroller>
   );
 };
 
