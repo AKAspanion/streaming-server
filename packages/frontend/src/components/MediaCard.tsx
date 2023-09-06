@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import IconButton from '@components/atoms/icon-button/IconButton';
 import { baseUrl } from '@config/api';
 import {
@@ -8,11 +9,11 @@ import {
   PlayIcon,
   TrashIcon,
 } from '@heroicons/react/24/solid';
-import { copyTextToClipboard } from '@utils/dom';
+import { copyTextToClipboard, startTransitionOnClick } from '@utils/dom';
 import { toast } from 'react-hot-toast/headless';
 import { FC } from 'react';
 import { InformationCircleIcon } from '@heroicons/react/24/outline';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import useMediaMutation from '@/hooks/useMediaMutation';
 import Spinner from '@components/atoms/spinner/Spinner';
 import React from 'react';
@@ -24,6 +25,7 @@ import { Popover, PopoverContent } from '@/components/ui/popover';
 import { PopoverTrigger } from '@radix-ui/react-popover';
 import { normalizeText } from '@common/utils/validate';
 import { feBaseUrl } from '@/config/app';
+import { flushSync } from 'react-dom';
 import Image from './atoms/image/Image';
 
 interface MediaCardProps {
@@ -34,11 +36,56 @@ interface MediaCardProps {
 
 const MediaCard: FC<MediaCardProps> = ({ media, backTo, folderId }) => {
   const { deleteMedia, isDeleteLoading } = useMediaMutation();
+  const navigate = useNavigate();
 
   const copyLink = async (txt: string) => {
     const res = await copyTextToClipboard(feBaseUrl + '/#' + txt);
     if (res) toast.success('Network link copied');
     else toast.error('Failed to copy link');
+  };
+  const navWithTransition = (ev: React.MouseEvent, to: string) => {
+    startTransitionOnClick(ev, () => flushSync(() => navigate(to)));
+  };
+
+  const navWithClipTransition = (ev: React.MouseEvent, to: string) => {
+    // @ts-ignore
+    if (!document.startViewTransition) {
+      flushSync(() => {
+        navigate(to);
+      });
+      return;
+    }
+
+    // Get the click position, or fallback to the middle of the screen
+    const x = ev?.clientX ?? innerWidth / 2;
+    const y = ev?.clientY ?? innerHeight / 2;
+    // Get the distance to the furthest corner
+    const endRadius = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+
+    // Create a transition:
+    // @ts-ignore
+    const transition = document.startViewTransition(() => {
+      flushSync(() => {
+        navigate(to);
+      });
+    });
+
+    // Wait for the pseudo-elements to be created:
+    transition.ready.then(() => {
+      console.log(document.getElementById('thumb'));
+      // Animate the root’s new view
+      document.documentElement.animate(
+        {
+          clipPath: [`circle(0 at ${x}px ${y}px)`, `circle(${endRadius}px at ${x}px ${y}px)`],
+        },
+        {
+          duration: 500,
+          easing: 'ease-in',
+          // Specify which pseudo-element to animate
+          pseudoElement: '::view-transition-new(root)',
+        },
+      );
+    });
   };
 
   const loading = isDeleteLoading;
@@ -59,6 +106,7 @@ const MediaCard: FC<MediaCardProps> = ({ media, backTo, folderId }) => {
                 'text-green-500 group-hover:opacity-100 transition-opacity duration-300',
                 'opacity-0  w-full h-full flex items-center justify-center',
               )}
+              onClick={(e) => navWithTransition(e, '/manage-media/transition-test')}
               to={`/media-play/${media.id}?resume=${currentDuration}&folderId=${normalizeText(
                 folderId,
               )}&back=${normalizeText(backTo)}`}
@@ -85,6 +133,7 @@ const MediaCard: FC<MediaCardProps> = ({ media, backTo, folderId }) => {
           )}
           <div className="h-40 rounded-lg overflow-hidden">
             <Image
+              id="thumb"
               src={`${baseUrl}/media/${media.id}/thumbnail`}
               className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
             />
@@ -100,6 +149,7 @@ const MediaCard: FC<MediaCardProps> = ({ media, backTo, folderId }) => {
         >
           <Link
             className="flex-1"
+            onClick={(e) => navWithTransition(e, '/manage-media/transition-test')}
             to={
               folderId
                 ? `/manage-media/${folderId}/folder/${media.id}/details`
@@ -133,7 +183,10 @@ const MediaCard: FC<MediaCardProps> = ({ media, backTo, folderId }) => {
                   <Spinner />
                 ) : (
                   <React.Fragment>
-                    <Link to={`/manage-media/${media.id}/details`}>
+                    <Link
+                      onClick={(e) => navWithClipTransition(e, `/manage-media/${media.id}/details`)}
+                      to={`/manage-media/${media.id}/details`}
+                    >
                       <IconButton>
                         <InformationCircleIcon />
                       </IconButton>

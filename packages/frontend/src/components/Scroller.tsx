@@ -94,7 +94,7 @@ const Scroller: React.FC<ScrollerProps> = ({
             'scroller-children flex items-start gap-4 overflow-x-auto overflow-y-hidden scroll-smooth',
             { 'px-4': padded, wrap: wrap },
           )}
-          style={{ width: width, 'scrollbar-height': 'none' } as React.CSSProperties}
+          style={{ width: width, scrollbarHeight: 'none' } as React.CSSProperties}
         >
           {children}
         </div>

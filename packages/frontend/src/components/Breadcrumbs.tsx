@@ -1,10 +1,11 @@
 import cs from 'classnames';
-import React, { useEffect } from 'react';
+import React, { startTransition, useEffect } from 'react';
 import { useMemo } from 'react';
 import { Link, useMatches, useNavigate } from 'react-router-dom';
 import { ChevronRightIcon } from '@heroicons/react/24/outline';
 import IconButton from './atoms/icon-button/IconButton';
 import { ArrowLeftIcon } from '@heroicons/react/20/solid';
+import { flushSync } from 'react-dom';
 
 function Breadcrumbs() {
   const navigate = useNavigate();
@@ -25,7 +26,9 @@ function Breadcrumbs() {
   }, [matches]);
 
   const goBack = () => {
-    navigate(-1);
+    startTransition(() => {
+      flushSync(() => navigate(-1));
+    });
   };
 
   const crumbsLength = crumbs.length;

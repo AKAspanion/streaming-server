@@ -15,6 +15,8 @@ import Home from '@pages/home/Home';
 import MediaPlay from '@pages/media-play/MediaPlay';
 import ManageMediaFolder from '@/pages/manage-media/ManageMediaFolder';
 import { LoaderResult, folderLoader } from './loaders';
+import TransitionTest from '@/pages/transition-test/TransitionTest';
+import TransitionTestFull from '@/pages/transition-test-full/TransitionTestFull';
 
 export const routes: RouteObject[] = [
   {
@@ -115,6 +117,24 @@ export const routes: RouteObject[] = [
               hide: true,
               name: 'Media Collection',
               crumb: [() => ({ to: '/manage-media', label: 'Media Collection' })],
+            },
+          },
+          {
+            path: '/manage-media/transition-test',
+            element: <TransitionTest />,
+            loader: ({ params }) => params,
+            handle: {
+              hide: true,
+              name: 'Transition Test',
+            },
+          },
+          {
+            path: '/manage-media/transition-test-full',
+            element: <TransitionTestFull />,
+            loader: ({ params }) => params,
+            handle: {
+              hide: true,
+              name: 'Transition Test Full',
             },
           },
           {
