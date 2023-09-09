@@ -17,7 +17,7 @@ permissions:
 jobs:
   build-mac-app:
     concurrency: ci-${{ github.ref }}
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v3
@@ -45,6 +45,5 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           yarn
-          yarn add dmg-license@^1.0.11 -D -W 
           yarn build:electron:mac
         shell: bash
