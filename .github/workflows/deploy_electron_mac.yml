@@ -2,12 +2,8 @@ name: Release Mac App
 
 on:
   push:
-    paths:
-      - packages/**
-      - electron/**
-      - package.json
     tags:
-      - '*'
+      - '**'
   workflow_dispatch:
 
 permissions:
