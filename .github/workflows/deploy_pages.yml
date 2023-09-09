@@ -1,0 +1,25 @@
+name: Deploy Github Pages
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  pages:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Deploy Pages
+        run: echo "Deploy"
+        shell: bash
+  hello:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Hello Pages
+        run: echo "Hello"
+        shell: bash
