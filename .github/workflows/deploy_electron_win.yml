@@ -28,6 +28,8 @@ jobs:
           node-version: 16
 
       - name: Install & Build for Windows 🔧
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           yarn
           yarn build:electron:win
