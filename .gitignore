@@ -8,3 +8,6 @@ build
 .env.development
 .temp
 .DS_Store
+.bin
+
+*.log

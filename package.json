@@ -1,6 +1,6 @@
 {
   "name": "streaming-server",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A server to stream videos in local network",
   "private": true,
   "main": "electron/electron.js",
@@ -18,6 +18,7 @@
     "preview": "lerna run preview --parallel",
     "format": "lerna run format --parallel",
     "clean": "lerna run clean --parallel",
+    "unzip:ffmpeg": "sh ./scripts/unzip.sh",
     "clean:root": "rm -rf dist && rm -rf build",
     "lint": "lerna run lint --parallel",
     "prepare": "husky install",
