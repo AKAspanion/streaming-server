@@ -1,9 +1,9 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { baseUrl } from '@config/api';
+import { getNetworkAPIUrl } from '@config/api';
 
 export const dashboardApi = createApi({
   reducerPath: 'dashboardApi',
-  baseQuery: fetchBaseQuery({ baseUrl }),
+  baseQuery: fetchBaseQuery({ baseUrl: getNetworkAPIUrl() }),
   tagTypes: ['dashboard'],
   endpoints: (builder) => ({
     getRecentAdded: builder.query<{ data: MediaTypeFull[] }, void>({

@@ -1,5 +1,5 @@
 import { useGetVideoByIdQuery, useGetVideoSubtitleByIdQuery } from '@services/video';
-import { baseUrl } from '@config/api';
+import { getNetworkAPIUrl } from '@config/api';
 import { useParams } from 'react-router-dom';
 import { useEffect, useRef } from 'react';
 import Spinner from '@components/atoms/spinner/Spinner';
@@ -55,7 +55,7 @@ function VIdeoPlay() {
   let src = '';
 
   if (videoData?.data?.id) {
-    src = `${baseUrl}/video/stream/${videoData?.data?.id}`;
+    src = `${getNetworkAPIUrl()}/video/stream/${videoData?.data?.id}`;
   }
 
   return (
@@ -70,7 +70,7 @@ function VIdeoPlay() {
         src={src}
         hls={false}
         backTo="/video-upload"
-        thumbnailSrc={`${baseUrl}/video/${videoData?.data?.id}/thumbnail/seek`}
+        thumbnailSrc={`${getNetworkAPIUrl()}/video/${videoData?.data?.id}/thumbnail/seek`}
         name={normalizeText(videoData?.data?.originalname)}
       />
     </div>

@@ -1,5 +1,5 @@
 import IconButton from '@components/atoms/icon-button/IconButton';
-import { baseUrl } from '@config/api';
+import { getNetworkAPIUrl } from '@config/api';
 import {
   ChatBubbleBottomCenterTextIcon,
   EllipsisVerticalIcon,
@@ -86,7 +86,7 @@ const MediaCard: FC<MediaCardProps> = ({ media, backTo, folderId }) => {
           )}
           <div className="h-40 rounded-lg overflow-hidden">
             <Image
-              src={`${baseUrl}/media/${media.id}/thumbnail`}
+              src={`${getNetworkAPIUrl()}/media/${media.id}/thumbnail`}
               className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
             />
           </div>

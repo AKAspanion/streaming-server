@@ -1,12 +1,12 @@
 import axios from 'axios';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { baseUrl } from '@config/api';
+import { getNetworkAPIUrl } from '@config/api';
 import { setVideoUploadProgress } from '@store/globalSlice';
 import toWebVTT from 'srt-webvtt';
 
 export const videoApi = createApi({
   reducerPath: 'videoApi',
-  baseQuery: fetchBaseQuery({ baseUrl }),
+  baseQuery: fetchBaseQuery({ baseUrl: getNetworkAPIUrl() }),
   tagTypes: ['Video'],
   endpoints: (builder) => ({
     getVideoById: builder.query<{ data: VideoType }, string>({
@@ -25,7 +25,7 @@ export const videoApi = createApi({
     addVideo: builder.mutation<VideoType, FormData>({
       queryFn: async (body, api) => {
         try {
-          const result = await axios.post(`${baseUrl}/video`, body, {
+          const result = await axios.post(`${getNetworkAPIUrl()}/video`, body, {
             onUploadProgress: (upload) => {
               if (upload.total) {
                 const uploadloadProgress = Math.round((100 * upload.loaded) / upload.total);
