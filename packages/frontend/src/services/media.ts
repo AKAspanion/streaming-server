@@ -2,9 +2,11 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { getNetworkAPIUrl } from '@config/api';
 import toWebVTT from 'srt-webvtt';
 
+const baseUrl = getNetworkAPIUrl();
+
 export const mediaApi = createApi({
   reducerPath: 'mediaApi',
-  baseQuery: fetchBaseQuery({ baseUrl: getNetworkAPIUrl() }),
+  baseQuery: fetchBaseQuery({ baseUrl }),
   tagTypes: ['Media', 'MediaDetails'],
   endpoints: (builder) => ({
     getMediaById: builder.query<{ data: MediaTypeJSONDB }, string>({

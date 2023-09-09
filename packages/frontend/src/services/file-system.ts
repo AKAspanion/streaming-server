@@ -1,9 +1,11 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { getNetworkAPIUrl } from '@config/api';
 
+const baseUrl = getNetworkAPIUrl();
+
 export const fileSystemApi = createApi({
   reducerPath: 'fileSystemApi',
-  baseQuery: fetchBaseQuery({ baseUrl: getNetworkAPIUrl() }),
+  baseQuery: fetchBaseQuery({ baseUrl }),
   tagTypes: ['FileSystem'],
   endpoints: (builder) => ({
     getFileSystem: builder.query<{ data: FileLocationType[] }, { dir: string }>({

@@ -4,9 +4,11 @@ import { getNetworkAPIUrl } from '@config/api';
 import { setVideoUploadProgress } from '@store/globalSlice';
 import toWebVTT from 'srt-webvtt';
 
+const baseUrl = getNetworkAPIUrl();
+
 export const videoApi = createApi({
   reducerPath: 'videoApi',
-  baseQuery: fetchBaseQuery({ baseUrl: getNetworkAPIUrl() }),
+  baseQuery: fetchBaseQuery({ baseUrl }),
   tagTypes: ['Video'],
   endpoints: (builder) => ({
     getVideoById: builder.query<{ data: VideoType }, string>({

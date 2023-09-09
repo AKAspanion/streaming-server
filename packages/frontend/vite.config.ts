@@ -38,6 +38,7 @@ export default defineConfig(({ mode }) => {
     plugins: [react()],
     server: {
       host: true,
+      open: true,
       port: Number(env.VITE_FE_PORT || 5709),
     },
     preview: {

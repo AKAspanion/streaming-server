@@ -1,30 +1,34 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './App.tsx';
+import { setup } from './config/setup.ts';
+import Spinner from './components/atoms/spinner/Spinner.tsx';
+
 import './index.css';
 
-try {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const ipcRenderer = require('electron').ipcRenderer;
-  if (ipcRenderer) {
-    ipcRenderer.send('network_host');
-    ipcRenderer.on('network_host', (_: any, arg: any) => {
-      ipcRenderer.removeAllListeners('network_host');
-      window.networkHost = arg.host;
-    });
-    ipcRenderer.send('app_version');
-    ipcRenderer.on('app_version', (_: any, arg: any) => {
-      ipcRenderer.removeAllListeners('app_version');
-      window.appVersion = arg.version;
-    });
-  }
-} catch (error) {
-  // no ipc renderer
-}
+// eslint-disable-next-line react-refresh/only-export-components
+const App = React.lazy(() => import('./App.tsx'));
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <App />
+    <div className="w-full h-full flex items-center justify-center">
+      <Spinner />
+    </div>
   </React.StrictMode>,
 );
+
+setup(() => {
+  ReactDOM.createRoot(document.getElementById('root')!).render(
+    <React.StrictMode>
+      <React.Suspense
+        fallback={
+          <div className="w-full h-full flex items-center justify-center">
+            <Spinner />
+          </div>
+        }
+      >
+        <App />
+      </React.Suspense>
+    </React.StrictMode>,
+  );
+});
