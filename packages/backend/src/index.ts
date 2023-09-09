@@ -14,7 +14,7 @@ import { appInit } from '@config/app';
 import '@utils/process';
 
 const app: Express = express();
-const port = process.env.NODE_APP_PORT || 5711;
+const port = process.env.NODE_APP_PORT || 80;
 
 appInit();
 app.use(cors());

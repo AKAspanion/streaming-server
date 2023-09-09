@@ -15,6 +15,14 @@ const dimensions = {
   app: { width: 1200, height: 720 },
 };
 
+let FE_PORT = 5709;
+let BE_PORT = 5708;
+
+if (process.env) {
+  FE_PORT = process.env.VITE_FE_PORT || 5709;
+  BE_PORT = process.env.VITE_BE_PORT || 5708;
+}
+
 function createWindow() {
   if (!tray) {
     createTray();
@@ -40,7 +48,7 @@ function createWindow() {
   });
 
   if (isDev) {
-    mainWindow.loadURL(`http://localhost:5709`);
+    mainWindow.loadURL(`http://localhost:${FE_PORT}`);
   } else {
     const filePath = `file://${path.join(__dirname, '../packages/frontend/dist/index.html')}`;
     mainWindow.loadURL(filePath);
@@ -247,14 +255,15 @@ async function exitApp() {
 async function exitBackend() {
   log.info('Exit Backend');
 
-  const NODE_APP_PORT = 5708;
-  try {
-    log.info('Exit Backend call');
-    await fetch(`http://127.0.0.1:${NODE_APP_PORT}/server/quit`);
-    log.info('Exit Backend success');
-  } catch (error) {
-    log.error(error);
-  }
+  getIPv4Address().forEach(async ({ address }) => {
+    try {
+      log.info('Exit Backend call');
+      await fetch(`http://${address}:${BE_PORT}/server/quit`);
+      log.info('Exit Backend success');
+    } catch (error) {
+      // log.error(error);
+    }
+  });
 
   try {
     processes.forEach(function (proc) {
@@ -331,17 +340,16 @@ function createTray() {
   tray.setContextMenu(contextMenu);
 }
 
-// const getIPv4Address = () => {
-//   const interfaces = os.networkInterfaces();
-//   const allAddress = [{ type: 'Local', address: 'localhost' }];
-//   for (const interfaceKey in interfaces) {
-//     const addressList = interfaces[interfaceKey];
-//     addressList?.forEach((address) => {
-//       if (address.family === 'IPv4' && !address.internal) {
-//         allAddress.push({ type: 'Network', address: `${address.address}` });
-//       }
-//     });
-//   }
-
-//   return allAddress;
-// };
+const getIPv4Address = () => {
+  const interfaces = os.networkInterfaces();
+  const allAddress = [{ type: 'Local', address: 'localhost' }];
+  for (const interfaceKey in interfaces) {
+    const addressList = interfaces[interfaceKey];
+    addressList?.forEach((address) => {
+      if (address.family === 'IPv4' && !address.internal) {
+        allAddress.push({ type: 'Network', address: `${address.address}` });
+      }
+    });
+  }
+  return allAddress;
+};

@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - packages/**
+      - electron/**
       - package.json
     tags:
       - '*'
@@ -33,6 +34,8 @@ jobs:
       - name: Install & Build for Windows 🔧
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VITE_FE_PORT: 5714
+          VITE_BE_PORT: 80
         run: |
           yarn
           yarn build:electron:win
