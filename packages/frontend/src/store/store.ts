@@ -4,6 +4,7 @@ import storage from 'redux-persist/lib/storage';
 import { persistReducer, persistStore } from 'redux-persist';
 
 import { fileSystemApi } from '@services/file-system';
+import { serverApi } from '@services/server';
 import { videoApi } from '@services/video';
 import { mediaApi } from '@services/media';
 import globalReducer from './globalSlice';
@@ -23,6 +24,7 @@ export const store = configureStore({
     [folderApi.reducerPath]: folderApi.reducer,
     [dashboardApi.reducerPath]: dashboardApi.reducer,
     [fileSystemApi.reducerPath]: fileSystemApi.reducer,
+    [serverApi.reducerPath]: serverApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
@@ -30,7 +32,8 @@ export const store = configureStore({
       .concat(videoApi.middleware)
       .concat(folderApi.middleware)
       .concat(dashboardApi.middleware)
-      .concat(fileSystemApi.middleware),
+      .concat(fileSystemApi.middleware)
+      .concat(serverApi.middleware),
   devTools: IS_DEV,
 });
 

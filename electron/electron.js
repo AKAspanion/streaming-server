@@ -7,6 +7,7 @@ const cp = require('child_process');
 const path = require('path');
 const os = require('os');
 
+const processes = [];
 const { name } = require('../package.json');
 
 const getIPv4Address = () => {
@@ -66,7 +67,7 @@ function createWindow() {
   });
 
   if (isDev) {
-    mainWindow.loadURL(`http://${VITE_BE_HOST}:${FE_PORT}`);
+    mainWindow.loadURL(`${VITE_BE_HOST}:${FE_PORT}`);
   } else {
     const filePath = `file://${path.join(__dirname, '../../frontend/index.html')}`;
     mainWindow.loadURL(filePath);
@@ -161,6 +162,9 @@ ipcMain.on('isMaximized', (event) => {
 ipcMain.on('app_version', (event) => {
   event.sender.send('app_version', { version: app.getVersion() });
 });
+ipcMain.on('network_host', (event) => {
+  event.sender.send('network_host', { host: `http://${NETWORK_IP}` });
+});
 
 const gotTheLock = app.requestSingleInstanceLock();
 
@@ -184,8 +188,6 @@ if (!gotTheLock) {
     createWindow();
   });
 }
-
-const processes = [];
 
 function hideWindows() {
   log.info('Hidding Windows');

@@ -12,7 +12,7 @@ const useIPCRenderer = () => {
       renderRef.current = ipcRenderer;
       setTick((i) => i + 1);
     } catch (error) {
-      console.log('IPC renderer load failed');
+      // console.log('IPC renderer load failed');
     }
   }, []);
 

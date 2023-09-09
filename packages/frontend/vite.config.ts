@@ -8,7 +8,7 @@ import os from 'os';
 export default defineConfig(({ mode }) => {
   const localIp = getIPv4Address();
   const env = loadEnv(mode, process.cwd(), 'VITE_');
-  if (env.VITE_REPLACE_NETWORK_IP === 'true') {
+  if (env.VITE_REPLACE_NETWORK_IP == 'true') {
     console.log(`Replacing VITE_BE_HOST with Network IP in .env.${mode}`);
     const host = `http://${localIp}`;
     env.VITE_BE_HOST = host;

@@ -116,7 +116,6 @@ export const waitUntilFileExists = (
 
 const isSegmentFinished = (requested: number, hlsManager: HLSManager, group: string) => {
   if (hlsManager.isTranscoderFinished(group)) {
-    processLogger.info(`[HLS] Transcoder finished`);
     return true;
   }
 

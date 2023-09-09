@@ -4,10 +4,12 @@ import Breadcrumbs from '@components/Breadcrumbs';
 import Sidebar from './Sidebar';
 import { useAppSelector } from '@/store/hook';
 import { cs } from '@/utils/helpers';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
+import { useGetNetworkIpQuery } from '@/services/server';
 
 function HomeLayout() {
   const matches = useMatches();
+  const { data } = useGetNetworkIpQuery('');
 
   const currentRoute = useMemo(() => {
     const nMatches = matches || [];
@@ -18,6 +20,12 @@ function HomeLayout() {
   const sidebarOpen = useAppSelector((s) => s?.globalData?.sidebarOpen);
 
   const isFull = currentRoute && (currentRoute?.handle as RouterHandler)?.full;
+
+  useEffect(() => {
+    if (data?.ip && data?.ip.startsWith('192')) {
+      window.networkHost = `http://${data?.ip}`;
+    }
+  }, [data?.ip]);
 
   return (
     <div className="relative">

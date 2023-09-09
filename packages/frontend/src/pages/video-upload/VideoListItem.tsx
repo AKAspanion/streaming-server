@@ -7,7 +7,7 @@ import Spinner from '@components/atoms/spinner/Spinner';
 import Button from '@components/atoms/button/Button';
 import { toast } from 'react-hot-toast/headless';
 import { copyTextToClipboard } from '@utils/dom';
-import { baseUrl } from '@config/api';
+import { getNetworkFEUrl } from '@/config/app';
 
 interface VideoListItemProps {
   video: VideoType;
@@ -37,7 +37,8 @@ const VideoListItem: FC<VideoListItemProps> = ({ video, loading, onDelete, onSub
   };
 
   const copyLink = async (txt: string) => {
-    const res = await copyTextToClipboard(baseUrl + '/#' + txt);
+    const link = getNetworkFEUrl() + '/#' + txt;
+    const res = await copyTextToClipboard(link);
     if (res) toast.success('Network link copied');
     else toast.error('Failed to copy link');
   };
