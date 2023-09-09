@@ -39,8 +39,6 @@
     "appId": "com.spanion.streaming-server",
     "copyright": "Copyright © 2023 Ankit Kumar Pandit",
     "files": [
-      "packages/frontend/dist/**/*",
-      "packages/frontend/package.json",
       "**/node_modules/**/*",
       "package.json",
       "electron"
@@ -49,6 +47,10 @@
       {
         "from": "packages/backend/dist",
         "to": "backend"
+      },
+      {
+        "from": "packages/frontend/dist",
+        "to": "frontend"
       }
     ],
     "nsis": {

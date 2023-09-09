@@ -4,10 +4,36 @@ const { app, ipcMain, BrowserWindow, nativeImage, Menu, Tray } = require('electr
 const isDev = require('electron-is-dev');
 const log = require('electron-log');
 const cp = require('child_process');
+const dotenv = require('dotenv');
 const path = require('path');
 const os = require('os');
 
 const { name } = require('../package.json');
+
+const getIPv4Address = () => {
+  const interfaces = os.networkInterfaces();
+  const allAddress = [{ type: 'Local', address: 'localhost' }];
+  for (const interfaceKey in interfaces) {
+    const addressList = interfaces[interfaceKey];
+    addressList?.forEach((address) => {
+      if (address.family === 'IPv4' && !address.internal) {
+        allAddress.push({ type: 'Network', address: `${address.address}` });
+      }
+    });
+  }
+  return allAddress;
+};
+
+const getNetworkIP = () => {
+  return (
+    getIPv4Address().find((n) => n.type === 'Network') || { type: 'Local', address: 'localhost' }
+  ).address;
+};
+
+const NETWORK_IP = getNetworkIP();
+
+const processEnv = { VITE_BE_HOST: NETWORK_IP };
+dotenv.config({ processEnv: processEnv });
 
 let mainWindow;
 
@@ -15,13 +41,9 @@ const dimensions = {
   app: { width: 1200, height: 720 },
 };
 
-let FE_PORT = 5709;
-let BE_PORT = 5708;
-
-if (process.env) {
-  FE_PORT = process.env.VITE_FE_PORT || 5709;
-  BE_PORT = process.env.VITE_BE_PORT || 5708;
-}
+const FE_PORT = process.env.VITE_FE_PORT || isDev ? 5709 : 5715;
+const BE_PORT = process.env.VITE_BE_HOST || isDev ? 5708 : 80;
+const VITE_BE_HOST = process.env.VITE_BE_HOST || 'localhost';
 
 function createWindow() {
   if (!tray) {
@@ -48,9 +70,9 @@ function createWindow() {
   });
 
   if (isDev) {
-    mainWindow.loadURL(`http://localhost:${FE_PORT}`);
+    mainWindow.loadURL(`http://${VITE_BE_HOST}:${FE_PORT}`);
   } else {
-    const filePath = `file://${path.join(__dirname, '../packages/frontend/dist/index.html')}`;
+    const filePath = `file://${path.join(__dirname, '../../frontend/index.html')}`;
     mainWindow.loadURL(filePath);
   }
 
@@ -192,13 +214,14 @@ function showWindows() {
 function getPaths() {
   const dataPath = path.join(appDataPath(), name);
   const binPath = `${path.join(__dirname, '../../backend')}`;
+  const frontendPath = path.join(__dirname, '../../frontend');
 
   if (os.platform() === 'win32') {
     const bePath = `${path.join(__dirname, '../../backend/index.exe')}`;
-    return { bePath, binPath, dataPath };
+    return { bePath, binPath, frontendPath, dataPath };
   } else {
     const bePath = `${path.join(__dirname, '../../backend/index')}`;
-    return { bePath, binPath, dataPath };
+    return { bePath, binPath, frontendPath, dataPath };
   }
 }
 
@@ -207,17 +230,21 @@ function startBackend() {
     log.info('Backend starting');
     const appName = app.getPath('exe');
 
-    const { bePath, binPath, dataPath } = getPaths();
+    const { bePath, binPath, dataPath, frontendPath } = getPaths();
 
+    log.info('Network', NETWORK_IP);
     log.info('App Name', appName);
     log.info('Data Path', dataPath);
     log.info('Executable Path', bePath);
+    log.info('Frontend assets Path', frontendPath);
     const expressAppProcess = cp.spawn(bePath, {
       stdio: 'pipe',
       env: {
+        ELECTRON_NETWORK_IP: NETWORK_IP,
         NODE_ENV: 'production',
         ELECTRON_RUN_AS_NODE: '1',
         BIN_PATH_IN_ELECTRON: binPath,
+        FE_PATH_IN_ELECTRON: frontendPath,
         RESOURCE_PATH_IN_ELECTRON: dataPath,
       },
     });
@@ -309,7 +336,7 @@ function redirectOutput(x) {
 
 let tray = null;
 function createTray() {
-  const icon = path.join(__dirname, '../packages/frontend/dist/logo.png');
+  const icon = path.join(__dirname, '../../frontend/logo.png');
   const trayicon = nativeImage.createFromPath(icon);
   tray = new Tray(trayicon.resize({ width: 16 }));
   const contextMenu = Menu.buildFromTemplate([
@@ -339,17 +366,3 @@ function createTray() {
 
   tray.setContextMenu(contextMenu);
 }
-
-const getIPv4Address = () => {
-  const interfaces = os.networkInterfaces();
-  const allAddress = [{ type: 'Local', address: 'localhost' }];
-  for (const interfaceKey in interfaces) {
-    const addressList = interfaces[interfaceKey];
-    addressList?.forEach((address) => {
-      if (address.family === 'IPv4' && !address.internal) {
-        allAddress.push({ type: 'Network', address: `${address.address}` });
-      }
-    });
-  }
-  return allAddress;
-};
