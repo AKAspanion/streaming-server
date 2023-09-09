@@ -6,8 +6,8 @@
   "main": "electron/electron.js",
   "scripts": {
     "dev:electron": "electron .",
-    "build:electron:mac": "cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder build",
-    "build:electron:win": "cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder build",
+    "build:electron:mac": "cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder build --mac --publish always",
+    "build:electron:win": "cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder build --win --publish always",
     "prebuild:electron:mac": "yarn clean:root && yarn package:mac",
     "prebuild:electron:win": "yarn clean:root && yarn package:win",
     "package:mac": "lerna run package:mac --parallel",
