@@ -1,11 +1,11 @@
 name: Release Mac App
 
 on:
-  push:
-    paths:
-      - packages/**
-    branches:
-      - main
+  # push:
+  #   paths:
+  #     - packages/**
+  #   branches:
+  #     - main
   pull_request:
     branches:
       - main
