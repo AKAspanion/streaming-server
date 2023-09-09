@@ -15,7 +15,7 @@ permissions:
   contents: write
 
 jobs:
-  pages:
+  build-windows:
     concurrency: ci-${{ github.ref }}
     runs-on: ubuntu-latest
     steps:

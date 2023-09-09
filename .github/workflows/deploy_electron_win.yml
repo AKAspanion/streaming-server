@@ -15,7 +15,7 @@ permissions:
   contents: write
 
 jobs:
-  pages:
+  build-gh-pages:
     concurrency: ci-${{ github.ref }}
     runs-on: ubuntu-latest
     steps:
@@ -27,6 +27,8 @@ jobs:
         with:
           node-version: 16
 
-      - name: Build for Windows 🔧
-        run: yarn build:electron:win
+      - name: Install & Build for Windows 🔧
+        run: |
+          yarn
+          yarn build:electron:win
         shell: bash
