@@ -1,14 +1,12 @@
 name: Release Mac App
 
 on:
-  # push:
-  #   paths:
-  #     - packages/**
-  #   branches:
-  #     - main
-  # pull_request:
-  #   branches:
-  #     - main
+  push:
+    paths:
+      - packages/**
+      - package.json
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
@@ -26,14 +24,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16
-
-      # - name: Install Linux Packages 📦
-      #   run: |
-      #     sudo dpkg --add-architecture i386
-      #     sudo apt update
-      #     sudo apt install wine32
-      #     sudo apt install unzip
-      #   shell: bash
 
       - name: Unzip ffmpeg 🗃️
         run: |

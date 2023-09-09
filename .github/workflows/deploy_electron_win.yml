@@ -7,9 +7,6 @@ on:
       - package.json
     branches:
       - main
-  # pull_request:
-  #   branches:
-  #     - main
   workflow_dispatch:
 
 permissions:
@@ -18,7 +15,7 @@ permissions:
 jobs:
   build-windows-app:
     concurrency: ci-${{ github.ref }}
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v3
@@ -27,14 +24,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16
-
-      - name: Install Linux Packages 📦
-        run: |
-          sudo dpkg --add-architecture i386
-          sudo apt update
-          sudo apt install wine32
-          sudo apt install unzip
-        shell: bash
 
       - name: Unzip ffmpeg 🗃️
         run: |
