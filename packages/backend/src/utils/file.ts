@@ -1,13 +1,6 @@
 // import path from "path";
 import fs from 'fs';
-
-export const readFile = () => {
-  //   const filepath = path.resolve(dir, filename);
-  //   const name = path.parse(filename).name;
-  //   const ext = path.parse(filename).ext;
-  //   const stat = fs.statSync(filepath);
-  //   const isFile = stat.isFile();
-};
+import cp from 'child_process';
 
 export const getFileType = (filepath: string) => {
   const stat = fs.statSync(filepath);
@@ -48,4 +41,42 @@ export const waitForFileAccess = (
       }
     });
   }, interval);
+};
+
+export const getWinDrives = () =>
+  new Promise<FileLocationType[]>((resolve, reject) => {
+    let stdout = '';
+    const spawn = cp.spawn;
+    const list = spawn('cmd');
+
+    list.stdout.on('data', function (data) {
+      stdout += data;
+    });
+
+    list.stderr.on('data', function (data) {
+      reject(data);
+    });
+
+    list.on('exit', function (code) {
+      if (code == 0) {
+        let data = stdout.split('\r\n');
+        data = data.splice(4, data.length - 7);
+        data = data.map(Function.prototype.call, String.prototype.trim);
+        data = data.map((d) => d + '\\');
+        resolve(data.map((p) => ({ path: p, name: p, type: 'directory', isFile: false })));
+      } else {
+        reject(new Error("Coudn't find drives"));
+      }
+    });
+
+    list.stdin.write('wmic logicaldisk get caption\n');
+    list.stdin.end();
+  });
+
+export const listDrives = () => {
+  if (process.platform !== 'darwin') {
+    return getWinDrives();
+  } else {
+    return new Promise<FileLocationType[]>((resolve) => resolve([]));
+  }
 };
