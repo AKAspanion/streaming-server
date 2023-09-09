@@ -5,8 +5,8 @@ on:
     paths:
       - packages/**
       - package.json
-    branches:
-      - main
+    tags:
+      - '*'
   workflow_dispatch:
 
 permissions:
