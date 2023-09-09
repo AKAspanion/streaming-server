@@ -2,6 +2,8 @@ name: Deploy Github Pages
 
 on:
   push:
+    paths:
+      - pages/**
     branches:
       - main
   pull_request:
@@ -9,17 +11,22 @@ on:
       - main
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   pages:
+    concurrency: ci-${{ github.ref }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Deploy Pages
-        run: echo "Deploy"
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+
+      - name: Install and Build 🔧
+        run: echo "Install"
         shell: bash
-  hello:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Hello Pages
-        run: echo "Hello"
-        shell: bash
+
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: pages
