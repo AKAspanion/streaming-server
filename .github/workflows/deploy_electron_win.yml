@@ -23,18 +23,28 @@ jobs:
       - name: Checkout 🛎️
         uses: actions/checkout@v3
 
-      - name: Install Node.js, NPM and Yarn
+      - name: Install Node.js, NPM and Yarn ⚙
         uses: actions/setup-node@v3
         with:
           node-version: 16
+
+      - name: Install Linux Packages 📦
+        run: |
+          sudo dpkg --add-architecture i386
+          sudo apt update
+          sudo apt install wine32
+          sudo apt install unzip
+        shell: bash
+
+      - name: Unzip ffmpeg 🗃️
+        run: |
+          yarn unzip:ffmpeg
+        shell: bash
 
       - name: Install & Build for Windows 🔧
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          sudo dpkg --add-architecture i386
-          sudo apt update
-          sudo apt install wine32
           yarn
           yarn build:electron:win
         shell: bash
