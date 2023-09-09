@@ -1,15 +1,13 @@
 import { AppError, HttpCode } from '@utils/exceptions';
 import { RequestHandler } from 'express';
-import { Drive } from 'drivelist';
 import path from 'path';
 import fs from 'fs';
 import os from 'os';
 import uniqBy from 'lodash.uniqby';
-import { getFileType } from '@utils/file';
+import { getFileType, listDrives } from '@utils/file';
 import { ALLOWED_VIDEO_FILES } from '@common/constants/app';
 import logger from '@utils/logger';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const drivelist = require('drivelist');
 
 export const getFilesInPath: RequestHandler = async (req, res) => {
   const { dir: dirInReq } = req.body;
@@ -21,17 +19,7 @@ export const getFilesInPath: RequestHandler = async (req, res) => {
   let drives: FileLocationType[] = [];
 
   try {
-    const systemDrives: Drive[] = await drivelist.list();
-
-    (systemDrives || []).forEach((d) => {
-      (d?.mountpoints || []).forEach((m) => {
-        drives.push({
-          path: m?.path,
-          name: m?.path,
-          type: 'directory',
-        });
-      });
-    });
+    drives = await listDrives();
 
     const homeDir = os.homedir();
     drives.unshift({
@@ -56,7 +44,10 @@ export const getFilesInPath: RequestHandler = async (req, res) => {
 
       fs.readdirSync(path.join(dirInReq)).forEach((filename) => {
         const isSystem =
-          filename.includes('System Volume Information') || filename.includes('$RECYCLE.BIN');
+          filename.includes('System Volume Information') ||
+          filename.includes('$RECYCLE.BIN') ||
+          filename.includes('.log') ||
+          filename.includes('.sys');
         const isHidden = filename.startsWith('.');
 
         const canShow = !isSystem && !isHidden;
