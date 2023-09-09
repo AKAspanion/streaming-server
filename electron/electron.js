@@ -7,6 +7,8 @@ const cp = require('child_process');
 const path = require('path');
 const os = require('os');
 
+let mainWindow;
+let tray = null;
 const processes = [];
 const { name } = require('../package.json');
 
@@ -31,8 +33,6 @@ const getNetworkIP = () => {
 };
 
 const NETWORK_IP = getNetworkIP();
-
-let mainWindow;
 
 const dimensions = {
   app: { width: 1200, height: 720 },
@@ -332,7 +332,6 @@ function redirectOutput(x) {
   });
 }
 
-let tray = null;
 function createTray() {
   const icon = path.join(__dirname, '../../frontend/logo.png');
   const trayicon = nativeImage.createFromPath(icon);
