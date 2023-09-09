@@ -38,7 +38,7 @@ const dimensions = {
   app: { width: 1200, height: 720 },
 };
 
-const FE_PORT = process.env.VITE_FE_PORT || isDev ? 5709 : 5715;
+const FE_PORT = process.env.VITE_FE_PORT || isDev ? 5709 : 80;
 const BE_PORT = process.env.VITE_BE_HOST || isDev ? 5708 : 80;
 const VITE_BE_HOST = process.env.VITE_BE_HOST || 'http://localhost';
 
