@@ -21,7 +21,7 @@
     "clean:root": "rm -rf dist && rm -rf build",
     "lint": "lerna run lint --parallel",
     "prepare": "husky install",
-    "deploy": "gh-pages -d github"
+    "deploy:pages": "gh-pages -d pages"
   },
   "workspaces": [
     "packages/*"
