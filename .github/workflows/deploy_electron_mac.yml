@@ -1,4 +1,4 @@
-name: Release Windows App
+name: Release Mac App
 
 on:
   push:
@@ -15,7 +15,7 @@ permissions:
   contents: write
 
 jobs:
-  build-windows-app:
+  build-mac-app:
     concurrency: ci-${{ github.ref }}
     runs-on: ubuntu-latest
     steps:
@@ -27,13 +27,10 @@ jobs:
         with:
           node-version: 16
 
-      - name: Install & Build for Windows 🔧
+      - name: Install & Build for Mac 🔧
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          sudo dpkg --add-architecture i386
-          sudo apt update
-          sudo apt install wine32
           yarn
-          yarn build:electron:win
+          yarn build:electron:mac
         shell: bash
