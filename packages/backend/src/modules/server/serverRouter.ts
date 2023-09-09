@@ -1,8 +1,9 @@
 import { Router } from 'express';
-import { quitServer } from './serverController';
+import { networkIp, quitServer } from './serverController';
 
 const router = Router();
 
 router.get('/quit', quitServer);
+router.get('/network-ip', networkIp);
 
 export default router;

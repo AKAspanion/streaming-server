@@ -32,6 +32,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VITE_FE_PORT: 5715
           VITE_BE_PORT: 80
+          VITE_BE_HOST: 'http://localhost'
         run: |
           yarn
           yarn build:electron:win

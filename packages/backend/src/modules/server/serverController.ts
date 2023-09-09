@@ -17,3 +17,7 @@ export const quitServer: RequestHandler = async (_, res) => {
 
   return res.status(HttpCode.OK).send({ message: 'Server exit started' });
 };
+
+export const networkIp: RequestHandler = async (_, res) => {
+  return res.status(HttpCode.OK).send({ ip: process.env.ELECTRON_NETWORK_IP || 'localhost' });
+};

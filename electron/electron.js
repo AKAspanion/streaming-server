@@ -4,7 +4,6 @@ const { app, ipcMain, BrowserWindow, nativeImage, Menu, Tray } = require('electr
 const isDev = require('electron-is-dev');
 const log = require('electron-log');
 const cp = require('child_process');
-const dotenv = require('dotenv');
 const path = require('path');
 const os = require('os');
 
@@ -32,9 +31,6 @@ const getNetworkIP = () => {
 
 const NETWORK_IP = getNetworkIP();
 
-const processEnv = { VITE_BE_HOST: NETWORK_IP };
-dotenv.config({ processEnv: processEnv });
-
 let mainWindow;
 
 const dimensions = {
@@ -43,7 +39,7 @@ const dimensions = {
 
 const FE_PORT = process.env.VITE_FE_PORT || isDev ? 5709 : 5715;
 const BE_PORT = process.env.VITE_BE_HOST || isDev ? 5708 : 80;
-const VITE_BE_HOST = process.env.VITE_BE_HOST || 'localhost';
+const VITE_BE_HOST = process.env.VITE_BE_HOST || 'http://localhost';
 
 function createWindow() {
   if (!tray) {
