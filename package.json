@@ -49,6 +49,7 @@
     "nsis": {
       "oneClick": false,
       "perMachine": true,
+      "deleteAppDataOnUninstall": true,
       "allowToChangeInstallationDirectory": true,
       "uninstallDisplayName": "Video Streaming Server"
     },
