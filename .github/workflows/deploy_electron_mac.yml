@@ -1,7 +1,7 @@
 name: Release Mac App
 
 on:
-  create:
+  # create:
   workflow_dispatch:
 
 permissions:
@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   build-mac-app:
-    if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+    # if: ${{ startsWith(github.ref, 'refs/tags/v') }}
     concurrency: ci-${{ github.ref }}
     runs-on: macos-latest
     steps:
