@@ -1,14 +1,13 @@
 import axios from 'axios';
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { createApi } from '@reduxjs/toolkit/query/react';
 import { getNetworkAPIUrl } from '@config/api';
 import { setVideoUploadProgress } from '@store/globalSlice';
 import toWebVTT from 'srt-webvtt';
-
-const baseUrl = getNetworkAPIUrl();
+import { dynamicBaseQuery } from '@/utils/query';
 
 export const videoApi = createApi({
   reducerPath: 'videoApi',
-  baseQuery: fetchBaseQuery({ baseUrl }),
+  baseQuery: dynamicBaseQuery,
   tagTypes: ['Video'],
   endpoints: (builder) => ({
     getVideoById: builder.query<{ data: VideoType }, string>({

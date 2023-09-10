@@ -1,12 +1,10 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { getNetworkAPIUrl } from '@config/api';
+import { dynamicBaseQuery } from '@/utils/query';
+import { createApi } from '@reduxjs/toolkit/query/react';
 import toWebVTT from 'srt-webvtt';
-
-const baseUrl = getNetworkAPIUrl();
 
 export const mediaApi = createApi({
   reducerPath: 'mediaApi',
-  baseQuery: fetchBaseQuery({ baseUrl }),
+  baseQuery: dynamicBaseQuery,
   tagTypes: ['Media', 'MediaDetails'],
   endpoints: (builder) => ({
     getMediaById: builder.query<{ data: MediaTypeJSONDB }, string>({

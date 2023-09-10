@@ -1,4 +1,5 @@
-const host: string = import.meta.env.VITE_BE_HOST || window.location.origin;
+const host: string =
+  import.meta.env.VITE_BE_HOST || window.networkHost || window.location.origin || '/';
 const port: string = import.meta.env.VITE_FE_PORT;
 
 export const getNetworkFEUrl = () => `${host}${port ? ':' + port : ''}`;

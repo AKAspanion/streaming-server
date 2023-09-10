@@ -1,11 +1,9 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { getNetworkAPIUrl } from '@config/api';
-
-const baseUrl = getNetworkAPIUrl();
+import { createApi } from '@reduxjs/toolkit/query/react';
+import { dynamicBaseQuery } from '@/utils/query';
 
 export const folderApi = createApi({
   reducerPath: 'folderApi',
-  baseQuery: fetchBaseQuery({ baseUrl }),
+  baseQuery: dynamicBaseQuery,
   tagTypes: ['FolderList', 'FolderDetails', 'MediaInFolder'],
   endpoints: (builder) => ({
     getFolder: builder.query<{ data: FolderType[] }, string>({

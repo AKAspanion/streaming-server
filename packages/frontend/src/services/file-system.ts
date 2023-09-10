@@ -1,11 +1,9 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { getNetworkAPIUrl } from '@config/api';
-
-const baseUrl = getNetworkAPIUrl();
+import { dynamicBaseQuery } from '@/utils/query';
+import { createApi } from '@reduxjs/toolkit/query/react';
 
 export const fileSystemApi = createApi({
   reducerPath: 'fileSystemApi',
-  baseQuery: fetchBaseQuery({ baseUrl }),
+  baseQuery: dynamicBaseQuery,
   tagTypes: ['FileSystem'],
   endpoints: (builder) => ({
     getFileSystem: builder.query<{ data: FileLocationType[] }, { dir: string }>({

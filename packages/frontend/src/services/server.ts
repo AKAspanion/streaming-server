@@ -1,11 +1,9 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { getNetworkAPIUrl } from '@config/api';
-
-const baseUrl = getNetworkAPIUrl();
+import { dynamicBaseQuery } from '@/utils/query';
+import { createApi } from '@reduxjs/toolkit/query/react';
 
 export const serverApi = createApi({
   reducerPath: 'serverApi',
-  baseQuery: fetchBaseQuery({ baseUrl }),
+  baseQuery: dynamicBaseQuery,
   tagTypes: ['server'],
   endpoints: (builder) => ({
     getNetworkIp: builder.query<{ ip: string }, string>({
