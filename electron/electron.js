@@ -214,10 +214,10 @@ function getPaths() {
   const frontendPath = path.join(__dirname, '../../frontend');
 
   if (os.platform() === 'win32') {
-    const bePath = path.join(__dirname, '../../backend/index.exe');
+    const bePath = path.join(__dirname, '../../backend/backend.exe');
     return { bePath, binPath, frontendPath, dataPath };
   } else {
-    const bePath = path.join(__dirname, '../../backend/index');
+    const bePath = path.join(__dirname, '../../backend/backend');
     return { bePath, binPath, frontendPath, dataPath };
   }
 }

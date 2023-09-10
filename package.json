@@ -58,12 +58,13 @@
       "perMachine": true,
       "deleteAppDataOnUninstall": true,
       "allowToChangeInstallationDirectory": true,
-      "uninstallDisplayName": "Video Streaming Server"
+      "uninstallDisplayName": "Video Streaming Server Uninstall"
     },
     "win": {
       "publish": [
         "github"
       ],
+      "requestedExecutionLevel": "requireAdministrator",
       "icon": "packages/frontend/dist/logo.png"
     },
     "mac": {

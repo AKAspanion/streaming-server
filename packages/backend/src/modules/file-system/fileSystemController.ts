@@ -37,12 +37,14 @@ export const getFilesInPath: RequestHandler = async (req, res) => {
   }
 
   if (!dir) {
+    console.log('A:', 'B:', 'C:', 'D:', 'E:', 'F:', 'G:', 'H:', 'I:', 'J:', 'K:', 'L:', 'M:');
+    console.log('N:', 'O:', 'P:', 'Q:', 'R:', 'S:', 'T:', 'U:', 'V:', 'W:', 'X:', 'W:', 'Z:');
     return res.status(HttpCode.OK).send({ data: drives });
   } else {
     try {
       let files: FileLocationType[] = [];
 
-      fs.readdirSync(path.join(dirInReq)).forEach((filename) => {
+      fs.readdirSync(path.resolve(dir)).forEach((filename) => {
         const isSystem =
           filename.includes('System Volume Information') ||
           filename.includes('$RECYCLE.BIN') ||
@@ -52,15 +54,19 @@ export const getFilesInPath: RequestHandler = async (req, res) => {
 
         const canShow = !isSystem && !isHidden;
         if (canShow) {
-          const ext = path.parse(filename).ext;
-          const name = path.parse(filename).name;
-          const filepath = path.resolve(dir, filename);
-          const { type, isFile } = getFileType(filepath);
+          try {
+            const ext = path.parse(filename).ext;
+            const name = path.parse(filename).name;
+            const filepath = path.join(dir, filename);
+            const { type, isFile } = getFileType(filepath);
 
-          if (isFile && ALLOWED_VIDEO_FILES.includes(ext)) {
-            files.push({ path: filepath, name, ext, type, isFile });
-          } else if (!isFile) {
-            files.push({ path: filepath, name, ext, type, isFile });
+            if (isFile && ALLOWED_VIDEO_FILES.includes(ext)) {
+              files.push({ path: filepath, name, ext, type, isFile });
+            } else if (!isFile) {
+              files.push({ path: filepath, name, ext, type, isFile });
+            }
+          } catch (error) {
+            logger.error('STAT' + error);
           }
         }
       });
@@ -74,7 +80,7 @@ export const getFilesInPath: RequestHandler = async (req, res) => {
       });
 
       const isRootDrive = drives.findIndex((d) => path.resolve(d.path) === path.resolve(dir));
-      const prevDir = isRootDrive !== -1 ? '' : path.resolve(dirInReq, '..');
+      const prevDir = isRootDrive !== -1 ? '' : path.resolve(dir, '..');
 
       files = [
         { name: '...', path: prevDir, type: 'directory', isFile: false },
@@ -82,7 +88,7 @@ export const getFilesInPath: RequestHandler = async (req, res) => {
       ];
       return res.status(HttpCode.OK).send({ data: files });
     } catch (error) {
-      logger.error(error);
+      logger.error('READ' + error);
       throw new AppError({
         description: 'Failed to load directory',
         httpCode: HttpCode.BAD_REQUEST,
