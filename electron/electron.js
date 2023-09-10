@@ -6,7 +6,6 @@ const log = require('electron-log');
 const cp = require('child_process');
 const path = require('path');
 const os = require('os');
-const fs = require('fs');
 
 let mainWindow;
 let tray = null;
@@ -40,8 +39,7 @@ const dimensions = {
 };
 
 const FE_PORT = process.env.VITE_FE_PORT || isDev ? 5709 : 80;
-const BE_PORT = process.env.VITE_BE_HOST || isDev ? 5708 : 80;
-const VITE_BE_HOST = process.env.VITE_BE_HOST || 'http://localhost';
+const BE_PORT = process.env.VITE_BE_PORT || isDev ? 5708 : 80;
 
 function createWindow() {
   if (!tray) {
@@ -67,28 +65,8 @@ function createWindow() {
     },
   });
 
-  const indexPath = path.join(__dirname, '../../frontend/index.html');
-  try {
-    if (!isDev) {
-      const file = fs.readFileSync(indexPath, { encoding: 'utf8', flag: 'r' });
-      const newFile = file.replace(
-        '<div id="data"></div>',
-        `<div
-      id="data"
-      data-network-host="${NETWORK_IP}"
-      data-app-version="${app.getVersion()}"
-    ></div>`,
-      );
-      fs.writeFileSync(indexPath, newFile);
-      log.info('Config added to index');
-    }
-  } catch (error) {
-    console.error('Cannot update the file with network ip: ', indexPath);
-  }
-
-  log.info('Loading frontend');
   if (isDev) {
-    mainWindow.loadURL(`${VITE_BE_HOST}:${FE_PORT}`);
+    mainWindow.loadURL(`http://localhost:${FE_PORT}`);
   } else {
     const filePath = `file://${path.join(__dirname, '../../frontend/index.html')}`;
     mainWindow.loadURL(filePath);

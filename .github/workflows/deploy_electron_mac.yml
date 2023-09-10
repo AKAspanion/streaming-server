@@ -29,9 +29,6 @@ jobs:
       - name: Install & Build for Mac 🔧
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VITE_FE_PORT: 80
-          VITE_BE_PORT: 80
-          VITE_BE_HOST: 'http://localhost'
         run: |
           yarn
           yarn build:electron:mac

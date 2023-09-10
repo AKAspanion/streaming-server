@@ -1,10 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-declare global {
-  interface Window {
-    appVersion?: string;
-  }
-}
-
 declare type RouterMatcher = {
   id: string;
   pathname: string;

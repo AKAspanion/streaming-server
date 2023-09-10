@@ -1,4 +1,4 @@
-const host: string = window.networkHost || import.meta.env.VITE_BE_HOST;
+const host: string = import.meta.env.VITE_BE_HOST || window.location.origin;
 const port: string = import.meta.env.VITE_BE_PORT;
 
-export const getNetworkAPIUrl = () => `${window.networkHost || host}${port ? ':' + port : ''}`;
+export const getNetworkAPIUrl = () => `${host}${port ? ':' + port : ''}`;
