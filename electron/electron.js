@@ -6,6 +6,7 @@ const log = require('electron-log');
 const cp = require('child_process');
 const path = require('path');
 const os = require('os');
+const fs = require('fs');
 
 let mainWindow;
 let tray = null;
@@ -66,6 +67,26 @@ function createWindow() {
     },
   });
 
+  const indexPath = path.join(__dirname, '../../frontend/index.html');
+  try {
+    if (!isDev) {
+      const file = fs.readFileSync(indexPath, { encoding: 'utf8', flag: 'r' });
+      const newFile = file.replace(
+        '<div id="data"></div>',
+        `<div
+      id="data"
+      data-network-host="${NETWORK_IP}"
+      data-app-version="${app.getVersion()}"
+    ></div>`,
+      );
+      fs.writeFileSync(indexPath, newFile);
+      log.info('Config added to index');
+    }
+  } catch (error) {
+    console.error('Cannot update the file with network ip: ', indexPath);
+  }
+
+  log.info('Loading frontend');
   if (isDev) {
     mainWindow.loadURL(`${VITE_BE_HOST}:${FE_PORT}`);
   } else {
@@ -211,14 +232,14 @@ function showWindows() {
 
 function getPaths() {
   const dataPath = path.join(appDataPath(), name);
-  const binPath = `${path.join(__dirname, '../../backend')}`;
+  const binPath = path.join(__dirname, '../../backend');
   const frontendPath = path.join(__dirname, '../../frontend');
 
   if (os.platform() === 'win32') {
-    const bePath = `${path.join(__dirname, '../../backend/index.exe')}`;
+    const bePath = path.join(__dirname, '../../backend/index.exe');
     return { bePath, binPath, frontendPath, dataPath };
   } else {
-    const bePath = `${path.join(__dirname, '../../backend/index')}`;
+    const bePath = path.join(__dirname, '../../backend/index');
     return { bePath, binPath, frontendPath, dataPath };
   }
 }
