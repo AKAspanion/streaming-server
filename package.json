@@ -96,6 +96,7 @@
     "lerna": "^7.1.4",
     "lint-staged": "^13.2.3",
     "prettier": "^3.0.0",
+    "prettier-plugin-svelte": "^3.0.3",
     "typescript": "^5.1.6"
   },
   "dependencies": {
