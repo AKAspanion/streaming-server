@@ -646,11 +646,13 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
                 </HoverCardContent>
               </HoverCard>
             </div>
-            <div className="p-2 cursor-pointer" onClick={toggleSubtitle}>
-              <div className={cs('w-8', { 'opacity-50': !subtitlesVisible })}>
-                <ClosedCaptionIcon />
+            {subtitlesText && (
+              <div className="p-2 cursor-pointer" onClick={toggleSubtitle}>
+                <div className={cs('w-8', { 'opacity-50': !subtitlesVisible })}>
+                  <ClosedCaptionIcon />
+                </div>
               </div>
-            </div>
+            )}
             {!maximized ? (
               <Popover>
                 <PopoverTrigger>
@@ -659,38 +661,42 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
                   </div>
                 </PopoverTrigger>
                 <PopoverContent align="end" side="top">
-                  <div className="flex gap-3 items-center justify-between pb-3">
-                    <div>Subtitle Position</div>
-                    <div className="flex gap-1 items-center">
-                      <div className="p-2 cursor-pointer">
-                        <div className="w-5" onClick={() => updateSubtitlePosition(10)}>
-                          <MinusIcon />
+                  {subtitlesText && (
+                    <div className="flex gap-3 items-center justify-between pb-3">
+                      <div>Subtitle Position</div>
+                      <div className="flex gap-1 items-center">
+                        <div className="p-2 cursor-pointer">
+                          <div className="w-5" onClick={() => updateSubtitlePosition(10)}>
+                            <MinusIcon />
+                          </div>
                         </div>
-                      </div>
-                      <div className="p-1 rounded opacity-50">{subtitleOffset.toFixed(1)}s</div>
-                      <div className="p-2 cursor-pointer">
-                        <div className="w-5" onClick={() => updateSubtitlePosition()}>
-                          <PlusIcon />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex gap-3 items-center justify-between pb-3">
-                    <div>Subtitle Delay</div>
-                    <div className="flex gap-1 items-center">
-                      <div className="p-2 cursor-pointer">
-                        <div className="w-5" onClick={() => updateSubtitleOffset(-1)}>
-                          <MinusIcon />
-                        </div>
-                      </div>
-                      <div className="p-1 rounded opacity-50">{subtitleOffset.toFixed(1)}s</div>
-                      <div className="p-2 cursor-pointer">
-                        <div className="w-5" onClick={() => updateSubtitleOffset(1)}>
-                          <PlusIcon />
+                        <div className="p-1 rounded opacity-50">{subtitleOffset.toFixed(1)}s</div>
+                        <div className="p-2 cursor-pointer">
+                          <div className="w-5" onClick={() => updateSubtitlePosition()}>
+                            <PlusIcon />
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
+                  )}
+                  {subtitlesText && (
+                    <div className="flex gap-3 items-center justify-between pb-3">
+                      <div>Subtitle Delay</div>
+                      <div className="flex gap-1 items-center">
+                        <div className="p-2 cursor-pointer">
+                          <div className="w-5" onClick={() => updateSubtitleOffset(-1)}>
+                            <MinusIcon />
+                          </div>
+                        </div>
+                        <div className="p-1 rounded opacity-50">{subtitleOffset.toFixed(1)}s</div>
+                        <div className="p-2 cursor-pointer">
+                          <div className="w-5" onClick={() => updateSubtitleOffset(1)}>
+                            <PlusIcon />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                   <div className="flex items-center gap-3">
                     <div className="whitespace-nowrap">Playback Speed </div>
                     <Select value={playbackRate} onValueChange={(v) => updatePlaybackRate(v)}>
