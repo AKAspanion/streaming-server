@@ -35,7 +35,7 @@ const Header: React.FC<HeaderProps> = ({ title }) => {
   return (
     <div
       className={cs(
-        'flex justify-between items-center w-screen bg-slate-200 dark:bg-slate-800',
+        'flex justify-between items-center w-screen bg-white dark:bg-slate-800',
         'border-slate-300 border-b dark:border-slate-700 h-[var(--header-height)]',
       )}
     >
