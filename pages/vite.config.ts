@@ -3,5 +3,5 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
 	plugins: [sveltekit()],
-	server: { open: true }
+	server: { open: true, host: true }
 });
