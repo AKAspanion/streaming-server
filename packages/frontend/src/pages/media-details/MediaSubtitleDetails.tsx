@@ -1,5 +1,6 @@
 import Modal from '@/components/atoms/modal/Modal';
 import Spinner from '@/components/atoms/spinner/Spinner';
+import ClosedCaptionIcon from '@/components/icons/ClosedCaptionIcon';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import useToastStatus from '@/hooks/useToastStatus';
@@ -10,7 +11,7 @@ import {
 } from '@/services/media';
 import { cs } from '@/utils/helpers';
 import { normalizeText } from '@common/utils/validate';
-import { ChatBubbleBottomCenterTextIcon, TrashIcon } from '@heroicons/react/24/solid';
+import { TrashIcon } from '@heroicons/react/24/solid';
 import React from 'react';
 import { FC, useRef, useState } from 'react';
 
@@ -88,8 +89,8 @@ const MediaSubtitleDetails: FC<MediaSubtitleDetailsProps> = ({
       <Button variant={'secondary'} onClick={() => setOpen(true)}>
         <div className="flex gap-2 items-center">
           Subtitle
-          <div className={cs('w-4', { 'text-green-500': !!data })}>
-            <ChatBubbleBottomCenterTextIcon />
+          <div className={cs('w-5', { 'text-green-500': !!data })}>
+            <ClosedCaptionIcon />
           </div>
         </div>
       </Button>
@@ -104,7 +105,7 @@ const MediaSubtitleDetails: FC<MediaSubtitleDetailsProps> = ({
               <React.Fragment>
                 <div
                   className={
-                    'p-3 bg-slate-800 rounded-md mb-3 gap-2 text-sm flex justify-between items-center transition-all'
+                    'p-3 dark:bg-slate-800 bg-slate-300 rounded-md mb-3 gap-2 text-sm flex justify-between items-center transition-all'
                   }
                 >
                   <div title={d?.name} className="line-clamp-2 pr-4 font-semibold">

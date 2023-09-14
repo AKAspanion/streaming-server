@@ -1,7 +1,7 @@
 import React, { FC, useMemo, useRef, useState } from 'react';
 import { buttonVariant } from '@components/atoms/button';
 import { Link } from 'react-router-dom';
-import { ChatBubbleLeftEllipsisIcon, LinkIcon, TrashIcon } from '@heroicons/react/24/solid';
+import { LinkIcon, TrashIcon } from '@heroicons/react/24/solid';
 import { PlayIcon } from '@heroicons/react/24/solid';
 import Spinner from '@components/atoms/spinner/Spinner';
 import Button from '@components/atoms/button/Button';
@@ -10,6 +10,7 @@ import { copyTextToClipboard } from '@utils/dom';
 import { getNetworkFEUrl } from '@/config/app';
 import { cs } from '@/utils/helpers';
 import Modal from '@/components/atoms/modal/Modal';
+import ClosedCaptionIcon from '@/components/icons/ClosedCaptionIcon';
 
 interface VideoListItemProps {
   isGrid?: boolean;
@@ -111,8 +112,8 @@ const VideoListItem: FC<VideoListItemProps> = ({
                 </div>
               </Button>
               <Button onClick={() => openFile()}>
-                <div title="Add subtitle" className="w-5">
-                  <ChatBubbleLeftEllipsisIcon />
+                <div title="Add subtitle" className="w-6">
+                  <ClosedCaptionIcon />
                 </div>
               </Button>
               <Button onClick={() => onDelete(video)}>

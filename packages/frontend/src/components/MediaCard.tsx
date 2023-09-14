@@ -1,7 +1,6 @@
 import IconButton from '@components/atoms/icon-button/IconButton';
 import { getNetworkAPIUrl } from '@config/api';
 import {
-  ChatBubbleBottomCenterTextIcon,
   EllipsisVerticalIcon,
   HeartIcon,
   LinkIcon,
@@ -25,6 +24,7 @@ import { PopoverTrigger } from '@radix-ui/react-popover';
 import { normalizeText } from '@common/utils/validate';
 import { getNetworkFEUrl } from '@/config/app';
 import Image from './atoms/image/Image';
+import ClosedCaptionIcon from './icons/ClosedCaptionIcon';
 
 interface MediaCardProps {
   folderId?: string;
@@ -79,8 +79,8 @@ const MediaCard: FC<MediaCardProps> = ({ media, backTo, folderId }) => {
           )}
           {hasSub && (
             <div className="text-white absolute left-3 top-3 shadow-lg">
-              <div className="w-5 drop-shadow">
-                <ChatBubbleBottomCenterTextIcon className="drop-shadow " />
+              <div className="w-6 drop-shadow">
+                <ClosedCaptionIcon className="drop-shadow " />
               </div>
             </div>
           )}

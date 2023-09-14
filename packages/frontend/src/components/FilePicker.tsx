@@ -5,7 +5,7 @@ import { useGetFileSystemQuery } from '@services/file-system';
 import { cs } from '@utils/helpers';
 import { useMemo, useState } from 'react';
 import { Checkbox } from './ui/checkbox';
-import Button from './atoms/button/Button';
+import { Button } from './ui/button';
 
 type FilePickerProps = {
   isFolder?: boolean;
@@ -162,8 +162,12 @@ const FilePicker: React.FC<FilePickerProps> = (props) => {
       </div>
       {isFileSelected && (
         <div className="flex w-full justify-between gap-3 pt-3">
-          <Button onClick={handleClear}>Clear</Button>
-          <Button onClick={handleSubmit}>Submit</Button>
+          <Button variant="secondary" onClick={handleClear}>
+            Clear
+          </Button>
+          <Button variant="secondary" onClick={handleSubmit}>
+            Submit
+          </Button>
         </div>
       )}
     </div>

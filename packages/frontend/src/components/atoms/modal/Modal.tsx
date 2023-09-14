@@ -28,7 +28,7 @@ const Modal: React.FC<ModalProps> = (props) => {
       contentLabel="Example Modal"
     >
       <div
-        className="z-50 dark:bg-slate-900  bg-slate-100 p-4 rounded-md"
+        className="z-50 dark:bg-slate-900  bg-white p-4 rounded-md"
         style={{
           maxWidth: 'calc(100vw - 100px)',
           minWidth: '400px',
