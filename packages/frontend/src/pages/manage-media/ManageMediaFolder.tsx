@@ -1,11 +1,10 @@
 import React, { FC, useState } from 'react';
 import ManageMediaHeader from './ManageMediaHeader';
-import { folderApi, useGetFolderByIdQuery, useGetMediaInFolderQuery } from '@/services/folder';
+import { useGetFolderByIdQuery, useGetMediaInFolderQuery } from '@/services/folder';
 import { useParams } from 'react-router-dom';
 import Spinner from '@/components/atoms/spinner/Spinner';
 import { useAddMediaMutation } from '@/services/media';
 import MediaCard from '@/components/MediaCard';
-import { useDispatch } from 'react-redux';
 import { FilmIcon, TvIcon, VideoCameraIcon } from '@heroicons/react/24/outline';
 import { normalizeText } from '@common/utils/validate';
 import FullError from '@/components/FullError';
@@ -15,7 +14,6 @@ import NoData from '@/components/NoData';
 interface ManageMediaFolderProps {}
 
 const ManageMediaFolder: FC<ManageMediaFolderProps> = () => {
-  const dispath = useDispatch();
   const { folderId = '' } = useParams();
 
   const [addLoading, setAddLoading] = useState(false);
@@ -28,7 +26,6 @@ const ManageMediaFolder: FC<ManageMediaFolderProps> = () => {
     setAddLoading(true);
     await Promise.allSettled(files.map((f) => addMedia({ file: f, folderId }).unwrap()));
 
-    dispath(folderApi.util.invalidateTags(['MediaInFolder']));
     setAddLoading(false);
   };
 

@@ -1,18 +1,15 @@
 import Spinner from '@components/atoms/spinner/Spinner';
 import { FolderIcon } from '@heroicons/react/24/solid';
-import { mediaApi, useAddMediaMutation, useGetMediaQuery } from '@services/media';
+import { useAddMediaMutation, useGetMediaQuery } from '@services/media';
 import MediaCard from '@/components/MediaCard';
-import { folderApi, useGetFolderQuery } from '@/services/folder';
+import { useGetFolderQuery } from '@/services/folder';
 import { Link } from 'react-router-dom';
 import ManageMediaHeader from './ManageMediaHeader';
 import NoData from '@/components/NoData';
-import { sleep } from '@common/utils/func';
 import SectionGrid from '@/components/SectionGrid';
 import { useState } from 'react';
-import { useDispatch } from 'react-redux';
 
 const ManageMedia = () => {
-  const dispath = useDispatch();
   const { data, isFetching } = useGetMediaQuery('');
   const { data: folderData, isFetching: isFolderFetching } = useGetFolderQuery(
     new Date().toString(),
@@ -24,10 +21,6 @@ const ManageMedia = () => {
   const handleFileSubmit = (files: FileLocationType[]) => {
     setAddLoading(true);
     Promise.allSettled(files.map((file) => addMedia({ file })));
-    sleep(1000);
-
-    dispath(mediaApi.util.invalidateTags(['MediaList']));
-    dispath(folderApi.util.invalidateTags(['FolderList', 'FolderDetails', 'MediaInFolder']));
     setAddLoading(false);
   };
 

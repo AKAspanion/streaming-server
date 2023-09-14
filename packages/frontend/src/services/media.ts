@@ -1,6 +1,8 @@
 import { dynamicBaseQuery } from '@/utils/query';
 import { createApi } from '@reduxjs/toolkit/query/react';
 import toWebVTT from 'srt-webvtt';
+import { dashboardApi } from './dashboard';
+import { folderApi } from './folder';
 
 export const mediaApi = createApi({
   reducerPath: 'mediaApi',
@@ -35,6 +37,10 @@ export const mediaApi = createApi({
         }
 
         return { url: `media/${id}/favourite`, method: 'POST' };
+      },
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
+        await queryFulfilled;
+        dispatch(dashboardApi.util.invalidateTags(['Dashboard']));
       },
       invalidatesTags: ['MediaDetails'],
     }),
@@ -72,6 +78,11 @@ export const mediaApi = createApi({
         method: 'PUT',
         body,
       }),
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
+        await queryFulfilled;
+        dispatch(dashboardApi.util.invalidateTags(['Dashboard']));
+        dispatch(folderApi.util.invalidateTags(['MediaInFolder']));
+      },
       invalidatesTags: ['MediaDetails'],
     }),
     stopMediaById: builder.mutation<APIStatusResponseType, string>({
@@ -80,6 +91,11 @@ export const mediaApi = createApi({
           throw new Error('Media id is required.');
         }
         return { url: `media/${id}/stop`, method: 'PUT' };
+      },
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
+        await queryFulfilled;
+        dispatch(dashboardApi.util.invalidateTags(['Dashboard']));
+        dispatch(folderApi.util.invalidateTags(['MediaInFolder']));
       },
       invalidatesTags: ['MediaDetails'],
     }),
@@ -91,6 +107,11 @@ export const mediaApi = createApi({
 
         return { url: `media/${id}`, method: 'DELETE' };
       },
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
+        await queryFulfilled;
+        dispatch(folderApi.util.invalidateTags(['MediaInFolder']));
+        dispatch(dashboardApi.util.invalidateTags(['Dashboard']));
+      },
       invalidatesTags: ['MediaList'],
     }),
     addMedia: builder.mutation<APIStatusResponseType, AddMediaAPIRequest>({
@@ -100,6 +121,11 @@ export const mediaApi = createApi({
         body: body,
       }),
       invalidatesTags: ['MediaList'],
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
+        await queryFulfilled;
+        dispatch(mediaApi.util.invalidateTags(['MediaList']));
+        dispatch(folderApi.util.invalidateTags(['FolderList', 'FolderDetails', 'MediaInFolder']));
+      },
     }),
     getMediaSubtitleById: builder.query<string, string>({
       query: (id) => {

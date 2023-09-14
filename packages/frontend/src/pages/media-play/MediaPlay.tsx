@@ -8,14 +8,11 @@ import usePollingEffect from '@/hooks/usePolling';
 import useMediaMutation from '@/hooks/useMediaMutation';
 import { HLSPlayer } from '@/components/hls-player/HLSPlayer';
 import { normalizeText } from '@common/utils/validate';
-import { folderApi, useGetMediaInFolderQuery } from '@/services/folder';
-import { dashboardApi } from '@/services/dashboard';
-import { useDispatch } from 'react-redux';
+import { useGetMediaInFolderQuery } from '@/services/folder';
 
 function MediaPlay() {
   const ref = useRef<HTMLVideoElement>(null);
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const { mediaId = '' } = useParams();
   const [searchParams] = useSearchParams();
 
@@ -28,13 +25,7 @@ function MediaPlay() {
   const { data: mediaData, isFetching, status } = usePlayMediaByIdQuery(mediaId);
   const { data: subData, isLoading: subLoading } = useGetMediaSubtitleByIdQuery(mediaId);
 
-  const invalidateCache = () => {
-    dispatch(dashboardApi.util.invalidateTags(['Dashboard']));
-    dispatch(folderApi.util.invalidateTags(['MediaInFolder']));
-  };
-
   const stopVideo = () => {
-    invalidateCache();
     mediaData?.data?.id && stopMedia(mediaData?.data?.id);
   };
 
@@ -104,7 +95,6 @@ function MediaPlay() {
             onNext={() => stopVideo()}
             onUnmount={() => stopVideo()}
             onEnded={async () => {
-              invalidateCache();
               if (mediaData?.data?.id && ref.current) {
                 await updateMediaStatus({
                   watched: true,
