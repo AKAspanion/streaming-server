@@ -59,7 +59,7 @@
       "perMachine": true,
       "deleteAppDataOnUninstall": true,
       "allowToChangeInstallationDirectory": true,
-      "uninstallDisplayName": "Video Streaming Server Uninstall"
+      "uninstallDisplayName": "Video Streaming Server"
     },
     "win": {
       "publish": [
@@ -72,12 +72,7 @@
       "publish": [
         "github"
       ],
-      "icon": "packages/frontend/dist/logo.png"
-    },
-    "linux": {
-      "publish": [
-        "github"
-      ],
+      "type": "development",
       "icon": "packages/frontend/dist/logo.png"
     }
   },

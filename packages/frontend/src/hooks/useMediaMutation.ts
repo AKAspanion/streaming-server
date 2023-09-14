@@ -8,11 +8,8 @@ import {
 } from '@services/media';
 import { useCallback } from 'react';
 import useToastStatus from './useToastStatus';
-import { folderApi } from '@/services/folder';
-import { useDispatch } from 'react-redux';
 
 const useMediaMutation = (options?: { onDelete?: () => void }) => {
-  const dispath = useDispatch();
   const { onDelete } = options || {};
   const [processDelete, { isLoading: isDeleteLoading, status: deleteStatus, data: deleteData }] =
     useDeleteMediaByIdMutation();
@@ -28,10 +25,9 @@ const useMediaMutation = (options?: { onDelete?: () => void }) => {
     async (id: string) => {
       await processDelete(id).unwrap();
 
-      dispath(folderApi.util.resetApiState());
       onDelete && onDelete();
     },
-    [dispath, onDelete, processDelete],
+    [onDelete, processDelete],
   );
 
   useToastStatus(deleteStatus, {

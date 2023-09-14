@@ -15,12 +15,10 @@ import { extractHLSFileInfo, generateManifest } from '@utils/hls';
 import { RequestHandler } from 'express';
 import {
   addOneMedia,
-  addFileSubtitleForMedia,
-  extractSubtitleForMedia,
   getAllMediaData,
   getOneMediaData,
-  extractPosterForMedia,
   deleteMediaData,
+  addMediaWithFolder,
 } from './mediaData';
 import { normalizeText } from '@common/utils/validate';
 import logger from '@utils/logger';
@@ -50,16 +48,10 @@ export const addMedia: RequestHandler = async (req, res) => {
   const { type } = getFileType(file.path);
 
   if (type === 'directory') {
-    throw new AppError({ description: 'File path is a directory', httpCode: HttpCode.BAD_REQUEST });
+    await addMediaWithFolder(file?.path, file.name || file.path);
+  } else {
+    await addOneMedia(file?.path, folderId);
   }
-
-  const { data } = await addOneMedia(file?.path, folderId);
-  extractPosterForMedia(data?.id, file?.path);
-
-  await Promise.all([
-    addFileSubtitleForMedia(data?.id, file?.path),
-    extractSubtitleForMedia(data?.id, file?.path, data.subtitleStreams),
-  ]);
 
   return res.status(HttpCode.OK_CREATED).send({ data: { message: 'Media added successfully' } });
 };

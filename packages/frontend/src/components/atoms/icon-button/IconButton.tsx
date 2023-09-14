@@ -18,7 +18,7 @@ const IconButton: FC<IconButtonProps> = ({ kind = 'primary', className, children
             kind === 'secondary',
         },
         {
-          'bg-white hover:bg-slate-100 dark:hover:bg-slate-700 dark:bg-slate-800':
+          'bg-white hover:bg-slate-100 dark:hover:bg-slate-700 dark:bg-slate-900':
             kind === 'primary',
         },
         className,

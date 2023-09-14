@@ -51,7 +51,7 @@ export const folderApi = createApi({
         }
         return { url: `folder/${id}`, method: 'DELETE' };
       },
-      invalidatesTags: ['FolderList'],
+      invalidatesTags: ['FolderList', 'MediaInFolder'],
     }),
   }),
 });

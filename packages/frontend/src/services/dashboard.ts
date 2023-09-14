@@ -4,22 +4,30 @@ import { dynamicBaseQuery } from '@/utils/query';
 export const dashboardApi = createApi({
   reducerPath: 'dashboardApi',
   baseQuery: dynamicBaseQuery,
-  tagTypes: ['dashboard'],
+  tagTypes: ['Dashboard'],
   endpoints: (builder) => ({
     getRecentAdded: builder.query<{ data: MediaTypeFull[] }, void>({
       query: () => `dashboard/recent`,
-      providesTags: ['dashboard'],
+      providesTags: ['Dashboard'],
     }),
     getFavourites: builder.query<{ data: MediaTypeFull[] }, void>({
       query: () => `dashboard/favourite`,
-      providesTags: ['dashboard'],
+      providesTags: ['Dashboard'],
     }),
     getRecentWatched: builder.query<{ data: MediaTypeFull[] }, void>({
       query: () => `dashboard/continue`,
-      providesTags: ['dashboard'],
+      providesTags: ['Dashboard'],
+    }),
+    getRecentCompleted: builder.query<{ data: MediaTypeFull[] }, void>({
+      query: () => `dashboard/completed`,
+      providesTags: ['Dashboard'],
     }),
   }),
 });
 
-export const { useGetRecentAddedQuery, useGetRecentWatchedQuery, useGetFavouritesQuery } =
-  dashboardApi;
+export const {
+  useGetRecentCompletedQuery,
+  useGetRecentAddedQuery,
+  useGetRecentWatchedQuery,
+  useGetFavouritesQuery,
+} = dashboardApi;

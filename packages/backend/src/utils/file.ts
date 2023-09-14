@@ -6,7 +6,7 @@ export const getFileType = (filepath: string) => {
   const stat = fs.statSync(filepath);
   const isFile = stat.isFile();
 
-  return { type: isFile ? 'file' : ('directory' as PathLocationType), isFile };
+  return { type: isFile ? 'file' : ('directory' as PathLocationType), isFile, stat };
 };
 
 export const checkIfFileExists = (filePath: string) => {

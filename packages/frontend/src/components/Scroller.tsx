@@ -68,10 +68,11 @@ const Scroller: React.FC<ScrollerProps> = ({
         setShowLeftScroller(false);
       }
     }
-  }, []);
+  }, [truncate]);
 
   useLayoutEffect(() => {
     handleULUpdate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEventListener('scroll', handleULUpdate, divRef);
@@ -92,7 +93,7 @@ const Scroller: React.FC<ScrollerProps> = ({
           ref={divRef}
           className={cs(
             'scroller-children flex items-start gap-4 overflow-x-auto overflow-y-hidden scroll-smooth',
-            { 'px-4': padded, wrap: wrap },
+            { 'px-4 pb-4': padded, wrap: wrap },
           )}
           style={{ width: width, scrollbarHeight: 'none' } as React.CSSProperties}
         >
@@ -104,7 +105,7 @@ const Scroller: React.FC<ScrollerProps> = ({
               'z-20 right-0 absolute inline-flex cursor-pointer items-center justify-center',
               {
                 'h-14 w-14 shadow-lg  bg-slate-50 dark:bg-slate-950 rounded-full': top,
-                'h-full bg-gradient-to-r from-transparent to-slate-50 dark:to-slate-950': !top,
+                'h-full bg-gradient-to-r from-transparent to-slate-400 dark:to-slate-950': !top,
               },
             )}
             onClick={handleScroll(1)}
@@ -120,7 +121,7 @@ const Scroller: React.FC<ScrollerProps> = ({
               'z-20 left-0 absolute inline-flex cursor-pointer items-center justify-center',
               {
                 'h-14 w-14 shadow-lg bg-slate-50 dark:bg-slate-950 rounded-full': top,
-                'h-full bg-gradient-to-l from-transparent to-slate-50 dark:to-slate-950': !top,
+                'h-full bg-gradient-to-l from-transparent to-slate-400 dark:to-slate-950': !top,
               },
             )}
             onClick={handleScroll(-1)}

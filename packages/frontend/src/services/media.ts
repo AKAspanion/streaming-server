@@ -1,11 +1,13 @@
 import { dynamicBaseQuery } from '@/utils/query';
 import { createApi } from '@reduxjs/toolkit/query/react';
 import toWebVTT from 'srt-webvtt';
+import { dashboardApi } from './dashboard';
+import { folderApi } from './folder';
 
 export const mediaApi = createApi({
   reducerPath: 'mediaApi',
   baseQuery: dynamicBaseQuery,
-  tagTypes: ['Media', 'MediaDetails'],
+  tagTypes: ['MediaList', 'MediaDetails', 'PlayMedia'],
   endpoints: (builder) => ({
     getMediaById: builder.query<{ data: MediaTypeJSONDB }, string>({
       query: (id) => {
@@ -23,10 +25,11 @@ export const mediaApi = createApi({
         }
         return `media/${id}/play`;
       },
+      providesTags: ['PlayMedia'],
     }),
     getMedia: builder.query<{ data: MediaType[] }, string>({
       query: () => `media`,
-      providesTags: ['Media', 'MediaDetails'],
+      providesTags: ['MediaList'],
     }),
     markMediaFavourite: builder.mutation<APIStatusResponseType, string>({
       query: (id) => {
@@ -35,6 +38,10 @@ export const mediaApi = createApi({
         }
 
         return { url: `media/${id}/favourite`, method: 'POST' };
+      },
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
+        await queryFulfilled;
+        dispatch(dashboardApi.util.invalidateTags(['Dashboard']));
       },
       invalidatesTags: ['MediaDetails'],
     }),
@@ -65,14 +72,19 @@ export const mediaApi = createApi({
     }),
     updateMediaStatus: builder.mutation<
       APIStatusResponseType,
-      { id: string; paused: boolean; currentTime: number }
+      { id: string; paused: boolean; currentTime: number; watched?: boolean }
     >({
       query: (body) => ({
         url: `media/${body.id}/status`,
         method: 'PUT',
         body,
       }),
-      invalidatesTags: ['MediaDetails'],
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
+        await queryFulfilled;
+        dispatch(dashboardApi.util.invalidateTags(['Dashboard']));
+        dispatch(folderApi.util.invalidateTags(['MediaInFolder']));
+      },
+      invalidatesTags: ['MediaDetails', 'MediaList'],
     }),
     stopMediaById: builder.mutation<APIStatusResponseType, string>({
       query: (id) => {
@@ -81,7 +93,12 @@ export const mediaApi = createApi({
         }
         return { url: `media/${id}/stop`, method: 'PUT' };
       },
-      invalidatesTags: ['MediaDetails'],
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
+        await queryFulfilled;
+        dispatch(dashboardApi.util.invalidateTags(['Dashboard']));
+        dispatch(folderApi.util.invalidateTags(['MediaInFolder']));
+      },
+      invalidatesTags: ['MediaDetails', 'MediaList'],
     }),
     deleteMediaById: builder.mutation<APIStatusResponseType, string>({
       query: (id) => {
@@ -91,7 +108,12 @@ export const mediaApi = createApi({
 
         return { url: `media/${id}`, method: 'DELETE' };
       },
-      invalidatesTags: ['Media'],
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
+        await queryFulfilled;
+        dispatch(folderApi.util.invalidateTags(['MediaInFolder']));
+        dispatch(dashboardApi.util.invalidateTags(['Dashboard']));
+      },
+      invalidatesTags: ['MediaList'],
     }),
     addMedia: builder.mutation<APIStatusResponseType, AddMediaAPIRequest>({
       query: (body) => ({
@@ -99,7 +121,12 @@ export const mediaApi = createApi({
         method: 'POST',
         body: body,
       }),
-      invalidatesTags: ['Media'],
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
+        await queryFulfilled;
+        dispatch(mediaApi.util.invalidateTags(['MediaList']));
+        dispatch(folderApi.util.invalidateTags(['FolderList', 'FolderDetails', 'MediaInFolder']));
+      },
+      invalidatesTags: ['MediaList'],
     }),
     getMediaSubtitleById: builder.query<string, string>({
       query: (id) => {

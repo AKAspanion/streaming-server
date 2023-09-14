@@ -68,7 +68,7 @@ const Sidebar: FC<SidebarProps> = () => {
         { 'translate-x-0 sm:translate-x-0': sidebarOpen },
         { '-translate-x-20 sm:translate-x-0': !sidebarOpen },
         'transition-all',
-        'bg-white select-none dark:bg-slate-800 border-r dark:border-slate-700 border-slate-300 h-full p-3',
+        'bg-white select-none dark:bg-slate-900 border-r dark:border-slate-800 border-slate-300 h-full p-3',
       )}
     >
       <div className={classNames('flex items-center justify-between mb-4 ml-1.5 w-10', {})}>

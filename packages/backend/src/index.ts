@@ -33,7 +33,11 @@ app.use(notFoundHandler);
 app.use(appErrorHandler);
 
 app.listen(port, () => {
-  console.log(`   ⚡️ BE Server is ready`);
+  console.log(
+    ['A:', 'B:', 'C:', 'D:', 'E:', 'F:', 'G:', 'H:', 'I:', 'J:', 'K:', 'L:', 'M:'].slice(0, 0),
+    ['N:', 'O:', 'P:', 'Q:', 'R:', 'S:', 'T:', 'U:', 'V:', 'W:', 'X:', 'W:', 'Z:'].slice(0, 0),
+    `⚡️ BE Server is ready`,
+  );
   getIPv4Address().forEach((address) => {
     console.log(`   ➜  ${address.type}: http://${address.address}:${port}/`);
   });

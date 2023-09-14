@@ -41,64 +41,7 @@ export const routes: RouteObject[] = [
           crumb: [() => ({ to: '/dashboard', label: 'Home' })],
         },
       },
-      {
-        path: '/video-upload',
-        element: <EmptyLayout />,
-        handle: {
-          name: 'Video',
-          icon: <VideoCameraIcon />,
-          crumb: [() => ({ to: '/video-upload', label: 'Video Upload' })],
-        },
-        children: [
-          {
-            index: true,
-            element: <VideoUpload />,
-            handle: {
-              hide: true,
-              name: 'Video List',
-              crumb: [() => ({ to: '/video-upload', label: 'Video List' })],
-            },
-          },
-        ],
-      },
 
-      {
-        path: '/media-search',
-        element: <EmptyLayout />,
-        handle: {
-          hide: true,
-          name: 'Search Media',
-          icon: <MagnifyingGlassIcon />,
-        },
-        children: [
-          {
-            index: true,
-            element: <div className="p-3">Search</div>,
-            handle: {
-              hide: true,
-              crumb: [() => ({ to: '/media-search', label: 'Search Media' })],
-            },
-          },
-        ],
-      },
-      {
-        path: '/video-play/:videoId',
-        element: <VideoPlay />,
-        handle: {
-          hide: true,
-          full: true,
-          name: 'Video Play',
-        },
-      },
-      {
-        path: '/media-play/:mediaId',
-        element: <MediaPlay />,
-        handle: {
-          hide: true,
-          full: true,
-          name: 'Media Play',
-        },
-      },
       {
         path: '/manage-media',
         element: <EmptyLayout />,
@@ -170,6 +113,63 @@ export const routes: RouteObject[] = [
             },
           },
         ],
+      },
+      {
+        path: '/video-upload',
+        element: <EmptyLayout />,
+        handle: {
+          name: 'Video',
+          icon: <VideoCameraIcon />,
+          crumb: [() => ({ to: '/video-upload', label: 'Video Upload' })],
+        },
+        children: [
+          {
+            index: true,
+            element: <VideoUpload />,
+            handle: {
+              hide: true,
+              name: 'Video List',
+              crumb: [() => ({ to: '/video-upload', label: 'Video List' })],
+            },
+          },
+        ],
+      },
+      {
+        path: '/media-search',
+        element: <EmptyLayout />,
+        handle: {
+          hide: true,
+          name: 'Search Media',
+          icon: <MagnifyingGlassIcon />,
+        },
+        children: [
+          {
+            index: true,
+            element: <div className="p-3">Search</div>,
+            handle: {
+              hide: true,
+              crumb: [() => ({ to: '/media-search', label: 'Search Media' })],
+            },
+          },
+        ],
+      },
+      {
+        path: '/video-play/:videoId',
+        element: <VideoPlay />,
+        handle: {
+          hide: true,
+          full: true,
+          name: 'Video Play',
+        },
+      },
+      {
+        path: '/media-play/:mediaId',
+        element: <MediaPlay />,
+        handle: {
+          hide: true,
+          full: true,
+          name: 'Media Play',
+        },
       },
     ],
   },

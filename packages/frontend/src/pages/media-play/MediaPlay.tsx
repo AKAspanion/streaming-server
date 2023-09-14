@@ -25,7 +25,9 @@ function MediaPlay() {
   const { data: mediaData, isFetching, status } = usePlayMediaByIdQuery(mediaId);
   const { data: subData, isLoading: subLoading } = useGetMediaSubtitleByIdQuery(mediaId);
 
-  const stopVideo = () => mediaData?.data?.id && stopMedia(mediaData?.data?.id);
+  const stopVideo = () => {
+    mediaData?.data?.id && stopMedia(mediaData?.data?.id);
+  };
 
   const nextLink = useMemo(() => {
     let path = '';
@@ -44,6 +46,7 @@ function MediaPlay() {
   usePollingEffect(async () => {
     if (ref.current && mediaData?.data?.id) {
       await updateMediaStatus({
+        watched: false,
         id: mediaData?.data?.id,
         paused: ref.current?.paused,
         currentTime: ref.current?.currentTime,
@@ -67,6 +70,10 @@ function MediaPlay() {
 
   if (resume) {
     currentTime = Number(resume);
+
+    if (mediaData?.data?.watched) {
+      currentTime = 0;
+    }
   }
 
   const backTo = folderId ? `/manage-media/${folderId}/folder` : back;
@@ -87,9 +94,16 @@ function MediaPlay() {
             thumbnailSrc={`${getNetworkAPIUrl()}/media/${mediaData?.data?.id}/thumbnail/seek`}
             onNext={() => stopVideo()}
             onUnmount={() => stopVideo()}
-            onEnded={() => {
+            onEnded={async () => {
+              if (mediaData?.data?.id && ref.current) {
+                await updateMediaStatus({
+                  watched: true,
+                  id: mediaData?.data?.id,
+                  paused: ref.current?.paused,
+                  currentTime: ref.current?.currentTime,
+                });
+              }
               navigate(backTo);
-              stopVideo();
             }}
           />
         ) : null}

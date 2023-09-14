@@ -35,8 +35,8 @@ const Header: React.FC<HeaderProps> = ({ title }) => {
   return (
     <div
       className={cs(
-        'flex justify-between items-center w-screen bg-white dark:bg-slate-800',
-        'border-slate-300 border-b dark:border-slate-700 h-[var(--header-height)]',
+        'flex justify-between items-center w-screen bg-white dark:bg-slate-900',
+        'border-slate-300 border-b dark:border-slate-800 h-[var(--header-height)]',
       )}
     >
       <div className={cs('p-2 px-4 font-bold flex flex-1 gap-3 items-center text-left')}>
@@ -46,6 +46,7 @@ const Header: React.FC<HeaderProps> = ({ title }) => {
         <div className="flex flex-1 header-electron">
           <div className="line-clamp-1">{title}</div>
         </div>
+        <div className="text-sm">{window?.appVersion ? 'v' + window.appVersion : ''}</div>
       </div>
       <div className="flex gap-1 px-2">
         <IconButton onClick={switchTheme}>

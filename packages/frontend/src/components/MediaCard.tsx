@@ -93,7 +93,7 @@ const MediaCard: FC<MediaCardProps> = ({ media, backTo, folderId }) => {
         </CoverButton>
         <div
           className={cs(
-            'drop-shadow-xl text-white',
+            'shadow-md text-white',
             'group-hover:to-transparent  overflow-hidden',
             'bg-gradient-to-b from-transparent to-slate-900 group-hover:to-transparent',
             'absolute bottom-0 flex gap-4 justify-between items-center rounded-b-lg w-full h-[52px] z-20',

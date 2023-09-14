@@ -3,25 +3,31 @@ import { DocumentIcon, FolderIcon } from '@heroicons/react/24/solid';
 import useToastStatus from '@hooks/useToastStatus';
 import { useGetFileSystemQuery } from '@services/file-system';
 import { cs } from '@utils/helpers';
-import { normalizeText } from '@common/utils/validate';
 import { useMemo, useState } from 'react';
 import { Checkbox } from './ui/checkbox';
 import Button from './atoms/button/Button';
-import { ALLOWED_VIDEO_FILES } from '@common/constants/app';
 
 type FilePickerProps = {
+  isFolder?: boolean;
   onSubmit?: (files: FileLocationType[]) => void;
 };
 
 const FilePicker: React.FC<FilePickerProps> = (props) => {
-  const { onSubmit } = props;
+  const { isFolder, onSubmit } = props;
   const [dir, setDir] = useState<string>('');
   const { data, status, isFetching } = useGetFileSystemQuery({ dir });
 
   const [selectedFiles, setSelectedFiles] = useState<Record<string, boolean>>({});
 
   const locations = data?.data || [];
-  const files = useMemo(() => (data?.data || []).filter((l) => l.isFile), [data?.data]);
+  const files = useMemo(() => {
+    const filtered = (data?.data || []).filter((l) => l?.name !== '...');
+    if (isFolder) {
+      return filtered.filter((l) => l?.isFile);
+    } else {
+      return filtered;
+    }
+  }, [isFolder, data?.data]);
 
   const handleFileChange = (f: FileLocationType) => {
     if (!f.isFile) {
@@ -116,13 +122,13 @@ const FilePicker: React.FC<FilePickerProps> = (props) => {
                   key={l.path}
                   className={cs(
                     'flex gap-2 items-center justify-between rounded px-2 py-1 bg-slate-300 dark:bg-slate-600',
-                    { 'hover:bg-slate-200 dark:hover:bg-slate-500': !l.isFile },
+                    'hover:bg-slate-200 dark:hover:bg-slate-500',
                   )}
                 >
                   <div
-                    className={cs('flex items-center flex-1 gap-2 w-[var(--file-title-width)]', {
-                      'cursor-pointer': !l.isFile,
-                    })}
+                    className={cs(
+                      'flex items-center flex-1 gap-2 w-[var(--file-title-width)] cursor-pointer',
+                    )}
                     onClick={() => handleFileChange(l)}
                   >
                     <div className="w-4">{l.isFile ? <DocumentIcon /> : <FolderIcon />}</div>
@@ -134,12 +140,19 @@ const FilePicker: React.FC<FilePickerProps> = (props) => {
                     </div>
                   </div>
                   <div>
-                    {ALLOWED_VIDEO_FILES.includes(normalizeText(l.ext)) && (
+                    {isFolder ? (
+                      l.isFile ? (
+                        <Checkbox
+                          checked={selectedFiles[l.path]}
+                          onCheckedChange={(v) => handleFileSelect(v, l)}
+                        />
+                      ) : null
+                    ) : l?.name !== '...' ? (
                       <Checkbox
                         checked={selectedFiles[l.path]}
                         onCheckedChange={(v) => handleFileSelect(v, l)}
                       />
-                    )}
+                    ) : null}
                   </div>
                 </div>
               );

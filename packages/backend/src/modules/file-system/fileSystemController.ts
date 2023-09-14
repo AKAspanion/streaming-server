@@ -7,7 +7,6 @@ import uniqBy from 'lodash.uniqby';
 import { getFileType, listDrives } from '@utils/file';
 import { ALLOWED_VIDEO_FILES } from '@common/constants/app';
 import logger from '@utils/logger';
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 
 export const getFilesInPath: RequestHandler = async (req, res) => {
   const { dir: dirInReq } = req.body;
@@ -37,8 +36,6 @@ export const getFilesInPath: RequestHandler = async (req, res) => {
   }
 
   if (!dir) {
-    console.log('A:', 'B:', 'C:', 'D:', 'E:', 'F:', 'G:', 'H:', 'I:', 'J:', 'K:', 'L:', 'M:');
-    console.log('N:', 'O:', 'P:', 'Q:', 'R:', 'S:', 'T:', 'U:', 'V:', 'W:', 'X:', 'W:', 'Z:');
     return res.status(HttpCode.OK).send({ data: drives });
   } else {
     try {

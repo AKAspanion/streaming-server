@@ -7,23 +7,28 @@ import { Link } from 'react-router-dom';
 import ManageMediaHeader from './ManageMediaHeader';
 import NoData from '@/components/NoData';
 import SectionGrid from '@/components/SectionGrid';
+import { useState } from 'react';
 
 const ManageMedia = () => {
   const { data, isFetching } = useGetMediaQuery('');
-  const { data: folderData, isFetching: isFolderFetching } = useGetFolderQuery('');
+  const { data: folderData, isFetching: isFolderFetching } = useGetFolderQuery(
+    new Date().toString(),
+  );
   const [addMedia, { isLoading }] = useAddMediaMutation();
 
+  const [addLoading, setAddLoading] = useState(false);
+
   const handleFileSubmit = (files: FileLocationType[]) => {
-    files.forEach((f) => {
-      addMedia({ file: f });
-    });
+    setAddLoading(true);
+    Promise.allSettled(files.map((file) => addMedia({ file })));
+    setAddLoading(false);
   };
 
   const mediaList = data?.data || [];
 
   const folderList = folderData?.data || [];
 
-  const loading = isFetching || isLoading || isFolderFetching;
+  const loading = isFetching || isLoading || isFolderFetching || addLoading;
 
   const noData = mediaList.length === 0 && folderList.length === 0 && !loading;
 
@@ -32,6 +37,7 @@ const ManageMedia = () => {
   ) : (
     <div className="relative h-full">
       <ManageMediaHeader
+        info
         title="Media Stream"
         subtitle="Add any media file here to stream."
         onFileSubmit={handleFileSubmit}
