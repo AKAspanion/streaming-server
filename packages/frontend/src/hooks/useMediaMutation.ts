@@ -10,6 +10,7 @@ import { useCallback } from 'react';
 import useToastStatus from './useToastStatus';
 import { folderApi } from '@/services/folder';
 import { useDispatch } from 'react-redux';
+import { dashboardApi } from '@/services/dashboard';
 
 const useMediaMutation = (options?: { onDelete?: () => void }) => {
   const dispath = useDispatch();
@@ -28,7 +29,8 @@ const useMediaMutation = (options?: { onDelete?: () => void }) => {
     async (id: string) => {
       await processDelete(id).unwrap();
 
-      dispath(folderApi.util.resetApiState());
+      dispath(folderApi.util.invalidateTags(['MediaInFolder']));
+      dispath(dashboardApi.util.invalidateTags(['Dashboard']));
       onDelete && onDelete();
     },
     [dispath, onDelete, processDelete],

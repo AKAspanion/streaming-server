@@ -160,7 +160,7 @@ export default class HLSManager {
     global.transcoders.push(transcoder);
     const promises = await transcoder.start(output, audioStreamIndex);
 
-    await Promise.all(promises);
+    await Promise.allSettled(promises);
 
     return true;
   }

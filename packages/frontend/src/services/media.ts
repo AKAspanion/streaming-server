@@ -65,7 +65,7 @@ export const mediaApi = createApi({
     }),
     updateMediaStatus: builder.mutation<
       APIStatusResponseType,
-      { id: string; paused: boolean; currentTime: number }
+      { id: string; paused: boolean; currentTime: number; watched?: boolean }
     >({
       query: (body) => ({
         url: `media/${body.id}/status`,

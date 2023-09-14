@@ -150,7 +150,7 @@ export const extractSubtitleForMedia = async (
       }
     }
 
-    Promise.all(addPromises);
+    Promise.allSettled(addPromises);
     return true;
   } catch (error) {
     logger.error(error);

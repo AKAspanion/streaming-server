@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import ManageMediaHeader from './ManageMediaHeader';
 import { folderApi, useGetFolderByIdQuery, useGetMediaInFolderQuery } from '@/services/folder';
 import { useParams } from 'react-router-dom';
@@ -18,20 +18,24 @@ const ManageMediaFolder: FC<ManageMediaFolderProps> = () => {
   const dispath = useDispatch();
   const { folderId = '' } = useParams();
 
+  const [addLoading, setAddLoading] = useState(false);
+
   const [addMedia, { isLoading }] = useAddMediaMutation();
   const { data: folderData, isFetching } = useGetFolderByIdQuery(folderId);
   const { data: mediaData, isFetching: isMediaFetching } = useGetMediaInFolderQuery(folderId);
 
   const handleFileSubmit = async (files: FileLocationType[]) => {
-    await Promise.all(files.map((f) => addMedia({ file: f, folderId }).unwrap()));
+    setAddLoading(true);
+    await Promise.allSettled(files.map((f) => addMedia({ file: f, folderId }).unwrap()));
 
-    dispath(folderApi.util.resetApiState());
+    dispath(folderApi.util.invalidateTags(['MediaInFolder']));
+    setAddLoading(false);
   };
 
   const folder = folderData?.data;
   const mediaList = mediaData?.data || [];
 
-  const loading = isLoading || isFetching || isMediaFetching;
+  const loading = isLoading || isFetching || isMediaFetching || addLoading;
 
   const getCategoryIcon = () => {
     if (folder?.category === 'movie') {

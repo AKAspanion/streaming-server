@@ -56,7 +56,7 @@ export const addMedia: RequestHandler = async (req, res) => {
   const { data } = await addOneMedia(file?.path, folderId);
   extractPosterForMedia(data?.id, file?.path);
 
-  await Promise.all([
+  await Promise.allSettled([
     addFileSubtitleForMedia(data?.id, file?.path),
     extractSubtitleForMedia(data?.id, file?.path, data.subtitleStreams),
   ]);

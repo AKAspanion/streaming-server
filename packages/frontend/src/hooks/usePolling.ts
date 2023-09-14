@@ -8,7 +8,7 @@ type UsePollingEffect = (
 ) => void;
 
 const usePollingEffect: UsePollingEffect = (asyncCallback, dependencies = [], options) => {
-  const { interval = 10_000, onCleanUp } = options || {};
+  const { interval = 5_000, onCleanUp } = options || {};
   const timeoutIdRef = useRef<NodeJS.Timeout>();
   useEffect(() => {
     let _stopped = false;

@@ -50,7 +50,7 @@ export const deleteFolder: RequestHandler = async (req, res) => {
   const { data: mediaList } = await getAllMediaData();
 
   try {
-    await Promise.all(
+    await Promise.allSettled(
       mediaList.filter((m) => m.folderId === data.id).map((media) => deleteMediaData(media)),
     );
   } catch (error) {

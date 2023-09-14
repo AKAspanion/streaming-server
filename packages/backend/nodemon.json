@@ -2,6 +2,6 @@
   "execMap": {
     "ts": "ts-node"
   },
-  "verbose": true,
+  "verbose": false,
   "ignore": ["README", "build", "dist", "_appdata"]
 }

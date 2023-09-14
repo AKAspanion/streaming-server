@@ -54,7 +54,6 @@ type HLSPlayerProps = {
 
 let lazyHeaderTimeout: NodeJS.Timeout;
 let lazyControlsTimeout: NodeJS.Timeout;
-// let seekTimeout: NodeJS.Timeout;
 export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, outerRef) => {
   const {
     src,
@@ -147,11 +146,6 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
 
         const track = document.createElement('track');
         track.src = trackText;
-        // if (mediaData?.data?.subs) {
-        //   track.label = normalizeText(
-        //     mediaData?.data?.subs[mediaData?.data?.selectedSubtitle || 0]?.name,
-        //   );
-        // }
         track.default = true;
         videoRef.appendChild(track);
 
