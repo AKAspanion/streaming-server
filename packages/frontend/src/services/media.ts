@@ -7,7 +7,7 @@ import { folderApi } from './folder';
 export const mediaApi = createApi({
   reducerPath: 'mediaApi',
   baseQuery: dynamicBaseQuery,
-  tagTypes: ['MediaList', 'MediaDetails'],
+  tagTypes: ['MediaList', 'MediaDetails', 'PlayMedia'],
   endpoints: (builder) => ({
     getMediaById: builder.query<{ data: MediaTypeJSONDB }, string>({
       query: (id) => {
@@ -25,6 +25,7 @@ export const mediaApi = createApi({
         }
         return `media/${id}/play`;
       },
+      providesTags: ['PlayMedia'],
     }),
     getMedia: builder.query<{ data: MediaType[] }, string>({
       query: () => `media`,
@@ -83,7 +84,7 @@ export const mediaApi = createApi({
         dispatch(dashboardApi.util.invalidateTags(['Dashboard']));
         dispatch(folderApi.util.invalidateTags(['MediaInFolder']));
       },
-      invalidatesTags: ['MediaDetails'],
+      invalidatesTags: ['MediaDetails', 'MediaList'],
     }),
     stopMediaById: builder.mutation<APIStatusResponseType, string>({
       query: (id) => {
@@ -97,7 +98,7 @@ export const mediaApi = createApi({
         dispatch(dashboardApi.util.invalidateTags(['Dashboard']));
         dispatch(folderApi.util.invalidateTags(['MediaInFolder']));
       },
-      invalidatesTags: ['MediaDetails'],
+      invalidatesTags: ['MediaDetails', 'MediaList'],
     }),
     deleteMediaById: builder.mutation<APIStatusResponseType, string>({
       query: (id) => {
@@ -120,12 +121,12 @@ export const mediaApi = createApi({
         method: 'POST',
         body: body,
       }),
-      invalidatesTags: ['MediaList'],
       async onQueryStarted(_, { dispatch, queryFulfilled }) {
         await queryFulfilled;
         dispatch(mediaApi.util.invalidateTags(['MediaList']));
         dispatch(folderApi.util.invalidateTags(['FolderList', 'FolderDetails', 'MediaInFolder']));
       },
+      invalidatesTags: ['MediaList'],
     }),
     getMediaSubtitleById: builder.query<string, string>({
       query: (id) => {
