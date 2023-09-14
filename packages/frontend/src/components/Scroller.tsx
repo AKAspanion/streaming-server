@@ -68,10 +68,11 @@ const Scroller: React.FC<ScrollerProps> = ({
         setShowLeftScroller(false);
       }
     }
-  }, []);
+  }, [truncate]);
 
   useLayoutEffect(() => {
     handleULUpdate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEventListener('scroll', handleULUpdate, divRef);

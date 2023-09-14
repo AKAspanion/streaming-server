@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { setup } from './config/setup.ts';
