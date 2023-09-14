@@ -46,6 +46,7 @@ const Header: React.FC<HeaderProps> = ({ title }) => {
         <div className="flex flex-1 header-electron">
           <div className="line-clamp-1">{title}</div>
         </div>
+        <div className="text-sm">{window?.appVersion ? 'v' + window.appVersion : ''}</div>
       </div>
       <div className="flex gap-1 px-2">
         <IconButton onClick={switchTheme}>
