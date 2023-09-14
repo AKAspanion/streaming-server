@@ -12,6 +12,7 @@
     "prebuild:electron:win": "yarn clean:root && yarn package:win",
     "package:mac": "lerna run package:mac --parallel",
     "package:win": "lerna run package:win --parallel",
+    "dev:pages": "cd pages && yarn dev",
     "dev": "lerna run dev --parallel",
     "start": "lerna run start --parallel",
     "build": "lerna run build --parallel",

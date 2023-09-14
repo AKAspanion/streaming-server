@@ -44,7 +44,7 @@ function Breadcrumbs() {
         'h-[var(--breadcrumbs-height)]',
       )}
     >
-      <IconButton onClick={goBack}>
+      <IconButton kind="secondary" onClick={goBack}>
         <div className="w-4">
           <ArrowLeftIcon />
         </div>
