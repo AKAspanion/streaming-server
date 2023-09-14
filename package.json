@@ -59,7 +59,7 @@
       "perMachine": true,
       "deleteAppDataOnUninstall": true,
       "allowToChangeInstallationDirectory": true,
-      "uninstallDisplayName": "Video Streaming Server Uninstall"
+      "uninstallDisplayName": "Video Streaming Server"
     },
     "win": {
       "publish": [
