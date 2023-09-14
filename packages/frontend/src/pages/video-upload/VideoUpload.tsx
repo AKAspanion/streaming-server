@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import {
   useAddVideoMutation,
   useAddVideoSubtitleMutation,
@@ -18,8 +18,12 @@ import { InformationCircleIcon } from '@heroicons/react/24/solid';
 import NoData from '@/components/NoData';
 import { cs } from '@/utils/helpers';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import SectionGrid from '@/components/SectionGrid';
 
 function VideoUpload() {
+  const [isGridView, setIsGridView] = useState(true);
   const ref = useRef<HTMLInputElement>(null);
   const videoLoadProgress = useAppSelector((s) => s?.globalData?.videoUploadProgress);
 
@@ -93,6 +97,23 @@ function VideoUpload() {
     errorMessage: 'Failed to delete Video',
   });
 
+  const ParsedVideos = () => (
+    <React.Fragment>
+      {parsedVideos.map((v) => {
+        return (
+          <VideoListItem
+            key={v.id}
+            video={v}
+            loading={false}
+            isGrid={isGridView}
+            onDelete={handleDelete}
+            onSubtitle={handleSubtitle}
+          />
+        );
+      })}
+    </React.Fragment>
+  );
+
   const loading = isLoading || subLoading || deleteLoading;
 
   return (
@@ -135,20 +156,33 @@ function VideoUpload() {
                       </TooltipTrigger>
                       <TooltipContent className="text-center p-3">
                         <p>When a video is added here,</p>
-                        <p>It is uploaded and streamed from server.</p>
+                        <p>It is uploaded and streamed from server</p>
+                        <p className="text-xs opacity-60">(only works for .mp4 files)</p>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
                 </div>
               </div>
-              <Button onClick={openFile}>
-                <div className="flex gap-2 items-center">
-                  <div>Upload Video</div>
-                  <div className="w-4">
-                    <ArrowUpTrayIcon />
-                  </div>
+              <div className="flex items-center gap-4">
+                <div className="gap-2 flex items-center">
+                  <Label htmlFor="grid-mode" className="cursor-pointer">
+                    Grid View
+                  </Label>
+                  <Switch
+                    id="grid-mode"
+                    checked={isGridView}
+                    onCheckedChange={() => setIsGridView(!isGridView)}
+                  />
                 </div>
-              </Button>
+                <Button onClick={openFile}>
+                  <div className="flex gap-2 items-center">
+                    <div>Upload Video</div>
+                    <div className="w-4">
+                      <ArrowUpTrayIcon />
+                    </div>
+                  </div>
+                </Button>
+              </div>
             </div>
           </div>
           <div
@@ -169,17 +203,13 @@ function VideoUpload() {
               />
             ) : (
               <div className="p-4 pt-0">
-                {parsedVideos.map((v) => {
-                  return (
-                    <VideoListItem
-                      key={v.id}
-                      video={v}
-                      loading={false}
-                      onDelete={handleDelete}
-                      onSubtitle={handleSubtitle}
-                    />
-                  );
-                })}
+                {isGridView ? (
+                  <SectionGrid>
+                    <ParsedVideos />
+                  </SectionGrid>
+                ) : (
+                  <ParsedVideos />
+                )}
               </div>
             )}
           </div>

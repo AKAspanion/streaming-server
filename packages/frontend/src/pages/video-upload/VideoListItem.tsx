@@ -8,15 +8,24 @@ import Button from '@components/atoms/button/Button';
 import { toast } from 'react-hot-toast/headless';
 import { copyTextToClipboard } from '@utils/dom';
 import { getNetworkFEUrl } from '@/config/app';
+import { cs } from '@/utils/helpers';
+import Modal from '@/components/atoms/modal/Modal';
 
 interface VideoListItemProps {
+  isGrid?: boolean;
   video: VideoType;
   loading: boolean;
   onDelete: (v: VideoType) => Promise<void>;
   onSubtitle: (v: VideoType, srt?: File) => Promise<void>;
 }
 
-const VideoListItem: FC<VideoListItemProps> = ({ video, loading, onDelete, onSubtitle }) => {
+const VideoListItem: FC<VideoListItemProps> = ({
+  isGrid,
+  video,
+  loading,
+  onDelete,
+  onSubtitle,
+}) => {
   const ref = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState(false);
   const handleSubtitleLoad = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -58,6 +67,17 @@ const VideoListItem: FC<VideoListItemProps> = ({ video, loading, onDelete, onSub
     ];
   }, [video.encoding, video.fieldname, video.id, video.mimetype, video.originalname, video.size]);
 
+  const VideoDetails = () => (
+    <React.Fragment>
+      {details.map(({ name, value }) => (
+        <React.Fragment key={name}>
+          <div className="whitespace-nowrap pr-4 pb-1 font-medium">{name}</div>
+          <div className="break-all pb-1">{value}</div>
+        </React.Fragment>
+      ))}
+    </React.Fragment>
+  );
+
   return (
     <div className="bg-slate-300 dark:bg-slate-800 p-2 px-4 rounded-md  mb-4">
       {loading ? (
@@ -69,10 +89,13 @@ const VideoListItem: FC<VideoListItemProps> = ({ video, loading, onDelete, onSub
           <div
             style={
               {
-                '--max-list-item': 'calc(100vw - 240px)',
+                '--max-list-item': isGrid ? 'calc(100%)' : 'calc(100vw - 240px)',
               } as React.CSSProperties
             }
-            className="flex items-center gap-4 justify-between"
+            className={cs('flex  justify-between', {
+              'flex-col items-start gap-2': isGrid,
+              'items-center gap-4': !isGrid,
+            })}
           >
             <div
               className="cursor-pointer select-none w-[var(--max-list-item)] overflow-hidden overflow-ellipsis whitespace-nowrap"
@@ -81,7 +104,7 @@ const VideoListItem: FC<VideoListItemProps> = ({ video, loading, onDelete, onSub
             >
               {video.originalname}
             </div>
-            <div className="text-lg flex">
+            <div className={cs('text-lg flex', { 'justify-between w-full': isGrid })}>
               <Button onClick={() => copyLink(`/video-play/${video.id}`)}>
                 <div title="Copy network link" className="w-4 mt-0.5">
                   <LinkIcon />
@@ -116,17 +139,19 @@ const VideoListItem: FC<VideoListItemProps> = ({ video, loading, onDelete, onSub
             style={{ gridTemplateColumns: 'auto 1fr' }}
             className={
               'dark:bg-slate-900 bg-slate-200 rounded-md px-3 text-sm grid transition-all' +
-              (!open ? ' h-0 overflow-hidden' : ' h-auto py-2 my-2')
+              (!open || isGrid ? ' h-0 overflow-hidden' : ' h-auto py-2 my-2')
             }
           >
-            {details.map(({ name, value }) => (
-              <React.Fragment key={name}>
-                <div className="whitespace-nowrap pr-4 pb-1">{name}</div>
-                <div className="break-all pb-1">{value}</div>
-              </React.Fragment>
-            ))}
+            {isGrid ? null : <VideoDetails />}
           </div>
         </>
+      )}
+      {isGrid && (
+        <Modal open={open} onClose={() => setOpen(false)}>
+          <div style={{ gridTemplateColumns: 'auto 1fr' }} className={'grid'}>
+            <VideoDetails />
+          </div>
+        </Modal>
       )}
     </div>
   );

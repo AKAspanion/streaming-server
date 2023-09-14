@@ -66,7 +66,8 @@ const ManageMediaHeader: FC<ManageMediaHeaderProps> = ({
                     </TooltipTrigger>
                     <TooltipContent className="text-center p-3">
                       <p>When a video is added here,</p>
-                      <p>It is streamed from original file location.</p>
+                      <p>It is streamed from original file location</p>
+                      <p className="text-xs opacity-60">(works on all video files)</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
