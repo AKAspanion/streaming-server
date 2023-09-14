@@ -21,6 +21,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import SectionGrid from '@/components/SectionGrid';
+import { WEB_VIDEO_FILES } from '@common/constants/app';
 
 function VideoUpload() {
   const [isGridView, setIsGridView] = useState(true);
@@ -138,15 +139,13 @@ function VideoUpload() {
                 className="invisible fixed pointer-events-none left-0"
                 type="file"
                 id="file"
-                accept="video/mp4"
+                accept={WEB_VIDEO_FILES.join(',')}
                 onChange={handleSubmit}
               />
               <div>
                 <div className="text-xl font-semibold">Video Stream</div>
                 <div className="flex gap-2">
-                  <div className="text-sm opacity-60">
-                    Upload a copy of .mp4 file here to stream.
-                  </div>
+                  <div className="text-sm opacity-60">Upload a Web supported file to stream</div>
                   <TooltipProvider>
                     <Tooltip delayDuration={100}>
                       <TooltipTrigger>
@@ -157,7 +156,9 @@ function VideoUpload() {
                       <TooltipContent className="text-center p-3">
                         <p>When a video is added here,</p>
                         <p>It is uploaded and streamed from server</p>
-                        <p className="text-xs opacity-60">(only works for .mp4 files)</p>
+                        <p className="text-xs opacity-60">
+                          (only works for {WEB_VIDEO_FILES.join('/')} files)
+                        </p>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>

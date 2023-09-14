@@ -1,3 +1,4 @@
+import { WEB_VIDEO_FILES } from '@common/constants/app';
 import { AppError, HttpCode } from '@utils/exceptions';
 import { getResourcePath, makeDirectory } from '@utils/helper';
 import multer from 'multer';
@@ -30,14 +31,14 @@ const multerSubsStorage = multer.diskStorage({
 export const uploadVideo = multer({
   storage: multerVideoStorage,
   fileFilter: (req, file, cb) => {
-    const allowed = ['mp4', 'x-matroska'];
+    const allowed = WEB_VIDEO_FILES.map((f) => f.replace('.', ''));
     if (allowed.includes(file.mimetype.split('/')[1])) {
       cb(null, true);
     } else {
       cb(
         new AppError({
           httpCode: HttpCode.BAD_REQUEST,
-          description: 'Not a Video File!!',
+          description: 'Not a web Video File!!',
         }),
       );
     }

@@ -1,3 +1,4 @@
+export const WEB_VIDEO_FILES = ['.mp4', '.webm', '.ogg'];
 export const ALLOWED_VIDEO_FILES = [
   '.mkv',
   '.mp4',

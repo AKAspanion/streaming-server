@@ -39,7 +39,7 @@ const ManageMedia = () => {
       <ManageMediaHeader
         info
         title="Media Stream"
-        subtitle="Add any media file here to stream."
+        subtitle="Add video file or folder to stream"
         onFileSubmit={handleFileSubmit}
       />
       <div
