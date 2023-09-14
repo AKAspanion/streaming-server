@@ -37,6 +37,7 @@ const ManageMedia = () => {
   ) : (
     <div className="relative h-full">
       <ManageMediaHeader
+        info
         title="Media Stream"
         subtitle="Add any media file here to stream."
         onFileSubmit={handleFileSubmit}

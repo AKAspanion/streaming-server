@@ -2,11 +2,13 @@ import { FC, useState } from 'react';
 import AddEditMediaFolder from './AddEditMediaFolder';
 import { Button } from '@/components/ui/button';
 import Modal from '@/components/atoms/modal/Modal';
-import { FolderIcon, PlusIcon } from '@heroicons/react/24/solid';
+import { FolderIcon, InformationCircleIcon, PlusIcon } from '@heroicons/react/24/solid';
 import FilePicker from '@/components/FilePicker';
 import { cs } from '@/utils/helpers';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface ManageMediaHeaderProps {
+  info?: boolean;
   title: string;
   subtitle: string;
   folderId?: string;
@@ -17,6 +19,7 @@ interface ManageMediaHeaderProps {
 
 const ManageMediaHeader: FC<ManageMediaHeaderProps> = ({
   tag,
+  info,
   title,
   subtitle,
   folderId,
@@ -51,7 +54,24 @@ const ManageMediaHeader: FC<ManageMediaHeaderProps> = ({
               <div className="text-xl line-clamp-1 font-semibold">{title}</div>
               {tag && <div>{tag}</div>}
             </div>
-            {subtitle && <div className="text-sm opacity-60">{subtitle}</div>}
+            <div className="flex gap-2">
+              {subtitle && <div className="text-sm opacity-60">{subtitle}</div>}
+              {info && (
+                <TooltipProvider>
+                  <Tooltip delayDuration={100}>
+                    <TooltipTrigger>
+                      <div className="w-5">
+                        <InformationCircleIcon />
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent className="text-center p-3">
+                      <p>When a video is added here,</p>
+                      <p>It is streamed from original file location.</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              )}
+            </div>
           </div>
         </div>
         <div className="flex gap-3 items-center">

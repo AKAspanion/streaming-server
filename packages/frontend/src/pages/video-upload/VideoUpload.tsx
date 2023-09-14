@@ -14,8 +14,10 @@ import Progress from '@components/atoms/progress/Progress';
 import { setVideoUploadProgress } from '@store/globalSlice';
 import { Button } from '@/components/ui/button';
 import { ArrowUpTrayIcon } from '@heroicons/react/24/solid';
+import { InformationCircleIcon } from '@heroicons/react/24/solid';
 import NoData from '@/components/NoData';
 import { cs } from '@/utils/helpers';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 function VideoUpload() {
   const ref = useRef<HTMLInputElement>(null);
@@ -120,7 +122,24 @@ function VideoUpload() {
               />
               <div>
                 <div className="text-xl font-semibold">Video Stream</div>
-                <div className="text-sm opacity-60">Upload a copy of .mp4 file here to stream.</div>
+                <div className="flex gap-2">
+                  <div className="text-sm opacity-60">
+                    Upload a copy of .mp4 file here to stream.
+                  </div>
+                  <TooltipProvider>
+                    <Tooltip delayDuration={100}>
+                      <TooltipTrigger>
+                        <div className="w-5">
+                          <InformationCircleIcon />
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent className="text-center p-3">
+                        <p>When a video is added here,</p>
+                        <p>It is uploaded and streamed from server.</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
               </div>
               <Button onClick={openFile}>
                 <div className="flex gap-2 items-center">
