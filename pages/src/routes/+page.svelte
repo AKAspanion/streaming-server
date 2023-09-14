@@ -35,7 +35,8 @@
 
 		<div class="max-w-xl mx-auto text-center">
 			<a
-				href="#"
+				href="https://github.com/AKAspanion/streaming-server/releases/latest"
+				target="_blank"
 				title=""
 				class="inline-flex items-center justify-center px-6 py-4 mt-10 text-base font-semibold bg-white rounded-md shadow-lg hover:shadow-md transition-all"
 			>
