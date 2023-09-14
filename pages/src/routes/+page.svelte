@@ -1,13 +1,28 @@
 <script lang="ts">
+	import { beforeUpdate } from 'svelte';
+	import { browser } from '$app/environment';
 	import ThemeSwitch from '$lib/ThemeSwitch/ThemeSwitch.svelte';
+
+	import ssDark from '$lib/assets/images/dashboard-dark.png';
+	import ssLight from '$lib/assets/images/dashboard-light.png';
+
+	let darkMode: boolean = browser && localStorage.theme === 'dark';
+
+	const handleSwitchDarkMode = (v: boolean) => {
+		darkMode = v;
+	};
 
 	import '../app.css';
 </script>
 
-<section class="py-10 bg-gray-50 dark:bg-gray-800 sm:py-16 lg:py-24 transition-all">
+<div class="fixed bottom-24 right-8">
+	<ThemeSwitch onThemeChange={handleSwitchDarkMode} />
+</div>
+
+<section class="py-10 bg-gray-50 dark:bg-gray-700 sm:py-16 lg:py-24 transition-all">
 	<div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
 		<div class="max-w-xl mx-auto text-center">
-			<p class="text-sm font-semibold tracking-widest text-blue-600 uppercase">
+			<p class="text-sm font-semibold tracking-widest text-blue-600 dark:text-white uppercase">
 				Video Streaming Server
 			</p>
 
@@ -45,8 +60,8 @@
 		</div>
 
 		<img
-			class="w-full max-w-3xl mx-auto mt-8 rounded-lg shadow-xl sm:mt-20"
-			src="https://cdn.rareblocks.xyz/collection/celebration/images/features/6/dashboard-screenshot.png"
+			class="w-full max-w-4xl mx-auto mt-8 rounded-lg shadow-xl sm:mt-20"
+			src={darkMode ? ssDark : ssLight}
 			alt=""
 		/>
 
@@ -55,7 +70,7 @@
 		>
 			<div class="flex items-center flex-1">
 				<svg
-					class="flex-shrink-0 text-white/50 w-14 h-14"
+					class="flex-shrink-0 text-black/50 dark:text-white/50 w-14 h-14"
 					xmlns="http://www.w3.org/2000/svg"
 					fill="none"
 					viewBox="0 0 24 24"
@@ -68,14 +83,14 @@
 						d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
 					/>
 				</svg>
-				<p class="ml-4 text-lg font-semibold leading-snug text-white">
-					Create powerful websites fast
+				<p class="ml-4 text-lg font-semibold leading-snug text-black dark:text-white">
+					Easy to access
 				</p>
 			</div>
 
 			<div class="flex items-center flex-1">
 				<svg
-					class="flex-shrink-0 text-white/50 w-14 h-14"
+					class="flex-shrink-0 text-black/50 dark:text-white/50 w-14 h-14"
 					xmlns="http://www.w3.org/2000/svg"
 					fill="none"
 					viewBox="0 0 24 24"
@@ -88,8 +103,8 @@
 						d="M13 10V3L4 14h7v7l9-11h-7z"
 					/>
 				</svg>
-				<p class="ml-4 text-lg font-semibold leading-snug text-white">
-					Easy to customize, ready to launch
+				<p class="ml-4 text-lg font-semibold leading-snug text-black dark:text-white">
+					Easy to manage
 				</p>
 			</div>
 		</div>

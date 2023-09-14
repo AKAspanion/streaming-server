@@ -1,4 +1,5 @@
 <script lang="ts">
+	export let onThemeChange: (flag: boolean) => void;
 	import { browser } from '$app/environment';
 
 	let darkMode: boolean = browser && localStorage.theme === 'dark';
@@ -10,6 +11,7 @@
 			? document.documentElement.classList.add('dark')
 			: document.documentElement.classList.remove('dark');
 
+		onThemeChange && onThemeChange(darkMode);
 		if (browser) {
 			localStorage.setItem('theme', darkMode ? 'dark' : 'light');
 		}
