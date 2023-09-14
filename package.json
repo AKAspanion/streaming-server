@@ -72,12 +72,7 @@
       "publish": [
         "github"
       ],
-      "icon": "packages/frontend/dist/logo.png"
-    },
-    "linux": {
-      "publish": [
-        "github"
-      ],
+      "type": "development",
       "icon": "packages/frontend/dist/logo.png"
     }
   },
