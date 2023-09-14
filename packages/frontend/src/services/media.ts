@@ -5,7 +5,7 @@ import toWebVTT from 'srt-webvtt';
 export const mediaApi = createApi({
   reducerPath: 'mediaApi',
   baseQuery: dynamicBaseQuery,
-  tagTypes: ['Media', 'MediaDetails'],
+  tagTypes: ['MediaList', 'MediaDetails'],
   endpoints: (builder) => ({
     getMediaById: builder.query<{ data: MediaTypeJSONDB }, string>({
       query: (id) => {
@@ -26,7 +26,7 @@ export const mediaApi = createApi({
     }),
     getMedia: builder.query<{ data: MediaType[] }, string>({
       query: () => `media`,
-      providesTags: ['Media', 'MediaDetails'],
+      providesTags: ['MediaList'],
     }),
     markMediaFavourite: builder.mutation<APIStatusResponseType, string>({
       query: (id) => {
@@ -91,7 +91,7 @@ export const mediaApi = createApi({
 
         return { url: `media/${id}`, method: 'DELETE' };
       },
-      invalidatesTags: ['Media'],
+      invalidatesTags: ['MediaList'],
     }),
     addMedia: builder.mutation<APIStatusResponseType, AddMediaAPIRequest>({
       query: (body) => ({
@@ -99,7 +99,7 @@ export const mediaApi = createApi({
         method: 'POST',
         body: body,
       }),
-      invalidatesTags: ['Media'],
+      invalidatesTags: ['MediaList'],
     }),
     getMediaSubtitleById: builder.query<string, string>({
       query: (id) => {

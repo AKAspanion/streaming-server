@@ -69,7 +69,7 @@ const ManageMediaHeader: FC<ManageMediaHeaderProps> = ({
       </div>
 
       <Modal title={'Select Video Files'} open={open} onClose={() => setOpen(false)}>
-        <FilePicker onSubmit={handleFileSubmit} />
+        <FilePicker isFolder={isFolder} onSubmit={handleFileSubmit} />
       </Modal>
     </div>
   );

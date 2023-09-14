@@ -7,13 +7,15 @@ import {
   createVideoThumbnail,
   getVideoMetaData,
 } from '@utils/ffmpeg';
-import { checkIfFileExists } from '@utils/file';
+import { checkIfFileExists, getFileType } from '@utils/file';
 import { randomUUID } from 'crypto';
 import path from 'path';
 import fs from 'fs';
 import { addOneMediaSubtitle } from '@modules/subtitle/subtitleData';
 import logger from '@utils/logger';
 import { deleteDirectory, deleteFilesSilently, getResourcePath } from '@utils/helper';
+import { addOneFolder } from '@modules/folder/folderData';
+import { ALLOWED_VIDEO_FILES } from '@common/constants/app';
 
 export const addOneMedia = async (filePath: string, folderId?: string) => {
   try {
@@ -54,7 +56,52 @@ export const addOneMedia = async (filePath: string, folderId?: string) => {
       handleJSONDBDataError(error, id);
     }
 
+    Promise.allSettled([
+      extractPosterForMedia(id, filePath),
+      addFileSubtitleForMedia(id, filePath),
+      extractSubtitleForMedia(id, filePath, subtitleStreams),
+    ]);
+
     return { data: body };
+  } catch (error) {
+    logger.error(error);
+    throw new AppError({
+      httpCode: HttpCode.INTERNAL_SERVER_ERROR,
+      description: 'Problem adding Media',
+    });
+  }
+};
+
+export const addMediaWithFolder = async (filePath: string, folderName: string) => {
+  try {
+    const folderId = randomUUID();
+
+    await addOneFolder(folderId, {
+      id: folderId,
+      name: folderName,
+      category: 'video',
+      description: filePath,
+    });
+
+    const files: FileLocationType[] = [];
+    fs.readdirSync(path.resolve(filePath)).forEach((filename) => {
+      try {
+        const ext = path.parse(filename).ext;
+        const name = path.parse(filename).name;
+        const filepath = path.join(filePath, filename);
+        const { type, isFile } = getFileType(filepath);
+
+        if (isFile && ALLOWED_VIDEO_FILES.includes(ext)) {
+          files.push({ path: filepath, name, ext, type, isFile });
+        }
+      } catch (error) {
+        logger.error('STAT' + error);
+      }
+    });
+
+    await Promise.allSettled(files.map((d) => addOneMedia(d?.path, folderId)));
+
+    return { data: { message: 'Media added successfully with folder' } };
   } catch (error) {
     logger.error(error);
     throw new AppError({
