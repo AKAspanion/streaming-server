@@ -40,7 +40,7 @@ function Breadcrumbs() {
   return crumbsLength === 0 ? null : (
     <div
       className={cs(
-        'flex items-center gap-4 px-4 border-b dark:border-slate-700 border-slate-300',
+        'flex items-center gap-4 px-4 border-b dark:border-slate-800 border-slate-300',
         'h-[var(--breadcrumbs-height)]',
       )}
     >

@@ -22,7 +22,7 @@ const Dashboard: FC<DashboardProps> = () => {
   return (
     <div>
       {recentWatchedList?.length ? (
-        <div className="py-4">
+        <div className="pt-4">
           <SectionHeader className="pb-4 px-4" title="Continue Watching" />
           <Scroller width="100%">
             {recentWatchedList.map((m) => (
@@ -34,7 +34,7 @@ const Dashboard: FC<DashboardProps> = () => {
         </div>
       ) : null}
       {favouritesList?.length ? (
-        <div className="py-4">
+        <div className="pt-4">
           <SectionHeader className="pb-4 px-4" title="Favourites" />
           <Scroller width="100%">
             {favouritesList.map((m) => (
@@ -46,7 +46,7 @@ const Dashboard: FC<DashboardProps> = () => {
         </div>
       ) : null}
       {recentAddedList?.length ? (
-        <div className="py-4">
+        <div className="pt-4">
           <SectionHeader className="pb-4 px-4" title="Recently Added" />
           <Scroller width="100%">
             {recentAddedList.map((m) => (
