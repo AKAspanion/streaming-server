@@ -48,7 +48,7 @@ export const setup = (loadApp: () => void) => {
 };
 
 const checkBEState = async () => {
-  const baseUrl = getNetworkAPIUrl();
+  const baseUrl = window.networkHost || getNetworkAPIUrl();
 
   try {
     const response = await fetch(baseUrl + '/server/ready');

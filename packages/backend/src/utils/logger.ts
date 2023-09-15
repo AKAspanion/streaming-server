@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import winston, { format, transports } from 'winston';
 import { getResourcePath, makeDirectory } from './helper';
+import { IS_DEV } from '@config/app';
 
 const getDate = () => new Date().toISOString();
 
@@ -8,14 +9,18 @@ const logDir = getResourcePath(`_appdata/_logs`);
 
 makeDirectory(logDir);
 
-// const timestamp = new Date().getTime();
-const timestamp = 'test';
+const timestamp = 'log';
 
 const beLogPath = getResourcePath(`_appdata/_logs/be-${timestamp}.log`);
 const accessLogPath = getResourcePath(`_appdata/_logs/access-${timestamp}.log`);
 const ffmpegLogPath = getResourcePath(`_appdata/_logs/ffmpeg-${timestamp}.log`);
 const pocessLogPath = getResourcePath(`_appdata/_logs/process-${timestamp}.log`);
 const ffmpegBinLogPath = getResourcePath(`_appdata/_logs/ffmpeg-bin-${timestamp}.log`);
+
+const devLoggers = [];
+if (IS_DEV) {
+  devLoggers.push(new transports.Console());
+}
 
 const logFormat = format.combine(
   format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss.SSS' }),
@@ -57,7 +62,7 @@ export const logger = winston.createLogger({
   level: 'info',
   format: logFormat,
   defaultMeta: { service: 'backend' },
-  transports: [new transports.Console(), new winston.transports.File({ filename: beLogPath })],
+  transports: [...devLoggers, new winston.transports.File({ filename: beLogPath })],
 });
 
 export const accessLoggger = winston.createLogger({
@@ -71,24 +76,21 @@ export const ffmpegLogger = winston.createLogger({
   level: 'info',
   format: logFormat,
   defaultMeta: { service: 'ffmpeg' },
-  transports: [new transports.Console(), new winston.transports.File({ filename: ffmpegLogPath })],
+  transports: [...devLoggers, new winston.transports.File({ filename: ffmpegLogPath })],
 });
 
 export const ffmpegBinLogger = winston.createLogger({
   level: 'info',
   format: logFormat,
   defaultMeta: { service: 'ffmpeg-bin' },
-  transports: [
-    new transports.Console(),
-    new winston.transports.File({ filename: ffmpegBinLogPath }),
-  ],
+  transports: [...devLoggers, new winston.transports.File({ filename: ffmpegBinLogPath })],
 });
 
 export const processLogger = winston.createLogger({
   level: 'info',
   format: logFormat,
   defaultMeta: { service: 'process' },
-  transports: [new transports.Console(), new winston.transports.File({ filename: pocessLogPath })],
+  transports: [...devLoggers, new winston.transports.File({ filename: pocessLogPath })],
 });
 
 export default logger;
