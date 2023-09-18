@@ -24,8 +24,8 @@ import { authenticate } from '@middleware/authenticate';
 const router = Router();
 
 router.get('/:id/poster', authenticate, getPoster);
-router.get('/:id/thumbnail', getThumbnail);
-router.get('/:id/thumbnail/seek', getSeekThumbnail);
+router.get('/:id/thumbnail', authenticate, getThumbnail);
+router.get('/:id/thumbnail/seek', authenticate, getSeekThumbnail);
 router.post('/stream/:id/generate', authenticate, generateStream);
 router.get('/stream/hls/*', authenticate, streamMedia);
 

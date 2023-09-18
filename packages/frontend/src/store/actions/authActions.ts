@@ -3,13 +3,17 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 
 export const generateToken = createAsyncThunk('auth/token', async (_, { rejectWithValue }) => {
   try {
-    const response = await fetch(`${getNetworkAPIUrl()}/auth/token/generate`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    return await response.json();
+    if (!window.token) {
+      const response = await fetch(`${getNetworkAPIUrl()}/auth/token/generate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      return await response.json();
+    } else {
+      return { data: { token: window.token } };
+    }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     // return custom error message from backend if present
