@@ -14,7 +14,7 @@ const Image: React.FC<ImageProps> = (props) => {
   return (
     <img
       src={imgSrc ? imgSrc : fallback}
-      className={cs('dark:bg-slate-600 bg-slate-200', className)}
+      className={cs(className, { 'dark:bg-slate-600 bg-slate-200': imgSrc === fallback })}
       onError={onError}
       {...rest}
     />
