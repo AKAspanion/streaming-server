@@ -23,6 +23,31 @@ const useDarkSwitch = () => {
     }
   }, [theme]);
 
+  useEffect(() => {
+    if (
+      window.matchMedia &&
+      window.matchMedia('(prefers-color-scheme: dark)').matches &&
+      !getStorageTheme()
+    ) {
+      setTheme('dark');
+    }
+
+    const toggle = (e: MediaQueryListEvent) => {
+      const colorScheme = e.matches ? 'dark' : 'light';
+      setTheme(colorScheme);
+    };
+
+    window.matchMedia &&
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', toggle);
+
+    return () => {
+      return (
+        window.matchMedia &&
+        window.matchMedia('(prefers-color-scheme: dark)').removeEventListener('change', toggle)
+      );
+    };
+  }, []);
+
   return { theme, isDark: theme === 'dark', switchTheme };
 };
 
