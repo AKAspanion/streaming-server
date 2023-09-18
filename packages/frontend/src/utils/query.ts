@@ -1,4 +1,5 @@
 import { getNetworkAPIUrl } from '@/config/api';
+import { RootState } from '@/store/store';
 import { TOKEN_HEADER_KEY } from '@common/constants/app';
 import {
   BaseQueryFn,
@@ -15,13 +16,9 @@ export const dynamicBaseQuery: BaseQueryFn<
   const baseUrl = getNetworkAPIUrl();
   const rawBaseQuery = fetchBaseQuery({
     baseUrl,
-    prepareHeaders: (headers) => {
-      // prepareHeaders: (headers, { getState }) => {
-      // const token = (getState() as RootState).auth.token;
-      const token =
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0aW1lIjoiTW9uIFNlcCAxOCAyMDIzIDE1OjM5OjMzIEdNVCswNTMwIChJbmRpYSBTdGFuZGFyZCBUaW1lKSIsImlhdCI6MTY5NTAzMTc3M30.11vwBbn-DIKH7IiFH2CuJDRIdURCMCzSUBI5B4Usjpg';
+    prepareHeaders: (headers, { getState }) => {
+      const token = (getState() as RootState).authData?.token;
 
-      // If we have a token set in state, let's assume that we should be passing it.
       if (token) {
         headers.set(TOKEN_HEADER_KEY, token);
       }

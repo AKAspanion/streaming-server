@@ -9,15 +9,16 @@ import {
   streamVideo,
 } from './videoController';
 import { uploadVideo } from '@config/multer';
+import { authenticate } from '@middleware/authenticate';
 
 const router = Router();
 
-router.get('/', getAllVideo);
+router.get('/', authenticate, getAllVideo);
 router.get('/:id/thumbnail', getThumbnail);
-router.get('/:id', getVideo);
-router.delete('/:id', deleteVideo);
-router.get('/stream/:id', streamVideo);
+router.get('/:id', authenticate, getVideo);
+router.delete('/:id', authenticate, deleteVideo);
+router.get('/stream/:id', authenticate, streamVideo);
 router.get('/:id/thumbnail/seek', getSeekThumbnail);
-router.post('/', uploadVideo.single('video_file'), addVideo);
+router.post('/', authenticate, uploadVideo.single('video_file'), addVideo);
 
 export default router;

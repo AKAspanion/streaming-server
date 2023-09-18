@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { createApi } from '@reduxjs/toolkit/query/react';
-import { getNetworkAPIUrl } from '@config/api';
+import { getNetworkAPIUrlWithAuth } from '@config/api';
 import { setVideoUploadProgress } from '@store/globalSlice';
 import toWebVTT from 'srt-webvtt';
 import { dynamicBaseQuery } from '@/utils/query';
@@ -26,7 +26,7 @@ export const videoApi = createApi({
     addVideo: builder.mutation<VideoType, FormData>({
       queryFn: async (body, api) => {
         try {
-          const result = await axios.post(`${getNetworkAPIUrl()}/video`, body, {
+          const result = await axios.post(getNetworkAPIUrlWithAuth(`/video`), body, {
             onUploadProgress: (upload) => {
               if (upload.total) {
                 const uploadloadProgress = Math.round((100 * upload.loaded) / upload.total);

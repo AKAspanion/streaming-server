@@ -1,7 +1,8 @@
 ### Todo
 
 - [ ] Fix the seek issue in HLS Player
-- [ ] Setup API authentication
+- [ ] Add login flow
+- [x] Setup API authentication
 - [x] Create thumbnails and posters on demand
 - [ ] R&D on direct read stream from original location
 

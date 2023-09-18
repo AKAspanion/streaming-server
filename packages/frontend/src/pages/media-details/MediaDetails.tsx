@@ -1,5 +1,5 @@
 import Spinner from '@components/atoms/spinner/Spinner';
-import { getNetworkAPIUrl } from '@config/api';
+import { getNetworkAPIUrlWithAuth } from '@config/api';
 import useToastStatus from '@hooks/useToastStatus';
 import { useGetMediaByIdQuery } from '@services/media';
 import React from 'react';
@@ -123,7 +123,7 @@ const MediaDetails: FC<MediaDetailsProps> = () => {
               <Card className="h-full md:w-[336px]">
                 {media.id && (
                   <Image
-                    src={`${getNetworkAPIUrl()}/media/${media.id}/poster`}
+                    src={getNetworkAPIUrlWithAuth(`/media/${media.id}/poster`)}
                     className="w-full h-full object-cover"
                   />
                 )}
