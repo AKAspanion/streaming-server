@@ -1,24 +1,20 @@
 import { TOKEN_HEADER_KEY } from '@common/constants/app';
 import { normalizeText } from '@common/utils/validate';
-import { getSignedToken, verifySignedToken } from '@services/jwt';
+import { verifySignedToken } from '@services/jwt';
 import { AppError, HttpCode } from '@utils/exceptions';
 import { RequestHandler } from 'express';
 
-export const generateToken: RequestHandler = async (req, res) => {
-  const data = { time: Date() };
+export const authenticate: RequestHandler = (req, res, next) => {
+  const token = req.header(TOKEN_HEADER_KEY) || normalizeText(req.query.token, '');
 
-  const token = getSignedToken(data);
+  if (!token) {
+    throw new AppError({ httpCode: HttpCode.UNAUTHORIZED, description: 'Token not provided' });
+  }
 
-  return res.status(HttpCode.OK).send({ data: { token } });
-};
-
-export const verifyToken: RequestHandler = async (req, res) => {
   try {
-    const token = req.header(TOKEN_HEADER_KEY) || normalizeText(req.query.token, '');
-
     const verified = verifySignedToken(token);
     if (verified) {
-      return res.status(HttpCode.OK).send({ data: { message: 'Successfully Verified' } });
+      next();
     } else {
       throw new AppError({ httpCode: HttpCode.UNAUTHORIZED, description: 'Token not valid' });
     }
