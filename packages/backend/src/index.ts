@@ -11,6 +11,7 @@ import { routes } from '@modules';
 import { getIPv4Address } from '@utils/ip';
 import { hlsFiles, webFiles } from '@static';
 import { appInit } from '@config/app';
+import { rateLimiter } from '@middleware/rateLimiter';
 import '@utils/process';
 
 const app: Express = express();
@@ -18,6 +19,7 @@ const port = process.env.NODE_APP_PORT || 80;
 
 appInit();
 app.use(cors());
+app.use(rateLimiter);
 app.use(requestLogger);
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());

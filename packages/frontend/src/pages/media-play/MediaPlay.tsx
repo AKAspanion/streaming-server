@@ -1,4 +1,4 @@
-import { getNetworkAPIUrl } from '@config/api';
+import { getNetworkAPIUrlWithAuth } from '@config/api';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useMemo, useRef } from 'react';
 import Spinner from '@components/atoms/spinner/Spinner';
@@ -63,7 +63,7 @@ function MediaPlay() {
   let videoSrc = '';
 
   if (mediaData?.data?.src) {
-    videoSrc = `${getNetworkAPIUrl()}${mediaData.data.src}`;
+    videoSrc = getNetworkAPIUrlWithAuth(mediaData.data.src);
   }
 
   let currentTime = 0;
@@ -91,7 +91,7 @@ function MediaPlay() {
             subtitlesText={subData}
             currentTime={currentTime}
             name={normalizeText(mediaData?.data?.originalName)}
-            thumbnailSrc={`${getNetworkAPIUrl()}/media/${mediaData?.data?.id}/thumbnail/seek`}
+            thumbnailSrc={`/media/${mediaData?.data?.id}/thumbnail/seek`}
             onNext={() => stopVideo()}
             onUnmount={() => stopVideo()}
             onEnded={async () => {

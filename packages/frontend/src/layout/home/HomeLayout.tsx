@@ -2,9 +2,10 @@ import { Outlet, useMatches } from 'react-router-dom';
 import Header from './Header';
 import Breadcrumbs from '@components/Breadcrumbs';
 import Sidebar from './Sidebar';
-import { useAppSelector } from '@/store/hook';
+import { useAppDispatch, useAppSelector } from '@/store/hook';
 import { cs } from '@/utils/helpers';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
+import { generateToken } from '@/store/actions/authActions';
 
 function HomeLayout() {
   const matches = useMatches();
@@ -18,6 +19,12 @@ function HomeLayout() {
   const sidebarOpen = useAppSelector((s) => s?.globalData?.sidebarOpen);
 
   const isFull = currentRoute && (currentRoute?.handle as RouterHandler)?.full;
+
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(generateToken());
+  }, [dispatch]);
 
   return (
     <div className="relative">

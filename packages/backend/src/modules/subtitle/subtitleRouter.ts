@@ -7,13 +7,14 @@ import {
   getVideoSubtitle,
 } from './subtitleController';
 import { uploadSubtitle } from '@config/multer';
+import { authenticate } from '@middleware/authenticate';
 
 const router = Router();
 
-router.post('/:videoId/video', uploadSubtitle.single('sub_file'), addVideoSubtitle);
-router.post('/:mediaId/media', uploadSubtitle.single('sub_file'), addMediaSubtitle);
-router.get('/:videoId/video', getVideoSubtitle);
-router.get('/:mediaId/media', getMediaSubtitle);
-router.delete('/:mediaId/media', deleteMediaSubtitle);
+router.post('/:videoId/video', authenticate, uploadSubtitle.single('sub_file'), addVideoSubtitle);
+router.post('/:mediaId/media', authenticate, uploadSubtitle.single('sub_file'), addMediaSubtitle);
+router.get('/:videoId/video', authenticate, getVideoSubtitle);
+router.get('/:mediaId/media', authenticate, getMediaSubtitle);
+router.delete('/:mediaId/media', authenticate, deleteMediaSubtitle);
 
 export default router;

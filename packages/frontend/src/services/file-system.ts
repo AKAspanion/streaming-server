@@ -14,7 +14,15 @@ export const fileSystemApi = createApi({
       }),
       providesTags: ['FileSystem'],
     }),
+    doesFileExists: builder.query<{ data: { message: string } }, { file: string }>({
+      query: (body) => ({
+        url: `file-system/exists`,
+        method: 'POST',
+        body: body,
+        cache: 'no-cache',
+      }),
+    }),
   }),
 });
 
-export const { useGetFileSystemQuery } = fileSystemApi;
+export const { useGetFileSystemQuery, useDoesFileExistsQuery } = fileSystemApi;

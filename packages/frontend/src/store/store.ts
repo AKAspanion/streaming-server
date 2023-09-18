@@ -8,17 +8,21 @@ import { serverApi } from '@services/server';
 import { videoApi } from '@services/video';
 import { mediaApi } from '@services/media';
 import globalReducer from './globalSlice';
+import authReducer from './authSlice';
 import { folderApi } from '@/services/folder';
 import { IS_DEV } from '@/config/app';
 import { dashboardApi } from '@/services/dashboard';
 
 const persistConfig = { key: 'streaming-server', storage };
+const authConfig = { key: 'streaming-server-auth', storage };
+
+const globalData = persistReducer(persistConfig, globalReducer);
+const authData = persistReducer(authConfig, authReducer);
 
 export const store = configureStore({
   reducer: {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    globalData: persistReducer(persistConfig, globalReducer),
+    globalData,
+    authData,
     [mediaApi.reducerPath]: mediaApi.reducer,
     [videoApi.reducerPath]: videoApi.reducer,
     [folderApi.reducerPath]: folderApi.reducer,

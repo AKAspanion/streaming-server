@@ -11,6 +11,8 @@ import { getNetworkFEUrl } from '@/config/app';
 import { cs } from '@/utils/helpers';
 import Modal from '@/components/atoms/modal/Modal';
 import ClosedCaptionIcon from '@/components/icons/ClosedCaptionIcon';
+import Image from '@/components/atoms/image/Image';
+import { getNetworkAPIUrlWithAuth } from '@/config/api';
 
 interface VideoListItemProps {
   isGrid?: boolean;
@@ -80,75 +82,84 @@ const VideoListItem: FC<VideoListItemProps> = ({
   );
 
   return (
-    <div className="bg-slate-300 dark:bg-slate-800 p-2 px-4 rounded-md  mb-4">
+    <div className="bg-slate-300 dark:bg-slate-800 rounded-md  mb-4">
       {loading ? (
         <div className="flex justify-center">
           <Spinner />
         </div>
       ) : (
         <>
-          <div
-            style={
-              {
-                '--max-list-item': isGrid ? 'calc(100%)' : 'calc(100vw - 240px)',
-              } as React.CSSProperties
-            }
-            className={cs('flex  justify-between', {
-              'flex-col items-start gap-2': isGrid,
-              'items-center gap-4': !isGrid,
-            })}
-          >
-            <div
-              className="cursor-pointer select-none w-[var(--max-list-item)] overflow-hidden overflow-ellipsis whitespace-nowrap"
-              title={video.originalname}
-              onClick={handleDetails}
-            >
-              {video.originalname}
-            </div>
-            <div className={cs('text-lg flex', { 'justify-between w-full': isGrid })}>
-              <Button onClick={() => copyLink(`/video-play/${video.id}`)}>
-                <div title="Copy network link" className="w-4 mt-0.5">
-                  <LinkIcon />
-                </div>
-              </Button>
-              <Button onClick={() => openFile()}>
-                <div title="Add subtitle" className="w-6">
-                  <ClosedCaptionIcon />
-                </div>
-              </Button>
-              <Button onClick={() => onDelete(video)}>
-                <div title="Delete video" className="w-5">
-                  <TrashIcon />
-                </div>
-              </Button>
-              <Link {...buttonVariant()} to={`/video-play/${video.id}`}>
-                <div title="Play video" className="w-5">
-                  <PlayIcon />
-                </div>
-              </Link>
-
-              <input
-                type="file"
-                ref={ref}
-                accept=".srt"
-                className="invisible fixed pointer-events-none left-0"
-                onChange={handleSubtitleLoad}
-              />
-            </div>
+          <div className="h-40 rounded-lg overflow-hidden">
+            <Image
+              fallback="/fallback-video.svg"
+              src={getNetworkAPIUrlWithAuth(`/video/${video?.id}/thumbnail`)}
+              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+            />
           </div>
-          <div
-            style={{ gridTemplateColumns: 'auto 1fr' }}
-            className={
-              'dark:bg-slate-900 bg-slate-200 rounded-md px-3 text-sm grid transition-all' +
-              (!open || isGrid ? ' h-0 overflow-hidden' : ' h-auto py-2 my-2')
-            }
-          >
-            {isGrid ? null : <VideoDetails />}
+          <div className="p-2 px-4">
+            <div
+              style={
+                {
+                  '--max-list-item': isGrid ? 'calc(100%)' : 'calc(100vw - 240px)',
+                } as React.CSSProperties
+              }
+              className={cs('flex  justify-between', {
+                'flex-col items-start gap-2': isGrid,
+                'items-center gap-4': !isGrid,
+              })}
+            >
+              <div
+                className="cursor-pointer select-none w-[var(--max-list-item)] overflow-hidden overflow-ellipsis whitespace-nowrap"
+                title={video.originalname}
+                onClick={handleDetails}
+              >
+                {video.originalname}
+              </div>
+              <div className={cs('text-lg flex', { 'justify-between w-full': isGrid })}>
+                <Button onClick={() => copyLink(`/video-play/${video.id}`)}>
+                  <div title="Copy network link" className="w-4 mt-0.5">
+                    <LinkIcon />
+                  </div>
+                </Button>
+                <Button onClick={() => openFile()}>
+                  <div title="Add subtitle" className="w-6">
+                    <ClosedCaptionIcon />
+                  </div>
+                </Button>
+                <Button onClick={() => onDelete(video)}>
+                  <div title="Delete video" className="w-5">
+                    <TrashIcon />
+                  </div>
+                </Button>
+                <Link {...buttonVariant()} to={`/video-play/${video.id}`}>
+                  <div title="Play video" className="w-5">
+                    <PlayIcon />
+                  </div>
+                </Link>
+
+                <input
+                  type="file"
+                  ref={ref}
+                  accept=".srt"
+                  className="invisible fixed pointer-events-none left-0"
+                  onChange={handleSubtitleLoad}
+                />
+              </div>
+            </div>
+            <div
+              style={{ gridTemplateColumns: 'auto 1fr' }}
+              className={
+                'dark:bg-slate-900 bg-slate-200 rounded-md px-3 text-sm grid transition-all' +
+                (!open || isGrid ? ' h-0 overflow-hidden' : ' h-auto py-2 my-2')
+              }
+            >
+              {isGrid ? null : <VideoDetails />}
+            </div>
           </div>
         </>
       )}
       {isGrid && (
-        <Modal open={open} onClose={() => setOpen(false)}>
+        <Modal title={'Video Info'} open={open} onClose={() => setOpen(false)}>
           <div style={{ gridTemplateColumns: 'auto 1fr' }} className={'grid'}>
             <VideoDetails />
           </div>

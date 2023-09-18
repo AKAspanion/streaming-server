@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import authRouter from './auth/authRouter';
 import mediaRouter from './media/mediaRouter';
 import videoRouter from './video/videoRouter';
 import serverRouter from './server/serverRouter';
@@ -10,6 +11,7 @@ import fileSystemRouter from './file-system/fileSystemRouter';
 type RouteMap = Record<string, Router>;
 
 export const routes: RouteMap = {
+  '/auth': authRouter,
   '/server': serverRouter,
   '/media': mediaRouter,
   '/video': videoRouter,

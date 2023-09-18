@@ -1,7 +1,7 @@
 import { MANIFEST_TEMP_FOLDER } from '@constants/hls';
 import { pushMediaDB } from '@database/json';
-import HLSManager from '@lib/hls-manager';
 import { processHLSStream } from '@services/hls';
+import HLSManager from '@lib/hls-manager';
 import { AppError, HttpCode } from '@utils/exceptions';
 import {
   createHLSStream,
@@ -19,9 +19,12 @@ import {
   getOneMediaData,
   deleteMediaData,
   addMediaWithFolder,
+  extractThumbnailForMedia,
+  extractPosterForMedia,
 } from './mediaData';
 import { normalizeText } from '@common/utils/validate';
 import logger from '@utils/logger';
+import { getTokenInRequest } from '@services/jwt';
 
 export const getMedia: RequestHandler = async (req, res) => {
   const id = normalizeText(req.params.id);
@@ -190,7 +193,9 @@ export const playMedia: RequestHandler = async (req, res) => {
 
   makeDirectory(hlsPath);
 
-  generateManifest(id, Number(data?.format?.duration));
+  const token = getTokenInRequest(req);
+
+  generateManifest(id, Number(data?.format?.duration), token);
 
   return res
     .status(HttpCode.OK)
@@ -211,7 +216,8 @@ export const stopMedia: RequestHandler = async (req, res) => {
 };
 
 export const streamMedia: RequestHandler = async (req, res) => {
-  const file = req.url.split('/stream/hls/').pop();
+  const reqUrl = req.url.split('?').shift() || '';
+  const file = reqUrl.split('/stream/hls/').pop();
 
   if (!file) {
     throw new AppError({ httpCode: HttpCode.BAD_REQUEST, description: 'Not a HLS request' });
@@ -272,8 +278,10 @@ export const getThumbnail: RequestHandler = async (req, res) => {
   const id = normalizeText(req.params.id);
   const { data } = await getOneMediaData(id);
 
-  if (data?.thumbnail && data?.thumbnail?.path) {
-    res.download(data?.thumbnail?.path, data?.thumbnail.name || 'thumbnail.png');
+  const thumbnail = await extractThumbnailForMedia(data?.id, data);
+
+  if (thumbnail?.path) {
+    res.download(thumbnail?.path, thumbnail.name || 'thumbnail.png');
   } else {
     throw new AppError({ httpCode: HttpCode.NOT_FOUND, description: 'Thumbnail not found' });
   }
@@ -283,10 +291,13 @@ export const getPoster: RequestHandler = async (req, res) => {
   const id = normalizeText(req.params.id);
   const { data } = await getOneMediaData(id);
 
-  const poster = data?.poster?.path || data?.thumbnail?.path;
+  const poster = await extractPosterForMedia(data?.id, data);
+  const thumbnail = await extractThumbnailForMedia(data?.id, data);
 
-  if (poster) {
-    res.download(poster, 'poster.jpg');
+  const posterPath = poster?.path || thumbnail?.path;
+
+  if (posterPath) {
+    res.download(posterPath, 'poster.jpg');
   } else {
     throw new AppError({ httpCode: HttpCode.NOT_FOUND, description: 'Poster not found' });
   }

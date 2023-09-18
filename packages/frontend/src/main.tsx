@@ -8,7 +8,9 @@ import './index.css';
 // eslint-disable-next-line react-refresh/only-export-components
 const App = React.lazy(() => import('./App.tsx'));
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+const root = ReactDOM.createRoot(document.getElementById('root')!);
+
+root.render(
   <React.StrictMode>
     <div className="w-full h-full flex items-center justify-center">
       <Spinner />
@@ -17,7 +19,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 );
 
 setup(() => {
-  ReactDOM.createRoot(document.getElementById('root')!).render(
+  root.render(
     <React.StrictMode>
       <React.Suspense
         fallback={

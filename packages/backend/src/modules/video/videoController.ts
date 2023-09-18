@@ -4,7 +4,7 @@ import { AppError, HttpCode } from '@utils/exceptions';
 import { randomUUID } from 'crypto';
 import { RequestHandler } from 'express';
 import fs from 'fs';
-import { getAllVideoData, getOneVideoData } from './videoData';
+import { extractThumbnailForVideo, getAllVideoData, getOneVideoData } from './videoData';
 import { deleteFilesSilently } from '@utils/helper';
 import { normalizeText } from '@common/utils/validate';
 import { createSeekThumbnail } from '@utils/ffmpeg';
@@ -67,6 +67,20 @@ export const streamVideo: RequestHandler = async (req, res) => {
   const videoStream = fs.createReadStream(result.path, { start, end });
 
   videoStream.pipe(res);
+};
+
+export const getThumbnail: RequestHandler = async (req, res) => {
+  const id = normalizeText(req.params.id);
+
+  const { data } = await getOneVideoData(id);
+
+  const thumbnail = await extractThumbnailForVideo(data?.id, data);
+
+  if (thumbnail?.path) {
+    res.download(thumbnail?.path, thumbnail.name || 'thumbnail.png');
+  } else {
+    throw new AppError({ httpCode: HttpCode.NOT_FOUND, description: 'Thumbnail not found' });
+  }
 };
 
 export const getSeekThumbnail: RequestHandler = async (req, res) => {

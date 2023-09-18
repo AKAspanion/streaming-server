@@ -1,3 +1,5 @@
+export const TOKEN_HEADER_KEY = 'X-Streaming-Token';
+
 export const WEB_VIDEO_FILES = ['.mp4', '.webm', '.ogg'];
 export const ALLOWED_VIDEO_FILES = [
   '.mkv',

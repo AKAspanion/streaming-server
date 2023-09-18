@@ -55,6 +55,18 @@ const checkBEState = async () => {
     const data = await response.json();
     if (!window.networkHost && data?.ip && !data?.ip?.includes('local')) {
       window.networkHost = `http://${data.ip}`;
+      try {
+        const authRes = await fetch(baseUrl + '/auth/token/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+        });
+        const authData = await authRes.json();
+        if (authData?.data?.token) {
+          window.token = authData?.data?.token;
+        }
+      } catch (error) {
+        // err
+      }
     }
     return true;
   } catch (error) {

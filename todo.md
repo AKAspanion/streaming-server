@@ -1,7 +1,9 @@
 ### Todo
 
-- [ ] Setup API authentication
-- [ ] Create thumbnails and posters on demand
+- [ ] Fix the seek issue in HLS Player
+- [ ] Add login flow
+- [x] Setup API authentication
+- [x] Create thumbnails and posters on demand
 - [ ] R&D on direct read stream from original location
 
 ### Done

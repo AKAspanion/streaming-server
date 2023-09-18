@@ -1,4 +1,6 @@
 import { getNetworkAPIUrl } from '@/config/api';
+import { RootState } from '@/store/store';
+import { TOKEN_HEADER_KEY } from '@common/constants/app';
 import {
   BaseQueryFn,
   FetchArgs,
@@ -12,6 +14,17 @@ export const dynamicBaseQuery: BaseQueryFn<
   FetchBaseQueryError
 > = async (args, WebApi, extraOptions) => {
   const baseUrl = getNetworkAPIUrl();
-  const rawBaseQuery = fetchBaseQuery({ baseUrl });
+  const rawBaseQuery = fetchBaseQuery({
+    baseUrl,
+    prepareHeaders: (headers, { getState }) => {
+      const token = (getState() as RootState).authData?.token;
+
+      if (token) {
+        headers.set(TOKEN_HEADER_KEY, token);
+      }
+
+      return headers;
+    },
+  });
   return rawBaseQuery(args, WebApi, extraOptions);
 };

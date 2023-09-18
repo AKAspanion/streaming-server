@@ -35,6 +35,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '../ui/hover-card';
 import LazyImage from '../LazyImage';
 import { IS_DEV } from '@/config/app';
+import { getNetworkAPIUrlWithAuth } from '@/config/api';
 
 type HLSPlayerProps = {
   hls?: boolean;
@@ -440,7 +441,7 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
 
     const srcNum = Math.round(seekValue / 10) * 10;
 
-    return `${thumbnailSrc}?time=${srcNum}`;
+    return getNetworkAPIUrlWithAuth(`${thumbnailSrc}?time=${srcNum}`);
   };
 
   const lazyHeaderHide = () => {
@@ -487,30 +488,32 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
 
   useEffect(() => {
     const onMove = (e: MouseEvent) => {
-      let offset = 500;
-      if (containerRef.current) {
-        const { height } = containerRef.current.getBoundingClientRect();
-        offset = height / 2;
-      }
+      handleControlsVisibility(true);
+      lazyControlsHide();
 
-      if (e.clientY < offset) {
-        setHeaderVisible(true);
-        lazyHeaderHide();
-      } else {
+      setHeaderVisible(true);
+      lazyHeaderHide();
+
+      if (
+        e.clientY <= 8 ||
+        e.clientX <= 8 ||
+        e.clientX >= window.innerWidth - 8 ||
+        e.clientY >= window.innerHeight - 8
+      ) {
+        handleControlsVisibility(false);
         setHeaderVisible(false);
       }
-
-      if (e.clientY > offset) {
-        handleControlsVisibility(true);
-        lazyControlsHide();
-      } else {
-        handleControlsVisibility(false);
-      }
+    };
+    const onLeave = () => {
+      handleControlsVisibility(false);
+      setHeaderVisible(false);
     };
     document.addEventListener('mousemove', onMove, false);
+    document.addEventListener('mouseleave', onLeave, false);
 
     return () => {
       document.removeEventListener('mousemove', onMove, false);
+      document.removeEventListener('mouseleave', onLeave, false);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

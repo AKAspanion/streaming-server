@@ -8,6 +8,26 @@ import { getFileType, listDrives } from '@utils/file';
 import { ALLOWED_VIDEO_FILES } from '@common/constants/app';
 import logger from '@utils/logger';
 
+export const doesFileExists: RequestHandler = async (req, res) => {
+  const { file } = req.body;
+
+  if (!file) {
+    throw new AppError({ description: 'File path is required', httpCode: HttpCode.BAD_REQUEST });
+  }
+
+  try {
+    if (fs.existsSync(file)) {
+      return res.status(HttpCode.OK).send({ data: { exits: true, message: 'File found' } });
+    } else {
+      return res.status(HttpCode.NOT_FOUND).send({ data: { message: 'File not found' } });
+    }
+  } catch (error) {
+    return res
+      .status(HttpCode.INTERNAL_SERVER_ERROR)
+      .send({ data: { message: 'Error getting file' } });
+  }
+};
+
 export const getFilesInPath: RequestHandler = async (req, res) => {
   const { dir: dirInReq } = req.body;
   const dir = String(dirInReq || '');
