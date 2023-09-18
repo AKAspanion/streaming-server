@@ -22,7 +22,6 @@ export const addOneMedia = async (filePath: string, folderId?: string) => {
     const id = randomUUID();
 
     const metadata: MediaTypeJSONDB = await getVideoMetaData(filePath);
-    const thumbnail = await createVideoThumbnail(id, filePath, metadata);
 
     const audioStreams: MediaStreamType[] = [];
     const subtitleStreams: MediaStreamType[] = [];
@@ -44,7 +43,6 @@ export const addOneMedia = async (filePath: string, folderId?: string) => {
       folderId,
       audioStreams,
       subtitleStreams,
-      thumbnail,
       selectedAudio,
       path: filePath,
       addDate: new Date().getTime(),
@@ -57,7 +55,6 @@ export const addOneMedia = async (filePath: string, folderId?: string) => {
     }
 
     Promise.allSettled([
-      extractPosterForMedia(id, filePath),
       addFileSubtitleForMedia(id, filePath),
       extractSubtitleForMedia(id, filePath, subtitleStreams),
     ]);
@@ -111,21 +108,43 @@ export const addMediaWithFolder = async (filePath: string, folderName: string) =
   }
 };
 
-export const extractPosterForMedia = async (mediaId: string, mediaPath: string) => {
+export const extractPosterForMedia = async (mediaId: string, data: MediaTypeJSONDB) => {
   try {
-    const { posterPath } = await createPoster(mediaId, mediaPath);
-    if (posterPath) {
-      const { error: pushError } = await pushMediaDB(`/${mediaId}/poster`, { path: posterPath });
+    if (data?.poster) {
+      return data?.poster;
+    } else {
+      const { posterPath } = await createPoster(mediaId, data?.path);
+      if (posterPath) {
+        const { error: pushError } = await pushMediaDB(`/${mediaId}/poster`, { path: posterPath });
+
+        if (pushError) {
+          handleJSONDBDataError(pushError, mediaId);
+        }
+      }
+      return { path: posterPath };
+    }
+  } catch (error) {
+    logger.error(error);
+    return undefined;
+  }
+};
+
+export const extractThumbnailForMedia = async (mediaId: string, data: MediaTypeJSONDB) => {
+  try {
+    if (data?.thumbnail?.path) {
+      return data?.thumbnail;
+    } else {
+      const thumbnail = await createVideoThumbnail(mediaId, data?.path, data);
+      const { error: pushError } = await pushMediaDB(`/${mediaId}/thumbnail`, thumbnail);
 
       if (pushError) {
         handleJSONDBDataError(pushError, mediaId);
       }
+      return thumbnail;
     }
-
-    return true;
   } catch (error) {
     logger.error(error);
-    return false;
+    return undefined;
   }
 };
 

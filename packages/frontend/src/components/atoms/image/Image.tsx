@@ -1,3 +1,4 @@
+import { cs } from '@/utils/helpers';
 import React, { useState } from 'react';
 
 export interface ImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
@@ -5,12 +6,19 @@ export interface ImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
 }
 
 const Image: React.FC<ImageProps> = (props) => {
-  const { fallback = '/fallback.svg', src, className, ...rest } = props;
+  const { fallback = '/fallback-media.svg', src, className, ...rest } = props;
 
   const [imgSrc, setImgSrc] = useState<string | undefined>(src);
   const onError = () => setImgSrc(fallback);
 
-  return <img src={imgSrc ? imgSrc : fallback} className={className} onError={onError} {...rest} />;
+  return (
+    <img
+      src={imgSrc ? imgSrc : fallback}
+      className={cs('dark:bg-slate-600 bg-slate-200', className)}
+      onError={onError}
+      {...rest}
+    />
+  );
 };
 
 export default Image;

@@ -3,6 +3,7 @@ import {
   addVideo,
   deleteVideo,
   getAllVideo,
+  getThumbnail,
   getSeekThumbnail,
   getVideo,
   streamVideo,
@@ -12,6 +13,7 @@ import { uploadVideo } from '@config/multer';
 const router = Router();
 
 router.get('/', getAllVideo);
+router.get('/:id/thumbnail', getThumbnail);
 router.get('/:id', getVideo);
 router.delete('/:id', deleteVideo);
 router.get('/stream/:id', streamVideo);

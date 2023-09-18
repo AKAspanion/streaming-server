@@ -4,3 +4,6 @@ export const getNetworkAPIUrl = () =>
   `${import.meta.env.VITE_BE_HOST || window.networkHost || window.location.origin || '/'}${
     port ? ':' + port : ''
   }`;
+
+export const getNetworkAPIUrlWithAuth = (endpoint?: string) =>
+  `${getNetworkAPIUrl()}${endpoint || ''}?token=${''}`;

@@ -19,6 +19,8 @@ import {
   getOneMediaData,
   deleteMediaData,
   addMediaWithFolder,
+  extractThumbnailForMedia,
+  extractPosterForMedia,
 } from './mediaData';
 import { normalizeText } from '@common/utils/validate';
 import logger from '@utils/logger';
@@ -272,8 +274,10 @@ export const getThumbnail: RequestHandler = async (req, res) => {
   const id = normalizeText(req.params.id);
   const { data } = await getOneMediaData(id);
 
-  if (data?.thumbnail && data?.thumbnail?.path) {
-    res.download(data?.thumbnail?.path, data?.thumbnail.name || 'thumbnail.png');
+  const thumbnail = await extractThumbnailForMedia(data?.id, data);
+
+  if (thumbnail?.path) {
+    res.download(thumbnail?.path, thumbnail.name || 'thumbnail.png');
   } else {
     throw new AppError({ httpCode: HttpCode.NOT_FOUND, description: 'Thumbnail not found' });
   }
@@ -283,10 +287,13 @@ export const getPoster: RequestHandler = async (req, res) => {
   const id = normalizeText(req.params.id);
   const { data } = await getOneMediaData(id);
 
-  const poster = data?.poster?.path || data?.thumbnail?.path;
+  const poster = await extractPosterForMedia(data?.id, data);
+  const thumbnail = await extractThumbnailForMedia(data?.id, data);
 
-  if (poster) {
-    res.download(poster, 'poster.jpg');
+  const posterPath = poster?.path || thumbnail?.path;
+
+  if (posterPath) {
+    res.download(posterPath, 'poster.jpg');
   } else {
     throw new AppError({ httpCode: HttpCode.NOT_FOUND, description: 'Poster not found' });
   }
