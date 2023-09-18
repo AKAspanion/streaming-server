@@ -9,7 +9,7 @@ import {
 import HLSManager from '@lib/hls-manager';
 import { processLogger } from './logger';
 
-export const generateManifest = (id: string, duration: number) =>
+export const generateManifest = (id: string, duration: number, token: string) =>
   new Promise((resolve, reject) => {
     const manifestFile = `${id}.m3u8`;
     const manifestDir = `${MANIFEST_TEMP_FOLDER}${id}/`;
@@ -23,7 +23,7 @@ export const generateManifest = (id: string, duration: number) =>
     const segments: string[] = [];
 
     const getSegment = (num: number, dur: number) =>
-      `#EXTINF:${dur.toFixed(6)},\n${id}${SEGMENT_FILE_NO_SEPERATOR}${num}.ts`;
+      `#EXTINF:${dur.toFixed(6)},\n${id}${SEGMENT_FILE_NO_SEPERATOR}${num}.ts?token=${token}`;
 
     const normalizedDuration = (remainigDuration: number) =>
       remainigDuration < targetDuration ? remainigDuration : targetDuration;

@@ -91,8 +91,7 @@ function MediaPlay() {
             subtitlesText={subData}
             currentTime={currentTime}
             name={normalizeText(mediaData?.data?.originalName)}
-            thumbnailSrc={`${getNetworkAPIUrlWithAuth()}/media/${mediaData?.data
-              ?.id}/thumbnail/seek`}
+            thumbnailSrc={`/media/${mediaData?.data?.id}/thumbnail/seek`}
             onNext={() => stopVideo()}
             onUnmount={() => stopVideo()}
             onEnded={async () => {

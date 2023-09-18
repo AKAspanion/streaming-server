@@ -1,6 +1,4 @@
-import { TOKEN_HEADER_KEY } from '@common/constants/app';
-import { normalizeText } from '@common/utils/validate';
-import { getSignedToken, verifySignedToken } from '@services/jwt';
+import { getSignedToken, getTokenInRequest, verifySignedToken } from '@services/jwt';
 import { AppError, HttpCode } from '@utils/exceptions';
 import { RequestHandler } from 'express';
 
@@ -14,7 +12,7 @@ export const generateToken: RequestHandler = async (req, res) => {
 
 export const verifyToken: RequestHandler = async (req, res) => {
   try {
-    const token = req.header(TOKEN_HEADER_KEY) || normalizeText(req.query.token, '');
+    const token = getTokenInRequest(req);
 
     const verified = verifySignedToken(token);
     if (verified) {

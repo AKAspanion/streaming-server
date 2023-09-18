@@ -6,4 +6,6 @@ export const getNetworkAPIUrl = () =>
   }`;
 
 export const getNetworkAPIUrlWithAuth = (endpoint?: string) =>
-  `${getNetworkAPIUrl()}${endpoint || ''}?token=${window.token}`;
+  `${getNetworkAPIUrl()}${endpoint || ''}${endpoint?.includes('?') ? '&token' : '?token'}=${
+    window.token
+  }`;

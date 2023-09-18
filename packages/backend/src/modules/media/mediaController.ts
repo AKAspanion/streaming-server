@@ -1,7 +1,7 @@
 import { MANIFEST_TEMP_FOLDER } from '@constants/hls';
 import { pushMediaDB } from '@database/json';
-import HLSManager from '@lib/hls-manager';
 import { processHLSStream } from '@services/hls';
+import HLSManager from '@lib/hls-manager';
 import { AppError, HttpCode } from '@utils/exceptions';
 import {
   createHLSStream,
@@ -24,6 +24,7 @@ import {
 } from './mediaData';
 import { normalizeText } from '@common/utils/validate';
 import logger from '@utils/logger';
+import { getTokenInRequest } from '@services/jwt';
 
 export const getMedia: RequestHandler = async (req, res) => {
   const id = normalizeText(req.params.id);
@@ -192,7 +193,9 @@ export const playMedia: RequestHandler = async (req, res) => {
 
   makeDirectory(hlsPath);
 
-  generateManifest(id, Number(data?.format?.duration));
+  const token = getTokenInRequest(req);
+
+  generateManifest(id, Number(data?.format?.duration), token);
 
   return res
     .status(HttpCode.OK)
@@ -213,7 +216,8 @@ export const stopMedia: RequestHandler = async (req, res) => {
 };
 
 export const streamMedia: RequestHandler = async (req, res) => {
-  const file = req.url.split('/stream/hls/').pop();
+  const reqUrl = req.url.split('?').shift() || '';
+  const file = reqUrl.split('/stream/hls/').pop();
 
   if (!file) {
     throw new AppError({ httpCode: HttpCode.BAD_REQUEST, description: 'Not a HLS request' });
