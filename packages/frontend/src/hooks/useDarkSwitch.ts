@@ -38,12 +38,14 @@ const useDarkSwitch = () => {
     };
 
     window.matchMedia &&
-      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', toggle);
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', toggle, false);
 
     return () => {
       return (
         window.matchMedia &&
-        window.matchMedia('(prefers-color-scheme: dark)').removeEventListener('change', toggle)
+        window
+          .matchMedia('(prefers-color-scheme: dark)')
+          .removeEventListener('change', toggle, false)
       );
     };
   }, []);
