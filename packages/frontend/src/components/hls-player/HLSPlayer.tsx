@@ -487,38 +487,32 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
   }, [src]);
 
   useEffect(() => {
-    const onMove = () => {
+    const onMove = (e: MouseEvent) => {
       handleControlsVisibility(true);
       lazyControlsHide();
 
       setHeaderVisible(true);
       lazyHeaderHide();
-    };
-    document.addEventListener('mousemove', onMove, false);
 
-    return () => {
-      document.removeEventListener('mousemove', onMove, false);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    const onLeave = (e: MouseEvent) => {
       if (
-        e.clientY <= 0 ||
-        e.clientX <= 0 ||
-        e.clientX >= window.innerWidth ||
-        e.clientY >= window.innerHeight
+        e.clientY <= 8 ||
+        e.clientX <= 8 ||
+        e.clientX >= window.innerWidth - 8 ||
+        e.clientY >= window.innerHeight - 8
       ) {
         handleControlsVisibility(false);
         setHeaderVisible(false);
-      } else {
-        console.log("I'm in");
       }
     };
+    const onLeave = () => {
+      handleControlsVisibility(false);
+      setHeaderVisible(false);
+    };
+    document.addEventListener('mousemove', onMove, false);
     document.addEventListener('mouseleave', onLeave, false);
 
     return () => {
+      document.removeEventListener('mousemove', onMove, false);
       document.removeEventListener('mouseleave', onLeave, false);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
