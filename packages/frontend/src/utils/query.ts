@@ -17,7 +17,7 @@ export const dynamicBaseQuery: BaseQueryFn<
   const rawBaseQuery = fetchBaseQuery({
     baseUrl,
     prepareHeaders: (headers, { getState }) => {
-      const token = (getState() as RootState).authData?.token;
+      const token = window.token || (getState() as RootState).authData?.token;
 
       if (token) {
         headers.set(TOKEN_HEADER_KEY, token);
