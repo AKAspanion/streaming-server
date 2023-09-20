@@ -35,6 +35,7 @@ declare type VideoType = {
   filename: string;
   path: string;
   size: number;
+  subs?: SubtitleType[];
 };
 
 declare type SubtitleType = {

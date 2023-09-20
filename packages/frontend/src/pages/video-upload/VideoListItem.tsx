@@ -122,7 +122,7 @@ const VideoListItem: FC<VideoListItemProps> = ({
                   </div>
                 </Button>
                 <Button onClick={() => openFile()}>
-                  <div title="Add subtitle" className="w-6">
+                  <div title="Add subtitle" className={cs('w-6', { 'opacity-30': !video?.subs })}>
                     <ClosedCaptionIcon />
                   </div>
                 </Button>
