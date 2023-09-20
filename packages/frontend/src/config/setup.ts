@@ -20,7 +20,9 @@ export const setup = (loadApp: () => void) => {
         ipcRenderer.send('network_host');
         ipcRenderer.on('network_host', (_: any, arg: any) => {
           ipcRenderer.removeAllListeners('network_host');
-          window.networkHost = arg.host;
+          if (!window.networkHost) {
+            window.networkHost = arg.host;
+          }
           hostReceived = true;
         });
       } else {
@@ -53,20 +55,21 @@ const checkBEState = async () => {
   try {
     const response = await fetch(baseUrl + '/server/ready');
     const data = await response.json();
-    if (!window.networkHost && data?.ip && !data?.ip?.includes('local')) {
+    if (data?.ip && !data?.ip?.includes('local')) {
       window.networkHost = `http://${data.ip}`;
-      try {
-        const authRes = await fetch(baseUrl + '/auth/token/generate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-        });
-        const authData = await authRes.json();
-        if (authData?.data?.token) {
-          window.token = authData?.data?.token;
-        }
-      } catch (error) {
-        // err
+    }
+
+    try {
+      const authRes = await fetch(baseUrl + '/auth/token/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      const authData = await authRes.json();
+      if (authData?.data?.token) {
+        window.token = authData?.data?.token;
       }
+    } catch (error) {
+      // err
     }
     return true;
   } catch (error) {
