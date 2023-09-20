@@ -3,12 +3,17 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useEffect, useMemo, useRef } from 'react';
 import Spinner from '@components/atoms/spinner/Spinner';
 import useToastStatus from '@hooks/useToastStatus';
-import { useGetMediaSubtitleByIdQuery, usePlayMediaByIdQuery } from '@services/media';
+import {
+  useGetMediaSubtitleByIdQuery,
+  usePlayMediaByIdQuery,
+  useSetMediaSubtitleMutation,
+} from '@services/media';
 import usePollingEffect from '@/hooks/usePolling';
 import useMediaMutation from '@/hooks/useMediaMutation';
 import { HLSPlayer } from '@/components/hls-player/HLSPlayer';
 import { normalizeText } from '@common/utils/validate';
 import { useGetMediaInFolderQuery } from '@/services/folder';
+import toast from 'react-hot-toast/headless';
 
 function MediaPlay() {
   const ref = useRef<HTMLVideoElement>(null);
@@ -24,6 +29,7 @@ function MediaPlay() {
   const { data: mediaList } = useGetMediaInFolderQuery(folderId || '');
   const { data: mediaData, isFetching, status } = usePlayMediaByIdQuery(mediaId);
   const { data: subData, isLoading: subLoading } = useGetMediaSubtitleByIdQuery(mediaId);
+  const [updateSubtitle, { isLoading: subUpdateLoading }] = useSetMediaSubtitleMutation();
 
   const getCurrentUrl = () => {
     return `/media-play/${mediaId || ''}?resume=${
@@ -38,6 +44,26 @@ function MediaPlay() {
   const handleExit = () => {
     navigate(getCurrentUrl());
     stopVideo();
+  };
+
+  const handleSubtitle = async (subId: string) => {
+    console.log(subId);
+    try {
+      const index = (mediaData?.data?.subs || []).findIndex((s) => {
+        return s?.id === subId;
+      });
+
+      if (index == -1) {
+        throw new Error('no sub found');
+      }
+
+      if (!subUpdateLoading) {
+        await updateSubtitle({ id: mediaId, index }).unwrap();
+        handleReload();
+      }
+    } catch (error) {
+      toast.error("Coudn't load subtitle");
+    }
   };
 
   const handleReload = () => {
@@ -122,11 +148,14 @@ function MediaPlay() {
             nextLink={nextLink}
             subtitlesText={subData}
             currentTime={currentTime}
+            subs={mediaData?.data?.subs}
+            selectedSubtitle={mediaData?.data?.selectedSubtitle}
             name={normalizeText(mediaData?.data?.originalName)}
             thumbnailSrc={`/media/${mediaData?.data?.id}/thumbnail/seek`}
             onNext={() => stopVideo()}
             onUnmount={() => stopVideo()}
             onReload={() => handleReload()}
+            onSubtitleChange={(v) => handleSubtitle(v)}
             onEnded={async () => {
               if (mediaData?.data?.id && ref.current) {
                 await updateMediaStatus({

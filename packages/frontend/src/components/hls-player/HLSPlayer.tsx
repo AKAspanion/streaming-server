@@ -40,11 +40,15 @@ import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '../ui/hover-card';
 import LazyImage from '../LazyImage';
 import useHLSPlayer, { HLSPlayerProps } from './useHLSPlayer';
+import { Switch } from '../ui/switch';
+import { Label } from '../ui/label';
 
 export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, outerRef) => {
   const {
+    subs,
     name,
     nextLink,
+    selectedSubtitle = 0,
     reload = false,
     backTo = '/',
     thumbnailSrc,
@@ -52,6 +56,7 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
     onNext,
     onEnded,
     onReload,
+    onSubtitleChange,
   } = props;
 
   const ref = useRef<HTMLVideoElement>(null);
@@ -218,12 +223,58 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
                 </HoverCardContent>
               </HoverCard>
             </div>
-            {subtitlesText && (
-              <div className="p-2 cursor-pointer" onClick={toggleSubtitle}>
-                <div className={cs('w-8', { 'opacity-50': !subtitlesVisible })}>
-                  <ClosedCaptionIcon />
-                </div>
-              </div>
+            {!maximized && (
+              // <div className="p-2 cursor-pointer" onClick={toggleSubtitle}>
+              //   <div className={cs('w-8', { 'opacity-50': !subtitlesVisible })}>
+              //     <ClosedCaptionIcon />
+              //   </div>
+              // </div>
+              <Popover>
+                <PopoverTrigger>
+                  <div className="w-8">
+                    <ClosedCaptionIcon />
+                  </div>
+                </PopoverTrigger>
+
+                <PopoverContent align="end" side="top">
+                  <div>
+                    <div className="gap-3 flex items-center justify-between">
+                      <Label htmlFor="toggle-sub" className="cursor-pointer text-base">
+                        Show subtitle
+                      </Label>
+                      <Switch
+                        id="toggle-sub"
+                        disabled={!subtitlesText}
+                        checked={subtitlesVisible}
+                        onCheckedChange={() => toggleSubtitle()}
+                      />
+                    </div>
+                    {subs && subs.length ? (
+                      <div className="flex items-center gap-3 pt-4">
+                        <div className="whitespace-nowrap">Subtitle</div>
+                        <Select
+                          value={subs[selectedSubtitle].id}
+                          onValueChange={(v) => onSubtitleChange && onSubtitleChange(v)}
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                              <SelectLabel>Playback speed</SelectLabel>
+                              {subs.map(({ id, name }) => (
+                                <SelectItem key={id} value={id}>
+                                  {name}
+                                </SelectItem>
+                              ))}
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    ) : null}
+                  </div>
+                </PopoverContent>
+              </Popover>
             )}
             {!maximized ? (
               <Popover>
@@ -270,7 +321,7 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
                     </div>
                   )}
                   <div className="flex items-center gap-3">
-                    <div className="whitespace-nowrap">Playback Speed </div>
+                    <div className="whitespace-nowrap">Playback Speed</div>
                     <Select value={playbackRate} onValueChange={(v) => updatePlaybackRate(v)}>
                       <SelectTrigger className="border-none">
                         <SelectValue />

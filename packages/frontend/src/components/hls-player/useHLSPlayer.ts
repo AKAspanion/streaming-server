@@ -8,6 +8,8 @@ export type HLSPlayerProps = {
   hls?: boolean;
   reload?: boolean;
   src: string;
+  subs?: SubtitleType[];
+  selectedSubtitle?: number;
   subtitlesText?: string;
   thumbnailSrc?: string;
   nextLink?: string;
@@ -20,6 +22,7 @@ export type HLSPlayerProps = {
   onEnded?: () => void;
   onUnmount?: () => void;
   onReload?: () => void;
+  onSubtitleChange?: (id: string) => void;
 };
 
 let lazyHeaderTimeout: NodeJS.Timeout;
