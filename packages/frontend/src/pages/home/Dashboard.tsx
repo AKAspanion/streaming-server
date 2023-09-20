@@ -10,14 +10,15 @@ import SectionHeader from '@/components/SectionHeader';
 import Scroller from '@/components/Scroller';
 import NoData from '@/components/NoData';
 import { Squares2X2Icon } from '@heroicons/react/24/solid';
+import Spinner from '@/components/atoms/spinner/Spinner';
 
 interface DashboardProps {}
 
 const Dashboard: FC<DashboardProps> = () => {
-  const { data: recentCompleted } = useGetRecentCompletedQuery();
-  const { data: recentWatched } = useGetRecentWatchedQuery();
-  const { data: recentAdded } = useGetRecentAddedQuery();
-  const { data: favourites } = useGetFavouritesQuery();
+  const { data: recentCompleted, isLoading: recentCompletedLoading } = useGetRecentCompletedQuery();
+  const { data: recentWatched, isLoading: recentWatchedLoading } = useGetRecentWatchedQuery();
+  const { data: recentAdded, isLoading: recentAddedLoading } = useGetRecentAddedQuery();
+  const { data: favourites, isLoading: favouritesLoading } = useGetFavouritesQuery();
 
   const recentCompletedList = recentCompleted?.data || [];
   const recentWatchedList = recentWatched?.data || [];
@@ -30,7 +31,12 @@ const Dashboard: FC<DashboardProps> = () => {
     !recentAddedList?.length &&
     !favouritesList?.length;
 
-  return (
+  const loading =
+    recentCompletedLoading || recentWatchedLoading || recentAddedLoading || favouritesLoading;
+
+  return loading ? (
+    <Spinner full />
+  ) : (
     <div>
       {isEmpty && (
         <div
