@@ -33,10 +33,6 @@ export const processHLSStream = (options: ProcessStreamOptions) => {
           // Stop other transcoders (other qualities) if they are running
           processLogger.info(`[HLS]Stop other transcoders if different audio`);
           restartTranscoder = true;
-        } else if (hlsManager.stopOtherVideoTranscoders(group)) {
-          // Stop other transcoders (other qualities) if they are running
-          processLogger.info(`[HLS]Stop other transcoders if they are running`);
-          restartTranscoder = true;
         } else {
           const path = pathLib.join(hlsManager.getVideoTranscoderOutputPath(group), file);
           const segmentExists = await checkIfFileExists(path);
