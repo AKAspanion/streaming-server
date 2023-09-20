@@ -1,4 +1,11 @@
-import { ArrowLeftIcon, MinusIcon, PauseIcon, PlayIcon, PlusIcon } from '@heroicons/react/24/solid';
+import {
+  ArrowLeftIcon,
+  ArrowPathIcon,
+  MinusIcon,
+  PauseIcon,
+  PlayIcon,
+  PlusIcon,
+} from '@heroicons/react/24/solid';
 import Hls, { LevelLoadedData } from 'hls.js';
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -39,6 +46,7 @@ import { getNetworkAPIUrlWithAuth } from '@/config/api';
 
 type HLSPlayerProps = {
   hls?: boolean;
+  reload?: boolean;
   src: string;
   subtitlesText?: string;
   thumbnailSrc?: string;
@@ -51,6 +59,7 @@ type HLSPlayerProps = {
   onNext?: () => void;
   onEnded?: () => void;
   onUnmount?: () => void;
+  onReload?: () => void;
 };
 
 let lazyHeaderTimeout: NodeJS.Timeout;
@@ -61,6 +70,7 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
     name,
     nextLink,
     hls = true,
+    reload = false,
     backTo = '/',
     thumbnailSrc,
     subtitlesText,
@@ -68,6 +78,7 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
     onNext,
     onEnded,
     onUnmount,
+    onReload,
   } = props;
   const [volume, setVolume] = useState(1);
   const [duration, setDuration] = useState(0);
@@ -736,7 +747,7 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
       >
         <div
           className="w-screen flex gap-4 justify-between"
-          style={{ '--max-wasd': 'calc(100vw - 32px)' } as React.CSSProperties}
+          style={{ '--max-wasd': '100vw' } as React.CSSProperties}
         >
           <div className="dark flex items-center gap-2 w-[var(--max-wasd)]">
             <div className="p-6 px-8">
@@ -745,7 +756,15 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
               </Link>
             </div>
             <div className="w-full h-full header-electron" />
-            <div />
+            {reload ? (
+              <div className="p-6 px-8">
+                <div className="w-6 cursor-pointer" onClick={onReload}>
+                  <ArrowPathIcon className="w-6" />
+                </div>
+              </div>
+            ) : (
+              <div />
+            )}
           </div>
         </div>
         <div className="h-5" />

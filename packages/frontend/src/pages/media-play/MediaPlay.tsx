@@ -1,6 +1,6 @@
 import { getNetworkAPIUrlWithAuth } from '@config/api';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import Spinner from '@components/atoms/spinner/Spinner';
 import useToastStatus from '@hooks/useToastStatus';
 import { useGetMediaSubtitleByIdQuery, usePlayMediaByIdQuery } from '@services/media';
@@ -25,8 +25,24 @@ function MediaPlay() {
   const { data: mediaData, isFetching, status } = usePlayMediaByIdQuery(mediaId);
   const { data: subData, isLoading: subLoading } = useGetMediaSubtitleByIdQuery(mediaId);
 
+  const getCurrentUrl = () => {
+    return `/media-play/${mediaId || ''}?resume=${
+      ref?.current?.currentTime || 0
+    }&back=${back}&folderId=${folderId}`;
+  };
+
   const stopVideo = () => {
     mediaData?.data?.id && stopMedia(mediaData?.data?.id);
+  };
+
+  const handleExit = () => {
+    navigate(getCurrentUrl());
+    stopVideo();
+  };
+
+  const handleReload = () => {
+    handleExit();
+    window.location.reload();
   };
 
   const nextLink = useMemo(() => {
@@ -78,12 +94,28 @@ function MediaPlay() {
 
   const backTo = folderId ? `/manage-media/${folderId}/folder` : back;
 
+  useEffect(() => {
+    const terminationEvent = 'onpagehide' in self ? 'pagehide' : 'unload';
+
+    const onLeave = () => {
+      handleExit();
+    };
+
+    addEventListener(terminationEvent, onLeave, false);
+
+    return () => {
+      removeEventListener(terminationEvent, onLeave, false);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading, subData]);
+
   return (
     <div className="fixed z-20 w-screen h-screen top-0 left-0">
       {loading && <Spinner full large />}
       <div className="bg-black h-screen">
         {videoSrc ? (
           <HLSPlayer
+            reload
             ref={ref}
             src={videoSrc}
             backTo={backTo}
@@ -94,6 +126,7 @@ function MediaPlay() {
             thumbnailSrc={`/media/${mediaData?.data?.id}/thumbnail/seek`}
             onNext={() => stopVideo()}
             onUnmount={() => stopVideo()}
+            onReload={() => handleReload()}
             onEnded={async () => {
               if (mediaData?.data?.id && ref.current) {
                 await updateMediaStatus({

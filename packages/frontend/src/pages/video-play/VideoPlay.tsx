@@ -14,6 +14,10 @@ function VIdeoPlay() {
   const { data: videoData, isFetching, status } = useGetVideoByIdQuery(videoId);
   const { data: subData, isLoading: subLoading } = useGetVideoSubtitleByIdQuery(videoId);
 
+  const handleReload = () => {
+    window.location.reload();
+  };
+
   const handleSubtitleLoad = (trackText: string) => {
     try {
       const videoRef = ref.current;
@@ -66,10 +70,12 @@ function VIdeoPlay() {
         </div>
       )}
       <HLSPlayer
+        reload
         ref={ref}
         src={src}
         hls={false}
         backTo="/video-upload"
+        onReload={handleReload}
         thumbnailSrc={`${getNetworkAPIUrlWithAuth()}/video/${videoData?.data?.id}/thumbnail/seek`}
         name={normalizeText(videoData?.data?.originalname)}
       />
