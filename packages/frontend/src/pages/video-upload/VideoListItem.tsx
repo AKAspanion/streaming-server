@@ -49,7 +49,7 @@ const VideoListItem: FC<VideoListItemProps> = ({
   };
 
   const copyLink = async (txt: string) => {
-    const link = getNetworkFEUrl() + '/#' + txt;
+    const link = getNetworkFEUrl(txt);
     const res = await copyTextToClipboard(link);
     if (res) toast.success('Network link copied');
     else toast.error('Failed to copy link');

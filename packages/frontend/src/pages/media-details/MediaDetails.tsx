@@ -200,7 +200,7 @@ const MediaDetails: FC<MediaDetailsProps> = () => {
 
                       <div className="flex gap-2 items-center">
                         <Select
-                          value={media?.selectedAudio}
+                          value={String(media?.selectedAudio)}
                           onValueChange={(v) => updateAudio({ id: media?.id, index: v })}
                         >
                           <SelectTrigger>

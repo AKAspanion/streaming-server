@@ -1,14 +1,20 @@
 import { getNetworkAPIUrlWithAuth } from '@config/api';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import Spinner from '@components/atoms/spinner/Spinner';
 import useToastStatus from '@hooks/useToastStatus';
-import { useGetMediaSubtitleByIdQuery, usePlayMediaByIdQuery } from '@services/media';
+import {
+  useGetMediaSubtitleByIdQuery,
+  usePlayMediaByIdQuery,
+  useSetMediaAudioMutation,
+  useSetMediaSubtitleMutation,
+} from '@services/media';
 import usePollingEffect from '@/hooks/usePolling';
 import useMediaMutation from '@/hooks/useMediaMutation';
 import { HLSPlayer } from '@/components/hls-player/HLSPlayer';
 import { normalizeText } from '@common/utils/validate';
 import { useGetMediaInFolderQuery } from '@/services/folder';
+import toast from 'react-hot-toast/headless';
 
 function MediaPlay() {
   const ref = useRef<HTMLVideoElement>(null);
@@ -24,9 +30,65 @@ function MediaPlay() {
   const { data: mediaList } = useGetMediaInFolderQuery(folderId || '');
   const { data: mediaData, isFetching, status } = usePlayMediaByIdQuery(mediaId);
   const { data: subData, isLoading: subLoading } = useGetMediaSubtitleByIdQuery(mediaId);
+  const [updateAudio, { isLoading: isAudioUpdating }] = useSetMediaAudioMutation();
+  const [updateSubtitle, { isLoading: isSubtitleUpdating }] = useSetMediaSubtitleMutation();
+
+  const getCurrentUrl = () => {
+    return `/media-play/${mediaId || ''}?resume=${
+      ref?.current?.currentTime || 0
+    }&back=${back}&folderId=${folderId}`;
+  };
 
   const stopVideo = () => {
     mediaData?.data?.id && stopMedia(mediaData?.data?.id);
+  };
+
+  const handleExit = () => {
+    navigate(getCurrentUrl());
+    stopVideo();
+  };
+
+  const handleAudioChange = async (v: string) => {
+    try {
+      const index = (mediaData?.data?.audioStreams || []).findIndex((s) => {
+        return s?.index == v;
+      });
+
+      if (index == -1) {
+        throw new Error('no audio found');
+      }
+
+      if (!isAudioUpdating) {
+        await updateAudio({ id: mediaId, index: v }).unwrap();
+        handleReload();
+      }
+    } catch (error) {
+      toast.error("Coudn't load audio");
+    }
+  };
+
+  const handleSubtitleChange = async (subId: string) => {
+    try {
+      const index = (mediaData?.data?.subs || []).findIndex((s) => {
+        return s?.id === subId;
+      });
+
+      if (index == -1) {
+        throw new Error('no sub found');
+      }
+
+      if (!isSubtitleUpdating) {
+        await updateSubtitle({ id: mediaId, index }).unwrap();
+        handleReload();
+      }
+    } catch (error) {
+      toast.error("Coudn't load subtitle");
+    }
+  };
+
+  const handleReload = () => {
+    handleExit();
+    window.location.reload();
   };
 
   const nextLink = useMemo(() => {
@@ -55,6 +117,7 @@ function MediaPlay() {
   }, [mediaData?.data?.id]);
 
   const loading = isFetching || subLoading;
+  const bgLoading = isAudioUpdating || isSubtitleUpdating;
 
   useToastStatus(status, {
     errorMessage: 'Failed to fetch video details',
@@ -78,22 +141,46 @@ function MediaPlay() {
 
   const backTo = folderId ? `/manage-media/${folderId}/folder` : back;
 
+  useEffect(() => {
+    const terminationEvent = 'onpagehide' in self ? 'pagehide' : 'unload';
+
+    const onLeave = () => {
+      handleExit();
+    };
+
+    addEventListener(terminationEvent, onLeave, false);
+
+    return () => {
+      removeEventListener(terminationEvent, onLeave, false);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading, subData]);
+
   return (
     <div className="fixed z-20 w-screen h-screen top-0 left-0">
       {loading && <Spinner full large />}
       <div className="bg-black h-screen">
         {videoSrc ? (
           <HLSPlayer
+            reload
             ref={ref}
             src={videoSrc}
             backTo={backTo}
+            loading={bgLoading}
             nextLink={nextLink}
             subtitlesText={subData}
             currentTime={currentTime}
+            subs={mediaData?.data?.subs}
+            audios={mediaData?.data?.audioStreams}
+            selectedAudio={mediaData?.data?.selectedAudio}
+            selectedSubtitle={mediaData?.data?.selectedSubtitle}
             name={normalizeText(mediaData?.data?.originalName)}
             thumbnailSrc={`/media/${mediaData?.data?.id}/thumbnail/seek`}
             onNext={() => stopVideo()}
             onUnmount={() => stopVideo()}
+            onReload={() => handleReload()}
+            onAudioChange={(v) => handleAudioChange(v)}
+            onSubtitleChange={(v) => handleSubtitleChange(v)}
             onEnded={async () => {
               if (mediaData?.data?.id && ref.current) {
                 await updateMediaStatus({

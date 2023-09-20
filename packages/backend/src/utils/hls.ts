@@ -2,7 +2,7 @@ import fs from 'fs';
 import { deleteFile, getResourcePath, makeDirectory } from './helper';
 import path from 'path';
 import {
-  SEGMENT_FILE_NO_SEPERATOR,
+  SEGMENT_FILE_NO_SEPARATOR,
   SEGMENT_TARGET_DURATION,
   MANIFEST_TEMP_FOLDER,
 } from '@constants/hls';
@@ -23,7 +23,7 @@ export const generateManifest = (id: string, duration: number, token: string) =>
     const segments: string[] = [];
 
     const getSegment = (num: number, dur: number) =>
-      `#EXTINF:${dur.toFixed(6)},\n${id}${SEGMENT_FILE_NO_SEPERATOR}${num}.ts?token=${token}`;
+      `#EXTINF:${dur.toFixed(6)},\n${id}${SEGMENT_FILE_NO_SEPARATOR}${num}.ts?token=${token}`;
 
     const normalizedDuration = (remainigDuration: number) =>
       remainigDuration < targetDuration ? remainigDuration : targetDuration;
@@ -74,8 +74,8 @@ export const extractHLSFileInfo = (filename: string) => {
   const isInvalid = ext !== 'm3u8' && ext !== 'ts';
 
   if (isTS) {
-    mediaId = fileId.split(SEGMENT_FILE_NO_SEPERATOR)[0];
-    segment = Number(fileId.split(SEGMENT_FILE_NO_SEPERATOR).pop());
+    mediaId = fileId.split(SEGMENT_FILE_NO_SEPARATOR)[0];
+    segment = Number(fileId.split(SEGMENT_FILE_NO_SEPARATOR).pop());
   }
 
   if (ism3u8) {
