@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import {
-  SEGMENT_FILE_NO_SEPERATOR,
+  SEGMENT_FILE_NO_SEPARATOR,
   SEGMENT_TARGET_DURATION,
   SEGMENT_TEMP_FOLDER,
 } from '@constants/hls';
@@ -33,7 +33,7 @@ export default class Transcoder {
     this.filePath = filePath;
     this.startSegment = startSegment;
     this.latestSegment = startSegment;
-    this.watchProgress = 0; // In procentage, 0-100
+    this.watchProgress = 0;
     this.output = '';
     this.finished = false;
     this.duration = duration;
@@ -109,11 +109,8 @@ export default class Transcoder {
               const latestTimedSegment = Math.max(
                 Math.floor(seconds / SEGMENT_TARGET_DURATION) - 1,
               );
-              const computedSegemnt = latestTimedSegment + this.startSegment || 0;
-              // processLogger.info(
-              //   `[Transcoder] Latest computed segment ${computedSegemnt}. timedSegment ${latestTimedSegment} startSegment:${this.startSegment}`,
-              // );
-              this.latestSegment = computedSegemnt;
+              const computedSegment = latestTimedSegment + this.startSegment || 0;
+              this.latestSegment = computedSegment;
             }
           })
           .on('start', async (commandLine) => {
@@ -123,7 +120,7 @@ export default class Transcoder {
             ffmpegLogger.info(commandLine);
             resolve(true);
           })
-          .on('error', (err, stdout, stderr) => {
+          .on('error', (err) => {
             if (
               err.message != 'Output stream closed' &&
               err.message != 'ffmpeg was killed with signal SIGKILL'
@@ -132,9 +129,8 @@ export default class Transcoder {
               this.removeTempFolder();
             }
             ffmpegLogger.error(err.message);
-            ffmpegLogger.error(stderr);
           })
-          .output(path.resolve(`${this.output}/${this.group}${SEGMENT_FILE_NO_SEPERATOR}%01d.ts`));
+          .output(path.resolve(`${this.output}/${this.group}${SEGMENT_FILE_NO_SEPARATOR}%01d.ts`));
       } catch (error) {
         // err
       }

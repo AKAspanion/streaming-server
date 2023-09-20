@@ -7,7 +7,7 @@ import path from 'path';
 import Ffmpeg = require('fluent-ffmpeg');
 import { secToTime } from '@common/utils/date-time';
 import { ffmpegBinLogger, ffmpegLogger } from './logger';
-import { SEGMENT_FILE_NO_SEPERATOR, SEGMENT_TARGET_DURATION } from '@constants/hls';
+import { SEGMENT_FILE_NO_SEPARATOR, SEGMENT_TARGET_DURATION } from '@constants/hls';
 import fs from 'fs';
 import os from 'os';
 
@@ -180,7 +180,7 @@ export const createHLSStream = (pathToFile: string, id: string) =>
         '-hls_playlist_type vod',
         '-hls_flags independent_segments',
         '-hls_segment_type mpegts',
-        `-hls_segment_filename ${pathToManifest}/${id}${SEGMENT_FILE_NO_SEPERATOR}%01d.ts`,
+        `-hls_segment_filename ${pathToManifest}/${id}${SEGMENT_FILE_NO_SEPARATOR}%01d.ts`,
       ])
       .on('start', function (commandLine) {
         ffmpegLogger.info('Spawned FFmpeg with command: ' + commandLine);

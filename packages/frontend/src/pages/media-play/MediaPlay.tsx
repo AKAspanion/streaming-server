@@ -31,7 +31,7 @@ function MediaPlay() {
   const { data: mediaData, isFetching, status } = usePlayMediaByIdQuery(mediaId);
   const { data: subData, isLoading: subLoading } = useGetMediaSubtitleByIdQuery(mediaId);
   const [updateAudio, { isLoading: isAudioUpdating }] = useSetMediaAudioMutation();
-  const [updateSubtitle, { isLoading: subUpdateLoading }] = useSetMediaSubtitleMutation();
+  const [updateSubtitle, { isLoading: isSubtitleUpdating }] = useSetMediaSubtitleMutation();
 
   const getCurrentUrl = () => {
     return `/media-play/${mediaId || ''}?resume=${
@@ -77,7 +77,7 @@ function MediaPlay() {
         throw new Error('no sub found');
       }
 
-      if (!subUpdateLoading) {
+      if (!isSubtitleUpdating) {
         await updateSubtitle({ id: mediaId, index }).unwrap();
         handleReload();
       }
@@ -117,6 +117,7 @@ function MediaPlay() {
   }, [mediaData?.data?.id]);
 
   const loading = isFetching || subLoading;
+  const bgLoading = isAudioUpdating || isSubtitleUpdating;
 
   useToastStatus(status, {
     errorMessage: 'Failed to fetch video details',
@@ -165,6 +166,7 @@ function MediaPlay() {
             ref={ref}
             src={videoSrc}
             backTo={backTo}
+            loading={bgLoading}
             nextLink={nextLink}
             subtitlesText={subData}
             currentTime={currentTime}

@@ -6,6 +6,7 @@ import { getNetworkAPIUrlWithAuth } from '@/config/api';
 export type HLSPlayerProps = {
   hls?: boolean;
   reload?: boolean;
+  loading?: boolean;
   src: string;
   subs?: SubtitleType[];
   audios?: MediaStreamType[];
@@ -35,7 +36,15 @@ const useHLSPlayer = (
   containerRef: React.RefObject<HTMLDivElement>,
   progressRef: React.RefObject<HTMLInputElement>,
 ) => {
-  const { src, hls = true, thumbnailSrc, subtitlesText, currentTime = 0, onUnmount } = props;
+  const {
+    src,
+    loading,
+    hls = true,
+    thumbnailSrc,
+    subtitlesText,
+    currentTime = 0,
+    onUnmount,
+  } = props;
 
   const [volume, setVolume] = useState(1);
   const [duration, setDuration] = useState(0);
@@ -60,6 +69,7 @@ const useHLSPlayer = (
     (position?: number) =>
       new Promise((resolve) => {
         const video = ref.current;
+        if (loading) return;
         if (video) {
           Array.from(video.textTracks).forEach((track) => {
             if (track.mode === 'showing') {
@@ -81,7 +91,7 @@ const useHLSPlayer = (
         }
         resolve(false);
       }),
-    [ref],
+    [ref, loading],
   );
 
   const handleControlsVisibility = useCallback(
@@ -268,16 +278,18 @@ const useHLSPlayer = (
   const updateSeekTime = useCallback(
     (multiplier: number) => {
       const video = ref.current;
+      if (loading) return;
       if (video) {
         video.currentTime += 10 * multiplier;
       }
     },
-    [ref],
+    [ref, loading],
   );
 
   const updateSubtitleOffset = useCallback(
     (multiplier: number) => {
       const video = ref.current;
+      if (loading) return;
       if (video) {
         Array.from(video.textTracks).forEach((track) => {
           if (track.mode === 'showing') {
@@ -304,7 +316,7 @@ const useHLSPlayer = (
       }
       return false;
     },
-    [ref, subtitleOffset],
+    [ref, subtitleOffset, loading],
   );
 
   const initPlayer = useCallback(() => {
@@ -317,6 +329,7 @@ const useHLSPlayer = (
 
   const togglePlay = useCallback(() => {
     const video = ref.current;
+    if (loading) return;
     if (!video) return;
 
     if (video.paused || video.ended) {
@@ -326,18 +339,21 @@ const useHLSPlayer = (
       video.pause();
       setPlaying(false);
     }
-  }, [ref]);
+  }, [ref, loading]);
 
   const toggleMute = useCallback(() => {
     const video = ref.current;
+
+    if (loading) return;
     if (!video) return;
 
     video.muted = !video.muted;
-  }, [ref]);
+  }, [ref, loading]);
 
   const togglePip = useCallback(async () => {
     try {
       const video = ref.current;
+      if (loading) return;
       if (pipVisible && video && video !== document.pictureInPictureElement) {
         await video.requestPictureInPicture();
       } else {
@@ -346,7 +362,7 @@ const useHLSPlayer = (
     } catch (error) {
       console.error(error);
     }
-  }, [pipVisible, ref]);
+  }, [pipVisible, ref, loading]);
 
   const toggleSubtitle = useCallback(() => {
     const video = ref.current;
@@ -363,6 +379,7 @@ const useHLSPlayer = (
   }, [ref]);
 
   const toggleFullScreen = useCallback(() => {
+    if (loading) return;
     if (!containerRef.current) return;
 
     if (document.fullscreenElement) {
@@ -372,7 +389,7 @@ const useHLSPlayer = (
       containerRef.current.requestFullscreen();
       setMaximized(true);
     }
-  }, [containerRef]);
+  }, [containerRef, loading]);
 
   const updateElapsedDuration = useCallback(() => {
     const video = ref.current;
@@ -422,11 +439,13 @@ const useHLSPlayer = (
 
   const seekVideo = useCallback(() => {
     const video = ref.current;
+
+    if (loading) return;
     if (!video) return;
 
     setProgress(seekValue);
     video.currentTime = seekValue;
-  }, [ref, seekValue]);
+  }, [ref, seekValue, loading]);
 
   const getTooltipLeft = useCallback(() => {
     if (!progressRef.current) return;

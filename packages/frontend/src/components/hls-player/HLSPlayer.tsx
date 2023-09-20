@@ -51,6 +51,7 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
     audios,
     name,
     nextLink,
+    loading: propLoading,
     selectedAudio = '0',
     selectedSubtitle = 0,
     reload = false,
@@ -110,6 +111,8 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
 
   useImperativeHandle(outerRef, () => ref.current!);
 
+  const loading = waiting || propLoading;
+
   return (
     <div ref={containerRef} className="text-white w-full h-full dark bg-black relative">
       <video
@@ -125,11 +128,11 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
         onVolumeChange={onVolumeChange}
         onTimeUpdate={() => updateElapsedDuration()}
       />
-      {waiting && (
+      {waiting || loading ? (
         <div className="text-white drop-shadow absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
           <Spinner large />
         </div>
-      )}
+      ) : null}
       <div
         style={{ opacity: `${controlsVisible ? 1 : 0}` }}
         className={cs(
@@ -150,8 +153,8 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
           )}
         </div>
         <div
-          style={{ '--hlsplayer-slider-w': 'calc(100%)' } as React.CSSProperties}
-          className="dark w-[var(--hlsplayer-slider-w)] px-4 left-5"
+          style={{ '--hls-player-slider-w': 'calc(100%)' } as React.CSSProperties}
+          className="dark w-[var(--hls-player-slider-w)] px-4 left-5"
         >
           <div className="w-full h-2 group cursor-pointer" onMouseMove={updateSeekTooltip}>
             <Progress
@@ -192,13 +195,21 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
         <div className="dark flex gap-3 justify-between items-center">
           <div className="pl-3.5 flex gap-4 items-center">
             <div className="w-7 scale-[1.2] cursor-pointer" onClick={() => updateSeekTime(-1)}>
-              <ChevronsLeft className="w-7" />
+              <div className={cs('', { 'opacity-50': loading })}>
+                <ChevronsLeft className="w-7" />
+              </div>
             </div>
             <div className="p-4 cursor-pointer" onClick={togglePlay}>
-              <div className="w-7 ml-0.5">{playing ? <PauseIcon /> : <PlayIcon />}</div>
+              <div className="w-7 ml-0.5">
+                <div className={cs('', { 'opacity-50': loading })}>
+                  {playing ? <PauseIcon /> : <PlayIcon />}
+                </div>
+              </div>
             </div>
             <div className="w-7 scale-[1.2] cursor-pointer" onClick={() => updateSeekTime(1)}>
-              <ChevronsRight className="w-7" />
+              <div className={cs('', { 'opacity-50': loading })}>
+                <ChevronsRight className="w-7" />
+              </div>
             </div>
           </div>
           <div className="flex gap-6 items-center">
@@ -206,13 +217,15 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
               <HoverCard openDelay={0}>
                 <HoverCardTrigger>
                   <div className="w-7 scale-[1.2]" onClick={toggleMute}>
-                    {volumeState === 'mute' ? (
-                      <VolumeXIcon />
-                    ) : volumeState === 'low' ? (
-                      <Volume1Icon />
-                    ) : (
-                      <Volume2Icon />
-                    )}
+                    <div className={cs('', { 'opacity-50': loading })}>
+                      {volumeState === 'mute' ? (
+                        <VolumeXIcon />
+                      ) : volumeState === 'low' ? (
+                        <Volume1Icon />
+                      ) : (
+                        <Volume2Icon />
+                      )}
+                    </div>
                   </div>
                 </HoverCardTrigger>
                 <HoverCardContent className="w-56" align="center" side="top">
@@ -229,11 +242,13 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
               </HoverCard>
             </div>
 
-            {!maximized && audios && audios?.length && (
+            {!maximized && audios && audios?.length ? (
               <Popover>
                 <PopoverTrigger>
                   <div className="w-7">
-                    <MusicalNoteIcon />
+                    <div className={cs('', { 'opacity-50': loading })}>
+                      <MusicalNoteIcon />
+                    </div>
                   </div>
                 </PopoverTrigger>
                 <PopoverContent align="end" side="top">
@@ -267,12 +282,14 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
                   </div>
                 </PopoverContent>
               </Popover>
-            )}
+            ) : null}
             {!maximized && (
               <Popover>
                 <PopoverTrigger>
-                  <div className="w-8">
-                    <ClosedCaptionIcon />
+                  <div className="p-2 cursor-pointer">
+                    <div className={cs('w-8', { 'opacity-50': loading || !subtitlesText })}>
+                      <ClosedCaptionIcon />
+                    </div>
                   </div>
                 </PopoverTrigger>
                 <PopoverContent align="end" side="top">
@@ -284,7 +301,7 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
                       <Switch
                         id="toggle-sub"
                         disabled={!subtitlesText}
-                        checked={subtitlesVisible}
+                        checked={!!subtitlesText && subtitlesVisible}
                         onCheckedChange={() => toggleSubtitle()}
                       />
                     </div>
@@ -319,7 +336,9 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
               <Popover>
                 <PopoverTrigger>
                   <div className="w-7">
-                    <SettingsIcon />
+                    <div className={cs('', { 'opacity-50': loading })}>
+                      <SettingsIcon />
+                    </div>
                   </div>
                 </PopoverTrigger>
                 <PopoverContent align="end" side="top">
@@ -381,12 +400,14 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
               </Popover>
             ) : null}
             <div className="p-2 cursor-pointer" onClick={togglePip}>
-              <div className={cs('', { 'opacity-50': !pipVisible })}>
+              <div className={cs('', { 'opacity-50': loading || !pipVisible })}>
                 <PictureInPicture2 className="scale-[1.2]" />
               </div>
             </div>
             <div className="p-2 pr-2.5 cursor-pointer" onClick={toggleFullScreen}>
-              <div className="w-7 ml-0.5">{maximized ? <MinimizeIcon /> : <MaximizeIcon />}</div>
+              <div className={cs('', { 'opacity-50': loading })}>
+                <div className="w-7 ml-0.5">{maximized ? <MinimizeIcon /> : <MaximizeIcon />}</div>
+              </div>
             </div>
           </div>
         </div>
@@ -401,9 +422,9 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
       >
         <div
           className="w-screen flex gap-4 justify-between"
-          style={{ '--max-wasd': '100vw' } as React.CSSProperties}
+          style={{ '--max-hls-head-width': '100vw' } as React.CSSProperties}
         >
-          <div className="dark flex items-center gap-2 w-[var(--max-wasd)]">
+          <div className="dark flex items-center gap-2 w-[var(--max-hls-head-width)]">
             <div className="p-6 px-8">
               <Link to={backTo} className="w-6 scale-[1]">
                 <ArrowLeftIcon className="w-6" />
