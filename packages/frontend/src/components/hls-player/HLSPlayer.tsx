@@ -2,6 +2,7 @@ import {
   ArrowLeftIcon,
   ArrowPathIcon,
   MinusIcon,
+  MusicalNoteIcon,
   PauseIcon,
   PlayIcon,
   PlusIcon,
@@ -22,7 +23,7 @@ import {
   Volume2Icon,
   VolumeXIcon,
 } from 'lucide-react';
-import { cs } from '@/utils/helpers';
+import { cs, titleCase } from '@/utils/helpers';
 import Spinner from '../atoms/spinner/Spinner';
 import {
   Select,
@@ -42,12 +43,15 @@ import LazyImage from '../LazyImage';
 import useHLSPlayer, { HLSPlayerProps } from './useHLSPlayer';
 import { Switch } from '../ui/switch';
 import { Label } from '../ui/label';
+import { normalizeText } from '@common/utils/validate';
 
 export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, outerRef) => {
   const {
     subs,
+    audios,
     name,
     nextLink,
+    selectedAudio = '0',
     selectedSubtitle = 0,
     reload = false,
     backTo = '/',
@@ -56,6 +60,7 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
     onNext,
     onEnded,
     onReload,
+    onAudioChange,
     onSubtitleChange,
   } = props;
 
@@ -196,7 +201,7 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
               <ChevronsRight className="w-7" />
             </div>
           </div>
-          <div className="flex gap-4 items-center">
+          <div className="flex gap-6 items-center">
             <div className="flex gap-2 items-center">
               <HoverCard openDelay={0}>
                 <HoverCardTrigger>
@@ -223,19 +228,53 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
                 </HoverCardContent>
               </HoverCard>
             </div>
+
+            {!maximized && audios && audios?.length && (
+              <Popover>
+                <PopoverTrigger>
+                  <div className="w-7">
+                    <MusicalNoteIcon />
+                  </div>
+                </PopoverTrigger>
+                <PopoverContent align="end" side="top">
+                  <div className="flex gap-3 items-center">
+                    <div>Audio</div>
+                    <Select
+                      value={selectedAudio}
+                      onValueChange={(v) => onAudioChange && onAudioChange(v)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select Audio" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectLabel>Select Audio</SelectLabel>
+                          {audios.map((a) => {
+                            return (
+                              <SelectItem key={a?.index} value={`${a?.index}`}>
+                                {`Audio: ${[
+                                  normalizeText(a?.tags?.title),
+                                  titleCase(normalizeText(a?.tags?.language)),
+                                ]
+                                  .filter(Boolean)
+                                  .join(' - ')}`}
+                              </SelectItem>
+                            );
+                          })}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </PopoverContent>
+              </Popover>
+            )}
             {!maximized && (
-              // <div className="p-2 cursor-pointer" onClick={toggleSubtitle}>
-              //   <div className={cs('w-8', { 'opacity-50': !subtitlesVisible })}>
-              //     <ClosedCaptionIcon />
-              //   </div>
-              // </div>
               <Popover>
                 <PopoverTrigger>
                   <div className="w-8">
                     <ClosedCaptionIcon />
                   </div>
                 </PopoverTrigger>
-
                 <PopoverContent align="end" side="top">
                   <div>
                     <div className="gap-3 flex items-center justify-between">

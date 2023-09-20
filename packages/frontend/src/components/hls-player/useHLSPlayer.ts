@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Hls, { LevelLoadedData } from 'hls.js';
 import useVideoControls from './useVideoControls';
-import { IS_DEV } from '@/config/app';
 import { getNetworkAPIUrlWithAuth } from '@/config/api';
 
 export type HLSPlayerProps = {
@@ -9,6 +8,8 @@ export type HLSPlayerProps = {
   reload?: boolean;
   src: string;
   subs?: SubtitleType[];
+  audios?: MediaStreamType[];
+  selectedAudio?: string;
   selectedSubtitle?: number;
   subtitlesText?: string;
   thumbnailSrc?: string;
@@ -22,6 +23,7 @@ export type HLSPlayerProps = {
   onEnded?: () => void;
   onUnmount?: () => void;
   onReload?: () => void;
+  onAudioChange?: (id: string) => void;
   onSubtitleChange?: (id: string) => void;
 };
 
@@ -162,7 +164,7 @@ const useHLSPlayer = (
     if (videoRef && src) {
       if (Hls.isSupported()) {
         hlsObj.current = new Hls({
-          debug: IS_DEV,
+          // debug: IS_DEV,
           autoStartLoad: true,
           manifestLoadingTimeOut: 60000,
           manifestLoadingRetryDelay: 500,

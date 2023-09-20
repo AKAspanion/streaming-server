@@ -6,6 +6,7 @@ import useToastStatus from '@hooks/useToastStatus';
 import {
   useGetMediaSubtitleByIdQuery,
   usePlayMediaByIdQuery,
+  useSetMediaAudioMutation,
   useSetMediaSubtitleMutation,
 } from '@services/media';
 import usePollingEffect from '@/hooks/usePolling';
@@ -29,6 +30,7 @@ function MediaPlay() {
   const { data: mediaList } = useGetMediaInFolderQuery(folderId || '');
   const { data: mediaData, isFetching, status } = usePlayMediaByIdQuery(mediaId);
   const { data: subData, isLoading: subLoading } = useGetMediaSubtitleByIdQuery(mediaId);
+  const [updateAudio, { isLoading: isAudioUpdating }] = useSetMediaAudioMutation();
   const [updateSubtitle, { isLoading: subUpdateLoading }] = useSetMediaSubtitleMutation();
 
   const getCurrentUrl = () => {
@@ -46,8 +48,26 @@ function MediaPlay() {
     stopVideo();
   };
 
-  const handleSubtitle = async (subId: string) => {
-    console.log(subId);
+  const handleAudioChange = async (v: string) => {
+    try {
+      const index = (mediaData?.data?.audioStreams || []).findIndex((s) => {
+        return s?.index == v;
+      });
+
+      if (index == -1) {
+        throw new Error('no audio found');
+      }
+
+      if (!isAudioUpdating) {
+        await updateAudio({ id: mediaId, index: v }).unwrap();
+        handleReload();
+      }
+    } catch (error) {
+      toast.error("Coudn't load audio");
+    }
+  };
+
+  const handleSubtitleChange = async (subId: string) => {
     try {
       const index = (mediaData?.data?.subs || []).findIndex((s) => {
         return s?.id === subId;
@@ -149,13 +169,16 @@ function MediaPlay() {
             subtitlesText={subData}
             currentTime={currentTime}
             subs={mediaData?.data?.subs}
+            audios={mediaData?.data?.audioStreams}
+            selectedAudio={mediaData?.data?.selectedAudio}
             selectedSubtitle={mediaData?.data?.selectedSubtitle}
             name={normalizeText(mediaData?.data?.originalName)}
             thumbnailSrc={`/media/${mediaData?.data?.id}/thumbnail/seek`}
             onNext={() => stopVideo()}
             onUnmount={() => stopVideo()}
             onReload={() => handleReload()}
-            onSubtitleChange={(v) => handleSubtitle(v)}
+            onAudioChange={(v) => handleAudioChange(v)}
+            onSubtitleChange={(v) => handleSubtitleChange(v)}
             onEnded={async () => {
               if (mediaData?.data?.id && ref.current) {
                 await updateMediaStatus({
