@@ -2,6 +2,7 @@
 
 import { getNetworkAPIUrl } from './api';
 import { sleep } from '@common/utils/func';
+import { IS_DEV } from './app';
 
 export const setup = (loadApp: () => void) => {
   let backendReady = false;
@@ -32,18 +33,22 @@ export const setup = (loadApp: () => void) => {
       hostReceived = true;
     }
 
-    const waitForBE = async () => {
+    const waitForBE = async (count: number) => {
       backendReady = await checkBEState();
+      if (count >= 50 && IS_DEV) {
+        loadApp();
+        return;
+      }
 
       if (hostReceived && backendReady) {
         loadApp();
       } else {
         await sleep(500);
-        waitForBE();
+        waitForBE(++count);
       }
     };
 
-    waitForBE();
+    waitForBE(1);
   } catch (error) {
     loadApp();
   }
