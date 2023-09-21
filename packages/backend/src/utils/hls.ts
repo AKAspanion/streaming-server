@@ -8,6 +8,7 @@ import {
 } from '@constants/hls';
 import HLSManager from '@lib/hls-manager';
 import { processLogger } from './logger';
+import { sleep } from '@common/utils/func';
 
 export const generateManifest = (id: string, duration: number, token: string) =>
   new Promise((resolve, reject) => {
@@ -96,21 +97,32 @@ export const waitUntilFileExists = (
   group: string,
 ) => {
   return new Promise((resolve, reject) => {
-    const interval = setInterval(() => {
+    const waitForFile = async (count: number) => {
+      processLogger.info(`[HLS]Waiting for segment "${requestedSegment}"`);
+      await sleep(250);
+
+      if (count >= 20) {
+        processLogger.info('[HLS]Stop checking segments, retries exceeded');
+        reject();
+        return;
+      }
+
       if (!hlsManager.isAnyVideoTranscoderActive(group)) {
         processLogger.info('[HLS]Stop checking segments, transcoder stopped');
-        clearInterval(interval);
         reject();
+        return;
       }
       fs.access(filePath, fs.constants.F_OK, (err) => {
         if (!err && isSegmentFinished(requestedSegment, hlsManager, group)) {
-          clearInterval(interval);
           resolve(true);
-        } else if (err) {
-          processLogger.info(`[HLS]Couldn't find ${filePath}, waiting...`);
+          return;
+        } else {
+          waitForFile(++count);
         }
       });
-    }, 1000);
+    };
+
+    waitForFile(1);
   });
 };
 
@@ -121,6 +133,11 @@ const isSegmentFinished = (requested: number, hlsManager: HLSManager, group: str
 
   const start = hlsManager.getTranscoderStartSegment(group);
   const current = hlsManager.getVideoTranscoderSegment(group);
+
+  processLogger.info(
+    `[HLS]Transcoder not finished. requested:${requested} start:${start} current:${current}`,
+  );
+
   if (start == -1) {
     start;
     return false;
@@ -128,8 +145,5 @@ const isSegmentFinished = (requested: number, hlsManager: HLSManager, group: str
 
   const flag = requested >= start && requested < current + 2;
 
-  processLogger.info(
-    `[HLS] Transcoder not finished. requested:${requested} start:${start} current:${current}`,
-  );
   return flag;
 };

@@ -7,7 +7,7 @@ import {
   createVideoThumbnail,
   getVideoMetaData,
 } from '@utils/ffmpeg';
-import { checkIfFileExists, getFileType } from '@utils/file';
+import { getFileType } from '@utils/file';
 import { randomUUID } from 'crypto';
 import path from 'path';
 import fs from 'fs';
@@ -171,7 +171,7 @@ const addOneSubtitleOfMedia = async (
   copied = false,
 ) => {
   try {
-    const exists = await checkIfFileExists(srtFilePath);
+    const exists = fileExists(srtFilePath);
     const stat = await fs.promises.stat(srtFilePath);
 
     if (exists) {
