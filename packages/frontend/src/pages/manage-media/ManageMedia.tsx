@@ -68,8 +68,11 @@ const ManageMedia = () => {
                     <div className="w-12 text-yellow-300">
                       <FolderIcon />
                     </div>
-                    <div className="flex flex-col">
-                      <div className="text-sm font-semibold">{f?.name}</div>
+                    <div
+                      style={{ '--folder-text-w': 'calc(100% - 56px)' } as React.CSSProperties}
+                      className="flex flex-col w-[var(--folder-text-w)]"
+                    >
+                      <div className="text-sm font-semibold line-clamp-1">{f?.name}</div>
                       <div className="text-xs opacity-70">
                         {f?.totalFiles == 1 ? '1 File' : (f?.totalFiles || 'No') + ' Files'}
                       </div>

@@ -127,7 +127,7 @@ export default class Transcoder {
             ffmpegLogger.info(commandLine);
             resolve(true);
           })
-          .on('error', (err, _, stderr) => {
+          .on('error', (err) => {
             if (
               err.message != 'Output stream closed' &&
               err.message != 'ffmpeg was killed with signal SIGKILL'
@@ -139,7 +139,7 @@ export default class Transcoder {
             HLSManager.stopVideoTranscoder(this.group);
 
             ffmpegLogger.error(err.message);
-            ffmpegLogger.error(stderr);
+            // ffmpegLogger.error(stderr);
           })
           .output(path.resolve(`${this.output}/${this.group}${SEGMENT_FILE_NO_SEPARATOR}%01d.ts`));
       } catch (error) {
