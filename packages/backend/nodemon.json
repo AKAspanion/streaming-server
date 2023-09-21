@@ -3,5 +3,5 @@
     "ts": "ts-node"
   },
   "verbose": false,
-  "ignore": ["README", "build", "dist", "_appdata"]
+  "ignore": ["README", "build", "dist", "_app_data"]
 }

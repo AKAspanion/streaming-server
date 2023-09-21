@@ -53,10 +53,10 @@ export const getRecentCompleted: RequestHandler = async (req, res) => {
   return res.status(HttpCode.OK).send({ data: recent.slice(0, 10) });
 };
 
-export const getFavourites: RequestHandler = async (req, res) => {
+export const getFavorites: RequestHandler = async (req, res) => {
   const { data: mediaList } = await getAllMediaData();
 
-  const favourites = mediaList.filter((m) => !!m?.isFavourite);
+  const favorites = mediaList.filter((m) => !!m?.isFavorite);
 
-  return res.status(HttpCode.OK).send({ data: favourites.slice(0, 10) });
+  return res.status(HttpCode.OK).send({ data: favorites.slice(0, 10) });
 };

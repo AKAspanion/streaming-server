@@ -10,8 +10,8 @@ export const dashboardApi = createApi({
       query: () => `dashboard/recent`,
       providesTags: ['Dashboard'],
     }),
-    getFavourites: builder.query<{ data: MediaTypeFull[] }, void>({
-      query: () => `dashboard/favourite`,
+    getFavorites: builder.query<{ data: MediaTypeFull[] }, void>({
+      query: () => `dashboard/favorite`,
       providesTags: ['Dashboard'],
     }),
     getRecentWatched: builder.query<{ data: MediaTypeFull[] }, void>({
@@ -29,5 +29,5 @@ export const {
   useGetRecentCompletedQuery,
   useGetRecentAddedQuery,
   useGetRecentWatchedQuery,
-  useGetFavouritesQuery,
+  useGetFavoritesQuery,
 } = dashboardApi;

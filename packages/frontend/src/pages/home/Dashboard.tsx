@@ -1,5 +1,5 @@
 import {
-  useGetFavouritesQuery,
+  useGetFavoritesQuery,
   useGetRecentAddedQuery,
   useGetRecentCompletedQuery,
   useGetRecentWatchedQuery,
@@ -18,21 +18,21 @@ const Dashboard: FC<DashboardProps> = () => {
   const { data: recentCompleted, isLoading: recentCompletedLoading } = useGetRecentCompletedQuery();
   const { data: recentWatched, isLoading: recentWatchedLoading } = useGetRecentWatchedQuery();
   const { data: recentAdded, isLoading: recentAddedLoading } = useGetRecentAddedQuery();
-  const { data: favourites, isLoading: favouritesLoading } = useGetFavouritesQuery();
+  const { data: favorites, isLoading: favoritesLoading } = useGetFavoritesQuery();
 
   const recentCompletedList = recentCompleted?.data || [];
   const recentWatchedList = recentWatched?.data || [];
   const recentAddedList = recentAdded?.data || [];
-  const favouritesList = favourites?.data || [];
+  const favoritesList = favorites?.data || [];
 
   const isEmpty =
     !recentCompletedList?.length &&
     !recentWatchedList?.length &&
     !recentAddedList?.length &&
-    !favouritesList?.length;
+    !favoritesList?.length;
 
   const loading =
-    recentCompletedLoading || recentWatchedLoading || recentAddedLoading || favouritesLoading;
+    recentCompletedLoading || recentWatchedLoading || recentAddedLoading || favoritesLoading;
 
   return loading ? (
     <Spinner full />
@@ -68,11 +68,11 @@ const Dashboard: FC<DashboardProps> = () => {
           </Scroller>
         </div>
       ) : null}
-      {favouritesList?.length ? (
+      {favoritesList?.length ? (
         <div className="pt-4">
-          <SectionHeader className="pb-4 px-4" title="Favourites" />
+          <SectionHeader className="pb-4 px-4" title="Favorites" />
           <Scroller width="100%">
-            {favouritesList.map((m) => (
+            {favoritesList.map((m) => (
               <div key={m.id} className="min-w-[300px]">
                 <MediaCard media={m} backTo="/" />
               </div>

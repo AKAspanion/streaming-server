@@ -47,8 +47,8 @@ const MediaDetails: FC<MediaDetailsProps> = () => {
   const {
     deleteMedia,
     isDeleteLoading,
-    markMediaFavourite,
-    isMarkFavouriteLoading,
+    markMediaFavorite,
+    isMarkFavoriteLoading,
     markMediaWatched,
     isMarkWatchedLoading,
     updateAudio,
@@ -61,7 +61,7 @@ const MediaDetails: FC<MediaDetailsProps> = () => {
   const { data: mediaData, isLoading, status } = useGetMediaByIdQuery(mediaId);
 
   const loading = isLoading || isFetching || isDeleteLoading;
-  const mutationLoading = isMarkFavouriteLoading || isMarkWatchedLoading || isAudioUpdating;
+  const mutationLoading = isMarkFavoriteLoading || isMarkWatchedLoading || isAudioUpdating;
 
   const folder = folderData?.data;
   const media = useMemo(() => mediaData?.data || ({} as MediaTypeFull), [mediaData?.data]);
@@ -190,8 +190,8 @@ const MediaDetails: FC<MediaDetailsProps> = () => {
                           </div>
                         </Button>
                       </Link>
-                      <Button variant={'secondary'} onClick={() => markMediaFavourite(media.id)}>
-                        <div className={cs('w-5', { 'text-red-500': media?.isFavourite })}>
+                      <Button variant={'secondary'} onClick={() => markMediaFavorite(media.id)}>
+                        <div className={cs('w-5', { 'text-red-500': media?.isFavorite })}>
                           <HeartIcon />
                         </div>
                       </Button>

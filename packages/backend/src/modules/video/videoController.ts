@@ -1,5 +1,5 @@
 import { deleteVideoDB, pushVideoDB } from '@database/json';
-import { handleJSONDBDataError } from '@utils/error';
+import { handleJsonDBDataError } from '@utils/error';
 import { AppError, HttpCode } from '@utils/exceptions';
 import { randomUUID } from 'crypto';
 import { RequestHandler } from 'express';
@@ -16,7 +16,7 @@ export const addVideo: RequestHandler = async (req, res) => {
   const { error } = await pushVideoDB(`/${id}`, body);
 
   if (error) {
-    handleJSONDBDataError(error, id);
+    handleJsonDBDataError(error, id);
   }
 
   const data = { id, ...body };
@@ -33,7 +33,7 @@ export const deleteVideo: RequestHandler = async (req, res) => {
   const { error: deleteError } = await deleteVideoDB(`/${id}`);
 
   if (deleteError) {
-    handleJSONDBDataError(deleteError, id);
+    handleJsonDBDataError(deleteError, id);
   }
 
   return res.status(HttpCode.OK).send({ message: 'Video deleted successfully' });

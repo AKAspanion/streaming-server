@@ -40,11 +40,11 @@ export const processHLSStream = (options: ProcessStreamOptions) => {
           const latestSegment = hlsManager.getVideoTranscoderSegment(group);
           // Increase the threshold to avoid the situation where the transcoder is being stopped too early because of slow transcoders
           if (segment > latestSegment + 10) {
-            // Restart transcoder since seektime is too far away
+            // Restart transcoder since seek time is too far away
             processLogger.info(`[HLS] Too long seek`);
             restartTranscoder = true;
           } else if (segment < hlsManager.getTranscoderStartSegment(group) && !segmentExists) {
-            // Restart transcoder since seektime is in the past, and that segment does not exist
+            // Restart transcoder since seek time is in the past, and that segment does not exist
             processLogger.info(`[HLS] Seeking in the past for a segment that doesn't exist `);
             restartTranscoder = true;
           } else if (hlsManager.isTranscoderFinished(group)) {

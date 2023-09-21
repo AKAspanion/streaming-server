@@ -1,6 +1,6 @@
 import {
   useDeleteMediaByIdMutation,
-  useMarkMediaFavouriteMutation,
+  useMarkMediaFavoriteMutation,
   useMarkMediaWatchedMutation,
   useSetMediaAudioMutation,
   useStopMediaByIdMutation,
@@ -14,8 +14,7 @@ const useMediaMutation = (options?: { onDelete?: () => void }) => {
   const [processDelete, { isLoading: isDeleteLoading, status: deleteStatus, data: deleteData }] =
     useDeleteMediaByIdMutation();
 
-  const [markMediaFavourite, { isLoading: isMarkFavouriteLoading }] =
-    useMarkMediaFavouriteMutation();
+  const [markMediaFavorite, { isLoading: isMarkFavoriteLoading }] = useMarkMediaFavoriteMutation();
   const [markMediaWatched, { isLoading: isMarkWatchedLoading }] = useMarkMediaWatchedMutation();
   const [updateMediaStatus, { isLoading: isMediaStatusUpdating }] = useUpdateMediaStatusMutation();
   const [updateAudio, { isLoading: isAudioUpdating }] = useSetMediaAudioMutation();
@@ -39,8 +38,8 @@ const useMediaMutation = (options?: { onDelete?: () => void }) => {
     deleteMedia,
     deleteData,
     isDeleteLoading,
-    markMediaFavourite,
-    isMarkFavouriteLoading,
+    markMediaFavorite,
+    isMarkFavoriteLoading,
     markMediaWatched,
     isMarkWatchedLoading,
     updateMediaStatus,

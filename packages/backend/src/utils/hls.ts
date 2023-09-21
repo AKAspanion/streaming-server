@@ -11,10 +11,10 @@ import { processLogger } from './logger';
 
 export const generateManifest = (id: string, duration: number, token: string) =>
   new Promise((resolve, reject) => {
-    const manifestFile = `${id}.m3u8`;
+    const file = `${id}.m3u8`;
     const manifestDir = `${MANIFEST_TEMP_FOLDER}${id}/`;
     const pathToManifest = getResourcePath(manifestDir);
-    const outputFile = path.join(pathToManifest, manifestFile);
+    const outputFile = path.join(pathToManifest, file);
 
     deleteFile(outputFile);
     makeDirectory(pathToManifest);
@@ -25,8 +25,8 @@ export const generateManifest = (id: string, duration: number, token: string) =>
     const getSegment = (num: number, dur: number) =>
       `#EXTINF:${dur.toFixed(6)},\n${id}${SEGMENT_FILE_NO_SEPARATOR}${num}.ts?token=${token}`;
 
-    const normalizedDuration = (remainigDuration: number) =>
-      remainigDuration < targetDuration ? remainigDuration : targetDuration;
+    const normalizedDuration = (remainingDuration: number) =>
+      remainingDuration < targetDuration ? remainingDuration : targetDuration;
 
     let index = 0;
     do {
@@ -35,7 +35,7 @@ export const generateManifest = (id: string, duration: number, token: string) =>
       index++;
     } while (duration > 0);
 
-    const manifestfile = `#EXTM3U
+    const manifestFile = `#EXTM3U
 #EXT-X-VERSION:3
 #EXT-X-MEDIA-SEQUENCE:0
 #EXT-X-ALLOW-CACHE:YES
@@ -43,7 +43,7 @@ export const generateManifest = (id: string, duration: number, token: string) =>
 ${segments.join('\n')}
 #EXT-X-ENDLIST`;
 
-    fs.writeFile(outputFile, manifestfile, (err) => {
+    fs.writeFile(outputFile, manifestFile, (err) => {
       if (err) {
         reject(err);
       }
@@ -98,7 +98,7 @@ export const waitUntilFileExists = (
   return new Promise((resolve, reject) => {
     const interval = setInterval(() => {
       if (!hlsManager.isAnyVideoTranscoderActive(group)) {
-        processLogger.info('[HLS]Stop checking segemnts, transcoder stopped');
+        processLogger.info('[HLS]Stop checking segments, transcoder stopped');
         clearInterval(interval);
         reject();
       }

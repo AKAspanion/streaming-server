@@ -32,10 +32,10 @@ export const getffmpeg = () => {
   return ffmpeg as typeof Ffmpeg;
 };
 
-export const createVideoThumbnail = (id: string, pathToFile: string, metadata: MediaTypeJSONDB) =>
+export const createVideoThumbnail = (id: string, pathToFile: string, metadata: MediaTypeJsonDB) =>
   new Promise<ThumbnailType>((resolve, reject) => {
     const ffmpeg = getffmpeg();
-    const pathToSnapshot = getResourcePath(`_appdata/_images/${id}`);
+    const pathToSnapshot = getResourcePath(`_app_data/_images/${id}`);
     const thumbnailFile = `poster_thumbnail_${id}.png`;
     const thumbnailPath = path.join(pathToSnapshot, thumbnailFile);
 
@@ -65,7 +65,7 @@ export const createVideoThumbnail = (id: string, pathToFile: string, metadata: M
 export const createSeekThumbnail = (id: string, pathToFile: string, time: number) =>
   new Promise<ThumbnailType>((resolve, reject) => {
     const ffmpeg = getffmpeg();
-    const pathToSnapshot = getResourcePath(`_appdata/_images/${id}`);
+    const pathToSnapshot = getResourcePath(`_app_data/_images/${id}`);
     const thumbnailFile = `thumb_${id}_${time}.jpeg`;
     const thumbnailPath = path.join(pathToSnapshot, thumbnailFile);
 
@@ -97,7 +97,7 @@ export const createSubtitle = (id: string, pathToFile: string, index: number) =>
   new Promise<{ subPath: string; name: string; error: any }>((resolve) => {
     const ffmpeg = getffmpeg();
 
-    const pathToSub = getResourcePath(`_appdata/_subs/${id}`);
+    const pathToSub = getResourcePath(`_app_data/_subs/${id}`);
     const subFile = `sub_${id}_${index}.srt`;
     const subPath = path.join(pathToSub, subFile);
 
@@ -123,7 +123,7 @@ export const createPoster = (id: string, pathToFile: string) =>
   new Promise<{ posterPath: string; error: any }>((resolve) => {
     const ffmpeg = getffmpeg();
 
-    const pathToPoster = getResourcePath(`_appdata/_images/${id}`);
+    const pathToPoster = getResourcePath(`_app_data/_images/${id}`);
     const subFile = `poster_${id}.jpg`;
     const posterPath = path.join(pathToPoster, subFile);
 
@@ -146,7 +146,7 @@ export const createPoster = (id: string, pathToFile: string) =>
   });
 
 export const getVideoMetaData = (pathToFile: string) =>
-  new Promise<MediaTypeJSONDB>((resolve, reject) => {
+  new Promise<MediaTypeJsonDB>((resolve, reject) => {
     const ffmpeg = getffmpeg();
 
     const mimeType = mime.getType(pathToFile);

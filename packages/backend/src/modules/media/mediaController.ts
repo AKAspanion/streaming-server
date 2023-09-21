@@ -88,11 +88,11 @@ export const updatePlayStatus: RequestHandler = async (req, res) => {
   return res.status(HttpCode.OK).send({ data: { message: 'Play status updated successfully' } });
 };
 
-export const markFavourite: RequestHandler = async (req, res) => {
+export const markFavorite: RequestHandler = async (req, res) => {
   const id = normalizeText(req.params.id);
   const { data } = await getOneMediaData(id);
 
-  const body = { ...data, isFavourite: !data?.isFavourite };
+  const body = { ...data, isFavorite: !data?.isFavorite };
 
   const { error: pushError } = await pushMediaDB(`/${id}`, body);
 
@@ -103,7 +103,7 @@ export const markFavourite: RequestHandler = async (req, res) => {
     });
   }
 
-  return res.status(HttpCode.OK).send({ data: { message: 'Media marked as favourite' } });
+  return res.status(HttpCode.OK).send({ data: { message: 'Media marked as favorite' } });
 };
 
 export const markWatched: RequestHandler = async (req, res) => {
@@ -121,7 +121,7 @@ export const markWatched: RequestHandler = async (req, res) => {
     });
   }
 
-  return res.status(HttpCode.OK).send({ data: { message: 'Media marked as favourite' } });
+  return res.status(HttpCode.OK).send({ data: { message: 'Media marked as favorite' } });
 };
 
 export const setAudioStream: RequestHandler = async (req, res) => {
@@ -138,7 +138,7 @@ export const setAudioStream: RequestHandler = async (req, res) => {
     res.status(HttpCode.OK).send({ data: { message: 'Audio index is already set' } });
   }
 
-  const body: MediaTypeJSONDB = { ...data, selectedAudio: req?.body?.index };
+  const body: MediaTypeJsonDB = { ...data, selectedAudio: req?.body?.index };
 
   const { error: pushError } = await pushMediaDB(`/${id}`, body);
 
@@ -169,7 +169,7 @@ export const setSubtitleStream: RequestHandler = async (req, res) => {
     res.status(HttpCode.OK).send({ data: { message: 'Subtitle index is already set' } });
   }
 
-  const body: MediaTypeJSONDB = { ...data, selectedSubtitle: req?.body?.index };
+  const body: MediaTypeJsonDB = { ...data, selectedSubtitle: req?.body?.index };
 
   const { error: pushError } = await pushMediaDB(`/${id}`, body);
 

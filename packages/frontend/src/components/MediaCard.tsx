@@ -48,7 +48,7 @@ const MediaCard: FC<MediaCardProps> = ({ media, backTo, folderId }) => {
   const progressValue = totalDuration ? formatPercentage(currentDuration, totalDuration) : 0;
 
   const hasSub = media?.subs && media?.subs.length;
-  const isFavourite = media?.isFavourite;
+  const isFavorite = media?.isFavorite;
 
   return (
     <Card className="h-full relative group">
@@ -70,7 +70,7 @@ const MediaCard: FC<MediaCardProps> = ({ media, backTo, folderId }) => {
             </Link>
           }
         >
-          {isFavourite && (
+          {isFavorite && (
             <div className="text-white absolute right-3 top-3 shadow-lg">
               <div className="w-5 drop-shadow">
                 <HeartIcon className="drop-shadow " />

@@ -1,5 +1,6 @@
 node_modules/
 _appdata/
+_app_data/
 
 dist
 build
