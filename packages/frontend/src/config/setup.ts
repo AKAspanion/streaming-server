@@ -35,7 +35,7 @@ export const setup = (loadApp: () => void) => {
 
     const waitForBE = async (count: number) => {
       backendReady = await checkBEState();
-      if (count >= 50 && IS_DEV) {
+      if (count >= 20 && IS_DEV) {
         loadApp();
         return;
       }
