@@ -62,3 +62,15 @@ export const deleteFile = (filePath: string) => {
     // err
   }
 };
+
+export const fileExists = (filePath: string) => {
+  try {
+    if (fs.existsSync(filePath)) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    return false;
+  }
+};

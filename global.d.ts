@@ -134,6 +134,7 @@ declare type MediaType = {
   path: string;
   addDate: number;
   lastPlayedDate?: number;
+  fileNotFound?: boolean;
   isFavourite?: boolean;
   watched?: boolean;
   paused?: boolean;

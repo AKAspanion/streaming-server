@@ -13,7 +13,7 @@ import path from 'path';
 import fs from 'fs';
 import { addOneMediaSubtitle } from '@modules/subtitle/subtitleData';
 import logger from '@utils/logger';
-import { deleteDirectory, deleteFilesSilently, getResourcePath } from '@utils/helper';
+import { deleteDirectory, deleteFilesSilently, fileExists, getResourcePath } from '@utils/helper';
 import { addOneFolder } from '@modules/folder/folderData';
 import { ALLOWED_VIDEO_FILES } from '@common/constants/app';
 
@@ -243,6 +243,10 @@ export const getOneMediaData = async (mediaId: string) => {
 
   if (!data) {
     throw new AppError({ httpCode: HttpCode.BAD_REQUEST, description: 'Media not found' });
+  }
+
+  if (!fileExists(data.path)) {
+    data.fileNotFound = true;
   }
 
   return { data: { ...data, id: mediaId } as MediaTypeJSONDB };

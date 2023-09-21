@@ -15,6 +15,7 @@ import {
   PlayIcon,
   TrashIcon,
   VideoCameraSlashIcon,
+  XCircleIcon,
 } from '@heroicons/react/24/solid';
 import { TagIcon } from '@heroicons/react/20/solid';
 import useMediaMutation from '@hooks/useMediaMutation';
@@ -137,16 +138,24 @@ const MediaDetails: FC<MediaDetailsProps> = () => {
                 <CardTitle>
                   <div className="line-clamp-2">{mediaTitle}</div>
                 </CardTitle>
-                {folder?.name && (
-                  <CardDescription>
+                <CardDescription className="flex gap-3">
+                  {folder?.name ? (
                     <div className="gap-2 flex">
                       <div className="text-yellow-300 w-5">
                         <FolderIcon />
                       </div>
                       <div>{folder?.name}</div>
                     </div>
-                  </CardDescription>
-                )}
+                  ) : null}
+                  {media?.fileNotFound ? (
+                    <div className="gap-2 flex">
+                      <div className="text-red-500 w-5">
+                        <XCircleIcon />
+                      </div>
+                      <div>File missing</div>
+                    </div>
+                  ) : null}
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="flex flex-col gap-4">
