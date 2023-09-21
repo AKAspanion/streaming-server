@@ -1,15 +1,19 @@
 import { useGetVideoByIdQuery, useGetVideoSubtitleByIdQuery } from '@services/video';
 import { getNetworkAPIUrlWithAuth } from '@config/api';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useEffect, useRef } from 'react';
 import Spinner from '@components/atoms/spinner/Spinner';
 import useToastStatus from '@hooks/useToastStatus';
 import { HLSPlayer } from '@/components/hls-player/HLSPlayer';
 import { normalizeText } from '@common/utils/validate';
 
-function VIdeoPlay() {
+function VideoPlay() {
+  const navigate = useNavigate();
   const ref = useRef<HTMLVideoElement>(null);
   const { videoId = '' } = useParams();
+  const [searchParams] = useSearchParams();
+
+  const back = searchParams.get('back') || '/video-upload';
 
   const { data: videoData, isFetching, status } = useGetVideoByIdQuery(videoId);
   const { data: subData, isLoading: subLoading } = useGetVideoSubtitleByIdQuery(videoId);
@@ -74,13 +78,14 @@ function VIdeoPlay() {
         ref={ref}
         src={src}
         hls={false}
-        backTo="/video-upload"
-        onReload={handleReload}
+        backTo={back}
         thumbnailSrc={`${getNetworkAPIUrlWithAuth()}/video/${videoData?.data?.id}/thumbnail/seek`}
         name={normalizeText(videoData?.data?.originalname)}
+        onReload={handleReload}
+        onEnded={() => navigate(back)}
       />
     </div>
   );
 }
 
-export default VIdeoPlay;
+export default VideoPlay;

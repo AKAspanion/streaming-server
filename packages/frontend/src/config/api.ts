@@ -1,7 +1,7 @@
 const port: string = import.meta.env.VITE_BE_PORT;
 
 export const getNetworkAPIUrl = () =>
-  `${import.meta.env.VITE_BE_HOST || window.networkHost || window.location.origin || '/'}${
+  `${window.networkHost || import.meta.env.VITE_BE_HOST || window.location.origin || '/'}${
     port ? ':' + port : ''
   }`;
 
