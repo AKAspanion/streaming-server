@@ -10,7 +10,7 @@ import {
   getVideoMetaData,
 } from '@utils/ffmpeg';
 import { getFileType } from '@utils/file';
-import { getResourcePath, makeDirectory } from '@utils/helper';
+import { fileExists, getResourcePath, makeDirectory } from '@utils/helper';
 import { extractHLSFileInfo, generateManifest } from '@utils/hls';
 import { RequestHandler } from 'express';
 import {
@@ -309,7 +309,7 @@ export const getSeekThumbnail: RequestHandler = async (req, res) => {
 
   const { data } = await getOneMediaData(id);
 
-  if (data?.path) {
+  if (fileExists(data?.path)) {
     const thumbnail = await createSeekThumbnail(id, data?.path, time);
     res.download(thumbnail?.path, thumbnail.name || 'thumb_seek.png');
   } else {

@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import mime from 'mime';
-import { deleteFile, getBinPath, getResourcePath, makeDirectory } from './helper';
+import { deleteFile, fileExists, getBinPath, getResourcePath, makeDirectory } from './helper';
 import path from 'path';
 import Ffmpeg = require('fluent-ffmpeg');
 import { secToTime } from '@common/utils/date-time';
@@ -34,6 +34,10 @@ export const getffmpeg = () => {
 
 export const createVideoThumbnail = (id: string, pathToFile: string, metadata: MediaTypeJsonDB) =>
   new Promise<ThumbnailType>((resolve, reject) => {
+    if (!fileExists(pathToFile)) {
+      return reject(new Error('File not found to extract thumbnail'));
+    }
+
     const ffmpeg = getffmpeg();
     const pathToSnapshot = getResourcePath(`_app_data/_images/${id}`);
     const thumbnailFile = `poster_thumbnail_${id}.png`;
@@ -64,6 +68,10 @@ export const createVideoThumbnail = (id: string, pathToFile: string, metadata: M
 
 export const createSeekThumbnail = (id: string, pathToFile: string, time: number) =>
   new Promise<ThumbnailType>((resolve, reject) => {
+    if (!fileExists(pathToFile)) {
+      return reject(new Error('File not found to create seek thumbnail'));
+    }
+
     const ffmpeg = getffmpeg();
     const pathToSnapshot = getResourcePath(`_app_data/_images/${id}`);
     const thumbnailFile = `thumb_${id}_${time}.jpeg`;
@@ -94,9 +102,12 @@ export const createSeekThumbnail = (id: string, pathToFile: string, time: number
   });
 
 export const createSubtitle = (id: string, pathToFile: string, index: number) =>
-  new Promise<{ subPath: string; name: string; error: any }>((resolve) => {
-    const ffmpeg = getffmpeg();
+  new Promise<{ subPath: string; name: string; error: any }>((resolve, reject) => {
+    if (!fileExists(pathToFile)) {
+      return reject(new Error('File not found to extract subtitle'));
+    }
 
+    const ffmpeg = getffmpeg();
     const pathToSub = getResourcePath(`_app_data/_subs/${id}`);
     const subFile = `sub_${id}_${index}.srt`;
     const subPath = path.join(pathToSub, subFile);
@@ -120,9 +131,12 @@ export const createSubtitle = (id: string, pathToFile: string, index: number) =>
   });
 
 export const createPoster = (id: string, pathToFile: string) =>
-  new Promise<{ posterPath: string; error: any }>((resolve) => {
-    const ffmpeg = getffmpeg();
+  new Promise<{ posterPath: string; error: any }>((resolve, reject) => {
+    if (!fileExists(pathToFile)) {
+      return reject(new Error('File not found to extract poster'));
+    }
 
+    const ffmpeg = getffmpeg();
     const pathToPoster = getResourcePath(`_app_data/_images/${id}`);
     const subFile = `poster_${id}.jpg`;
     const posterPath = path.join(pathToPoster, subFile);
@@ -147,8 +161,11 @@ export const createPoster = (id: string, pathToFile: string) =>
 
 export const getVideoMetaData = (pathToFile: string) =>
   new Promise<MediaTypeJsonDB>((resolve, reject) => {
-    const ffmpeg = getffmpeg();
+    if (!fileExists(pathToFile)) {
+      return reject(new Error('File not found to extract metadata'));
+    }
 
+    const ffmpeg = getffmpeg();
     const mimeType = mime.getType(pathToFile);
     const parsedData = path.parse(pathToFile);
     const originalName = parsedData.name;
@@ -164,6 +181,10 @@ export const getVideoMetaData = (pathToFile: string) =>
 
 export const createHLSStream = (pathToFile: string, id: string) =>
   new Promise<string>((resolve, reject) => {
+    if (!fileExists(pathToFile)) {
+      return reject(new Error('File not found to create HLS stream'));
+    }
+
     const ffmpeg = getffmpeg();
     const manifestDir = `_hls/${id}`;
     const pathToManifest = getResourcePath(manifestDir);

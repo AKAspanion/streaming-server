@@ -5,7 +5,7 @@ import { randomUUID } from 'crypto';
 import { RequestHandler } from 'express';
 import fs from 'fs';
 import { extractThumbnailForVideo, getAllVideoData, getOneVideoData } from './videoData';
-import { deleteFilesSilently } from '@utils/helper';
+import { deleteFilesSilently, fileExists } from '@utils/helper';
 import { normalizeText } from '@common/utils/validate';
 import { createSeekThumbnail } from '@utils/ffmpeg';
 
@@ -89,7 +89,7 @@ export const getSeekThumbnail: RequestHandler = async (req, res) => {
 
   const { data } = await getOneVideoData(id);
 
-  if (data?.path) {
+  if (fileExists(data?.path)) {
     const thumbnail = await createSeekThumbnail(id, data?.path, time);
     res.download(thumbnail?.path, thumbnail.name || 'thumbnail.png');
   } else {
