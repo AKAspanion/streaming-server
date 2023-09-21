@@ -12,6 +12,7 @@ import { deleteDirectory, getResourcePath, makeDirectory } from '@utils/helper';
 import { ffmpegBinLogger, ffmpegLogger, processLogger } from '@utils/logger';
 import { FfmpegCommand } from 'fluent-ffmpeg';
 import path from 'path';
+import HLSManager from './hls-manager';
 
 export default class Transcoder {
   group: string;
@@ -127,6 +128,8 @@ export default class Transcoder {
             ) {
               processLogger.error(`[Transcoder] Cannot process video: ${err.message}`);
               this.removeTempFolder();
+            } else {
+              HLSManager.stopVideoTranscoder(this.group);
             }
             ffmpegLogger.error(err.message);
           })

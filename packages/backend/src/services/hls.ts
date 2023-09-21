@@ -59,7 +59,7 @@ export const processHLSStream = (options: ProcessStreamOptions) => {
           // If restartTranscoder is true in here, we need to stop the other transcoders
           // Since we are either seeking far in the future, in the past or inside the fast seeking range
           if (restartTranscoder) {
-            hlsManager.stopAllVideoTranscoders(group);
+            hlsManager.stopAllVideoTranscoder(group);
           }
         }
       }

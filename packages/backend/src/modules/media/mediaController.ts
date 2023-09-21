@@ -126,7 +126,7 @@ export const markWatched: RequestHandler = async (req, res) => {
 
 export const setAudioStream: RequestHandler = async (req, res) => {
   const id = normalizeText(req.params.id);
-  HLSManager.stopVideotranscoders(id);
+  HLSManager.stopVideoTranscoder(id);
 
   const { data } = await getOneMediaData(id);
 
@@ -154,7 +154,7 @@ export const setAudioStream: RequestHandler = async (req, res) => {
 
 export const setSubtitleStream: RequestHandler = async (req, res) => {
   const id = normalizeText(req.params.id);
-  HLSManager.stopVideotranscoders(id);
+  HLSManager.stopVideoTranscoder(id);
 
   const { data } = await getOneMediaData(id);
 
@@ -209,7 +209,7 @@ export const stopMedia: RequestHandler = async (req, res) => {
   const hlsManager = new HLSManager();
 
   if (hlsManager.isAnyVideoTranscoderActive(id)) {
-    HLSManager.stopVideotranscoders(id);
+    HLSManager.stopVideoTranscoder(id);
   }
 
   return res.status(HttpCode.OK).send({ data: { message: 'Media stopped successfully' } });
