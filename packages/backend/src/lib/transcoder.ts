@@ -8,10 +8,11 @@ import {
 } from '@constants/hls';
 import { timestampToSeconds } from '@common/utils/date-time';
 import { getffmpeg } from '@utils/ffmpeg';
-import { deleteDirectory, getResourcePath, makeDirectory } from '@utils/helper';
+import { deleteDirectory, fileExists, getResourcePath, makeDirectory } from '@utils/helper';
 import { ffmpegBinLogger, ffmpegLogger, processLogger } from '@utils/logger';
 import { FfmpegCommand } from 'fluent-ffmpeg';
 import path from 'path';
+import HLSManager from './hls-manager';
 
 export default class Transcoder {
   group: string;
@@ -88,6 +89,12 @@ export default class Transcoder {
 
   startProcessing() {
     return new Promise((resolve) => {
+      if (!fileExists(this.filePath)) {
+        processLogger.info(`[Transcoder] Can't start, file not found`);
+        HLSManager.stopVideoTranscoder(this.group);
+        return;
+      }
+
       const outputOptions = this.getOutputOptions();
 
       outputOptions.push('-map -a');
@@ -128,7 +135,11 @@ export default class Transcoder {
               processLogger.error(`[Transcoder] Cannot process video: ${err.message}`);
               this.removeTempFolder();
             }
+
+            HLSManager.stopVideoTranscoder(this.group);
+
             ffmpegLogger.error(err.message);
+            // ffmpegLogger.error(stderr);
           })
           .output(path.resolve(`${this.output}/${this.group}${SEGMENT_FILE_NO_SEPARATOR}%01d.ts`));
       } catch (error) {

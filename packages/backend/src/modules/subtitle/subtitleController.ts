@@ -2,7 +2,7 @@ import { normalizeText } from '@common/utils/validate';
 import { deleteMediaDB, geMediaDBIndex, pushMediaDB, pushVideoDB } from '@database/json';
 import { getOneMediaData } from '@modules/media/mediaData';
 import { getOneVideoData } from '@modules/video/videoData';
-import { handleJSONDBDataError } from '@utils/error';
+import { handleJsonDBDataError } from '@utils/error';
 import { AppError, HttpCode } from '@utils/exceptions';
 import { randomUUID } from 'crypto';
 import { RequestHandler } from 'express';
@@ -48,7 +48,7 @@ export const addVideoSubtitle: RequestHandler = async (req, res) => {
   const { error: pushError } = await pushVideoDB(`/${videoId}/subs[]`, body);
 
   if (pushError) {
-    handleJSONDBDataError(pushError, videoId);
+    handleJsonDBDataError(pushError, videoId);
   }
 
   const data = { ...body };
@@ -67,7 +67,7 @@ export const addMediaSubtitle: RequestHandler = async (req, res) => {
   const { error: pushError } = await pushMediaDB(`/${mediaId}/subs[]`, body);
 
   if (pushError) {
-    handleJSONDBDataError(pushError, mediaId);
+    handleJsonDBDataError(pushError, mediaId);
   }
 
   const data = { ...body };
@@ -91,13 +91,13 @@ export const deleteMediaSubtitle: RequestHandler = async (req, res) => {
 
   const { index, error } = await geMediaDBIndex(`/${mediaId}/subs`, subtitleId);
   if (error) {
-    handleJSONDBDataError(error, subtitleId);
+    handleJsonDBDataError(error, subtitleId);
   }
 
   const { error: deleteError } = await deleteMediaDB(`/${mediaId}/subs[${index}]`);
 
   if (deleteError) {
-    handleJSONDBDataError(deleteError, mediaId);
+    handleJsonDBDataError(deleteError, mediaId);
   }
 
   const deletePaths = [data?.sub?.path];
@@ -114,5 +114,5 @@ export const deleteMediaSubtitle: RequestHandler = async (req, res) => {
     }
   });
 
-  return res.status(HttpCode.OK).send({ data: { messsage: 'Subtitle deleted successfully' } });
+  return res.status(HttpCode.OK).send({ data: { message: 'Subtitle deleted successfully' } });
 };

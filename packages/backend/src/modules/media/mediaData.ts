@@ -1,5 +1,5 @@
 import { deleteMediaDB, getMediaDataDB, pushMediaDB } from '@database/json';
-import { handleJSONDBDataError } from '@utils/error';
+import { handleJsonDBDataError } from '@utils/error';
 import { AppError, HttpCode } from '@utils/exceptions';
 import {
   createPoster,
@@ -7,13 +7,13 @@ import {
   createVideoThumbnail,
   getVideoMetaData,
 } from '@utils/ffmpeg';
-import { checkIfFileExists, getFileType } from '@utils/file';
+import { getFileType } from '@utils/file';
 import { randomUUID } from 'crypto';
 import path from 'path';
 import fs from 'fs';
 import { addOneMediaSubtitle } from '@modules/subtitle/subtitleData';
 import logger from '@utils/logger';
-import { deleteDirectory, deleteFilesSilently, getResourcePath } from '@utils/helper';
+import { deleteDirectory, deleteFilesSilently, fileExists, getResourcePath } from '@utils/helper';
 import { addOneFolder } from '@modules/folder/folderData';
 import { ALLOWED_VIDEO_FILES } from '@common/constants/app';
 
@@ -21,7 +21,7 @@ export const addOneMedia = async (filePath: string, folderId?: string) => {
   try {
     const id = randomUUID();
 
-    const metadata: MediaTypeJSONDB = await getVideoMetaData(filePath);
+    const metadata: MediaTypeJsonDB = await getVideoMetaData(filePath);
 
     const audioStreams: MediaStreamType[] = [];
     const subtitleStreams: MediaStreamType[] = [];
@@ -37,7 +37,7 @@ export const addOneMedia = async (filePath: string, folderId?: string) => {
 
     const selectedAudio = String(audioStreams[0]?.index || '1');
 
-    const body: MediaTypeJSONDB = {
+    const body: MediaTypeJsonDB = {
       ...metadata,
       id,
       folderId,
@@ -51,7 +51,7 @@ export const addOneMedia = async (filePath: string, folderId?: string) => {
     const { error } = await pushMediaDB(`/${id}`, body);
 
     if (error) {
-      handleJSONDBDataError(error, id);
+      handleJsonDBDataError(error, id);
     }
 
     Promise.allSettled([
@@ -108,7 +108,7 @@ export const addMediaWithFolder = async (filePath: string, folderName: string) =
   }
 };
 
-export const extractPosterForMedia = async (mediaId: string, data: MediaTypeJSONDB) => {
+export const extractPosterForMedia = async (mediaId: string, data: MediaTypeJsonDB) => {
   try {
     if (data?.poster) {
       return data?.poster;
@@ -118,7 +118,7 @@ export const extractPosterForMedia = async (mediaId: string, data: MediaTypeJSON
         const { error: pushError } = await pushMediaDB(`/${mediaId}/poster`, { path: posterPath });
 
         if (pushError) {
-          handleJSONDBDataError(pushError, mediaId);
+          handleJsonDBDataError(pushError, mediaId);
         }
       }
       return { path: posterPath };
@@ -129,7 +129,7 @@ export const extractPosterForMedia = async (mediaId: string, data: MediaTypeJSON
   }
 };
 
-export const extractThumbnailForMedia = async (mediaId: string, data: MediaTypeJSONDB) => {
+export const extractThumbnailForMedia = async (mediaId: string, data: MediaTypeJsonDB) => {
   try {
     if (data?.thumbnail?.path) {
       return data?.thumbnail;
@@ -138,7 +138,7 @@ export const extractThumbnailForMedia = async (mediaId: string, data: MediaTypeJ
       const { error: pushError } = await pushMediaDB(`/${mediaId}/thumbnail`, thumbnail);
 
       if (pushError) {
-        handleJSONDBDataError(pushError, mediaId);
+        handleJsonDBDataError(pushError, mediaId);
       }
       return thumbnail;
     }
@@ -171,7 +171,7 @@ const addOneSubtitleOfMedia = async (
   copied = false,
 ) => {
   try {
-    const exists = await checkIfFileExists(srtFilePath);
+    const exists = fileExists(srtFilePath);
     const stat = await fs.promises.stat(srtFilePath);
 
     if (exists) {
@@ -228,30 +228,34 @@ export const updateOneMedia = async (id: string, body: MediaType) => {
   const { error: pushError } = await pushMediaDB(`/${id}`, body);
 
   if (pushError) {
-    handleJSONDBDataError(pushError, id);
+    handleJsonDBDataError(pushError, id);
   }
 
   return true;
 };
 
 export const getOneMediaData = async (mediaId: string) => {
-  const { data, error } = await getMediaDataDB<MediaTypeJSONDB>(`/${mediaId}`);
+  const { data, error } = await getMediaDataDB<MediaTypeJsonDB>(`/${mediaId}`);
 
   if (error) {
-    handleJSONDBDataError(error, mediaId);
+    handleJsonDBDataError(error, mediaId);
   }
 
   if (!data) {
     throw new AppError({ httpCode: HttpCode.BAD_REQUEST, description: 'Media not found' });
   }
 
-  return { data: { ...data, id: mediaId } as MediaTypeJSONDB };
+  if (!fileExists(data.path)) {
+    data.fileNotFound = true;
+  }
+
+  return { data: { ...data, id: mediaId } as MediaTypeJsonDB };
 };
 
 export const getAllMediaData = async () => {
-  const { data: result, error } = await getMediaDataDB<Record<string, MediaTypeJSONDB>>(`/`);
+  const { data: result, error } = await getMediaDataDB<Record<string, MediaTypeJsonDB>>(`/`);
   if (error) {
-    handleJSONDBDataError(error);
+    handleJsonDBDataError(error);
   }
 
   if (!result) {
@@ -287,8 +291,8 @@ export const deleteMediaData = async (media: MediaType) => {
     }
   });
 
-  const pathToImages = getResourcePath(`_appdata/_images/${media.id}`);
-  const pathToSubs = getResourcePath(`_appdata/_subs/${media.id}`);
+  const pathToImages = getResourcePath(`_app_data/_images/${media.id}`);
+  const pathToSubs = getResourcePath(`_app_data/_subs/${media.id}`);
   deleteDirectory(pathToImages);
   deleteDirectory(pathToSubs);
 
@@ -297,7 +301,7 @@ export const deleteMediaData = async (media: MediaType) => {
   const { error: deleteError } = await deleteMediaDB(`/${media.id}`);
 
   if (deleteError) {
-    handleJSONDBDataError(deleteError, media.id);
+    handleJsonDBDataError(deleteError, media.id);
   }
 
   return true;

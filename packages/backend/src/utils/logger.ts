@@ -5,17 +5,17 @@ import { IS_DEV } from '@config/app';
 
 const getDate = () => new Date().toISOString();
 
-const logDir = getResourcePath(`_appdata/_logs`);
+const logDir = getResourcePath(`_app_data/_logs`);
 
 makeDirectory(logDir);
 
 const timestamp = 'log';
 
-const beLogPath = getResourcePath(`_appdata/_logs/be-${timestamp}.log`);
-const accessLogPath = getResourcePath(`_appdata/_logs/access-${timestamp}.log`);
-const ffmpegLogPath = getResourcePath(`_appdata/_logs/ffmpeg-${timestamp}.log`);
-const pocessLogPath = getResourcePath(`_appdata/_logs/process-${timestamp}.log`);
-const ffmpegBinLogPath = getResourcePath(`_appdata/_logs/ffmpeg-bin-${timestamp}.log`);
+const beLogPath = getResourcePath(`_app_data/_logs/be-${timestamp}.log`);
+const accessLogPath = getResourcePath(`_app_data/_logs/access-${timestamp}.log`);
+const ffmpegLogPath = getResourcePath(`_app_data/_logs/ffmpeg-${timestamp}.log`);
+const processLogPath = getResourcePath(`_app_data/_logs/process-${timestamp}.log`);
+const ffmpegBinLogPath = getResourcePath(`_app_data/_logs/ffmpeg-bin-${timestamp}.log`);
 
 const devLoggers = [];
 if (IS_DEV) {
@@ -65,7 +65,7 @@ export const logger = winston.createLogger({
   transports: [...devLoggers, new winston.transports.File({ filename: beLogPath })],
 });
 
-export const accessLoggger = winston.createLogger({
+export const accessLogger = winston.createLogger({
   level: 'info',
   format: logFormat,
   defaultMeta: { service: 'access' },
@@ -90,7 +90,7 @@ export const processLogger = winston.createLogger({
   level: 'info',
   format: logFormat,
   defaultMeta: { service: 'process' },
-  transports: [...devLoggers, new winston.transports.File({ filename: pocessLogPath })],
+  transports: [...devLoggers, new winston.transports.File({ filename: processLogPath })],
 });
 
 export default logger;

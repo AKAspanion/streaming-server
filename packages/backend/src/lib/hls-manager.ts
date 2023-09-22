@@ -31,7 +31,7 @@ export default class HLSManager {
     return global.transcoders.some((t) => t.group === group);
   }
 
-  static stopOtherVideotranscoders(group: string) {
+  static stopOtherVideoTranscoder(group: string) {
     if (!global.transcoders || !global.transcoders.length) return;
     let i = global.transcoders.length;
     let anythingStopped = false;
@@ -82,7 +82,7 @@ export default class HLSManager {
     return transcoder.getLatestSegment();
   }
 
-  stopOtherVideoTranscoders(group: string) {
+  stopOtherVideoTranscoder(group: string) {
     if (!global.transcoders || !global.transcoders.length) return;
     let i = global.transcoders.length;
     let anythingStopped = false;
@@ -96,7 +96,7 @@ export default class HLSManager {
     return anythingStopped;
   }
 
-  stopAllVideoTranscoders(group: string) {
+  stopAllVideoTranscoder(group: string) {
     if (!global.transcoders || !global.transcoders.length) return;
     let i = global.transcoders.length;
     let stopped = 0;
@@ -112,7 +112,7 @@ export default class HLSManager {
     }
   }
 
-  static stopVideotranscoders(group: string) {
+  static stopVideoTranscoder(group: string) {
     if (!global.transcoders || !global.transcoders.length) return;
     let i = global.transcoders.length;
     let anythingStopped = false;
@@ -126,7 +126,7 @@ export default class HLSManager {
     return anythingStopped;
   }
 
-  static stopGlobalTranscoders() {
+  static stopGlobalTranscoder() {
     if (!global.transcoders || !global.transcoders.length) return;
     let i = global?.transcoders?.length;
 

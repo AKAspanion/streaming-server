@@ -1,21 +1,21 @@
 import { getFolderDataDB, pushFolderDB } from '@database/json';
-import { handleJSONDBDataError } from '@utils/error';
+import { handleJsonDBDataError } from '@utils/error';
 import { AppError, HttpCode } from '@utils/exceptions';
 
 export const addOneFolder = async (id: string, body: FolderType) => {
   const { error: pushError } = await pushFolderDB(`/${id}`, body);
 
   if (pushError) {
-    handleJSONDBDataError(pushError, id);
+    handleJsonDBDataError(pushError, id);
   }
 
   return true;
 };
 
 export const getAllFolderData = async () => {
-  const { data: result, error } = await getFolderDataDB<Record<string, FolderTypeJSONDB>>(`/`);
+  const { data: result, error } = await getFolderDataDB<Record<string, FolderTypeJsonDB>>(`/`);
   if (error) {
-    handleJSONDBDataError(error);
+    handleJsonDBDataError(error);
   }
 
   if (!result) {
@@ -35,10 +35,10 @@ export const getAllFolderData = async () => {
 };
 
 export const getOneFolderData = async (folderId: string) => {
-  const { data, error } = await getFolderDataDB<FolderTypeJSONDB>(`/${folderId}`);
+  const { data, error } = await getFolderDataDB<FolderTypeJsonDB>(`/${folderId}`);
 
   if (error) {
-    handleJSONDBDataError(error, folderId);
+    handleJsonDBDataError(error, folderId);
   }
 
   if (!data) {

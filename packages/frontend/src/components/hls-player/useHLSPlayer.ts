@@ -176,14 +176,15 @@ const useHLSPlayer = (
         hlsObj.current = new Hls({
           // debug: IS_DEV,
           autoStartLoad: true,
-          manifestLoadingTimeOut: 60000,
-          manifestLoadingRetryDelay: 500,
-          levelLoadingTimeOut: 60000,
-          levelLoadingRetryDelay: 500,
-          fragLoadingTimeOut: 60000,
+          manifestLoadingTimeOut: 30000,
+          manifestLoadingRetryDelay: 350,
+          levelLoadingTimeOut: 30000,
+          levelLoadingRetryDelay: 350,
+          fragLoadingTimeOut: 30000,
           fragLoadingRetryDelay: 250,
           startFragPrefetch: true,
           startPosition: currentTime,
+          enableWorker: true,
         });
 
         const hls = hlsObj.current;

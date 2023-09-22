@@ -4,7 +4,7 @@ import { RequestHandler } from 'express';
 import { addOneFolder, getAllFolderData, getOneFolderData } from './folderData';
 import { deleteMediaData, getAllMediaData } from '@modules/media/mediaData';
 import { deleteFolderDB } from '@database/json';
-import { handleJSONDBDataError } from '@utils/error';
+import { handleJsonDBDataError } from '@utils/error';
 import { normalizeText } from '@common/utils/validate';
 
 export const addFolder: RequestHandler = async (req, res) => {
@@ -63,7 +63,7 @@ export const deleteFolder: RequestHandler = async (req, res) => {
   const { error: deleteError } = await deleteFolderDB(`/${id}`);
 
   if (deleteError) {
-    handleJSONDBDataError(deleteError, id);
+    handleJsonDBDataError(deleteError, id);
   }
 
   return res.status(HttpCode.OK).send({ data });

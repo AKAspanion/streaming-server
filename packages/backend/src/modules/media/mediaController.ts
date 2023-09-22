@@ -10,7 +10,7 @@ import {
   getVideoMetaData,
 } from '@utils/ffmpeg';
 import { getFileType } from '@utils/file';
-import { getResourcePath, makeDirectory } from '@utils/helper';
+import { fileExists, getResourcePath, makeDirectory } from '@utils/helper';
 import { extractHLSFileInfo, generateManifest } from '@utils/hls';
 import { RequestHandler } from 'express';
 import {
@@ -88,11 +88,11 @@ export const updatePlayStatus: RequestHandler = async (req, res) => {
   return res.status(HttpCode.OK).send({ data: { message: 'Play status updated successfully' } });
 };
 
-export const markFavourite: RequestHandler = async (req, res) => {
+export const markFavorite: RequestHandler = async (req, res) => {
   const id = normalizeText(req.params.id);
   const { data } = await getOneMediaData(id);
 
-  const body = { ...data, isFavourite: !data?.isFavourite };
+  const body = { ...data, isFavorite: !data?.isFavorite };
 
   const { error: pushError } = await pushMediaDB(`/${id}`, body);
 
@@ -103,7 +103,7 @@ export const markFavourite: RequestHandler = async (req, res) => {
     });
   }
 
-  return res.status(HttpCode.OK).send({ data: { message: 'Media marked as favourite' } });
+  return res.status(HttpCode.OK).send({ data: { message: 'Media marked as favorite' } });
 };
 
 export const markWatched: RequestHandler = async (req, res) => {
@@ -121,12 +121,12 @@ export const markWatched: RequestHandler = async (req, res) => {
     });
   }
 
-  return res.status(HttpCode.OK).send({ data: { message: 'Media marked as favourite' } });
+  return res.status(HttpCode.OK).send({ data: { message: 'Media marked as favorite' } });
 };
 
 export const setAudioStream: RequestHandler = async (req, res) => {
   const id = normalizeText(req.params.id);
-  HLSManager.stopVideotranscoders(id);
+  HLSManager.stopVideoTranscoder(id);
 
   const { data } = await getOneMediaData(id);
 
@@ -138,7 +138,7 @@ export const setAudioStream: RequestHandler = async (req, res) => {
     res.status(HttpCode.OK).send({ data: { message: 'Audio index is already set' } });
   }
 
-  const body: MediaTypeJSONDB = { ...data, selectedAudio: req?.body?.index };
+  const body: MediaTypeJsonDB = { ...data, selectedAudio: req?.body?.index };
 
   const { error: pushError } = await pushMediaDB(`/${id}`, body);
 
@@ -154,7 +154,7 @@ export const setAudioStream: RequestHandler = async (req, res) => {
 
 export const setSubtitleStream: RequestHandler = async (req, res) => {
   const id = normalizeText(req.params.id);
-  HLSManager.stopVideotranscoders(id);
+  HLSManager.stopVideoTranscoder(id);
 
   const { data } = await getOneMediaData(id);
 
@@ -169,7 +169,7 @@ export const setSubtitleStream: RequestHandler = async (req, res) => {
     res.status(HttpCode.OK).send({ data: { message: 'Subtitle index is already set' } });
   }
 
-  const body: MediaTypeJSONDB = { ...data, selectedSubtitle: req?.body?.index };
+  const body: MediaTypeJsonDB = { ...data, selectedSubtitle: req?.body?.index };
 
   const { error: pushError } = await pushMediaDB(`/${id}`, body);
 
@@ -209,7 +209,7 @@ export const stopMedia: RequestHandler = async (req, res) => {
   const hlsManager = new HLSManager();
 
   if (hlsManager.isAnyVideoTranscoderActive(id)) {
-    HLSManager.stopVideotranscoders(id);
+    HLSManager.stopVideoTranscoder(id);
   }
 
   return res.status(HttpCode.OK).send({ data: { message: 'Media stopped successfully' } });
@@ -309,7 +309,7 @@ export const getSeekThumbnail: RequestHandler = async (req, res) => {
 
   const { data } = await getOneMediaData(id);
 
-  if (data?.path) {
+  if (fileExists(data?.path)) {
     const thumbnail = await createSeekThumbnail(id, data?.path, time);
     res.download(thumbnail?.path, thumbnail.name || 'thumb_seek.png');
   } else {

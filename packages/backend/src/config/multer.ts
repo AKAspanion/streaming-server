@@ -3,8 +3,8 @@ import { AppError, HttpCode } from '@utils/exceptions';
 import { getResourcePath, makeDirectory } from '@utils/helper';
 import multer from 'multer';
 
-const videoPath = getResourcePath('_appdata/_videos');
-const subPath = getResourcePath('_appdata/_subs');
+const videoPath = getResourcePath('_app_data/_videos');
+const subPath = getResourcePath('_app_data/_subs');
 
 const multerVideoStorage = multer.diskStorage({
   destination: (req, file, cb) => {

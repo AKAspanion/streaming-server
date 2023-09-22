@@ -10,7 +10,7 @@ import {
   testStuff,
   deleteMedia,
   playMedia,
-  markFavourite,
+  markFavorite,
   markWatched,
   updatePlayStatus,
   setAudioStream,
@@ -36,7 +36,7 @@ router.get('/:id', authenticate, getMedia);
 router.get('/:id/play', authenticate, playMedia);
 router.put('/:id/stop', authenticate, stopMedia);
 router.put('/:id/status', authenticate, updatePlayStatus);
-router.post('/:id/favourite', authenticate, markFavourite);
+router.post('/:id/favorite', authenticate, markFavorite);
 router.post('/:id/watched', authenticate, markWatched);
 router.post('/:id/audio', authenticate, setAudioStream);
 router.post('/:id/subtitle', authenticate, setSubtitleStream);

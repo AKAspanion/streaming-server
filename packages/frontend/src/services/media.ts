@@ -9,7 +9,7 @@ export const mediaApi = createApi({
   baseQuery: dynamicBaseQuery,
   tagTypes: ['MediaList', 'MediaDetails', 'PlayMedia'],
   endpoints: (builder) => ({
-    getMediaById: builder.query<{ data: MediaTypeJSONDB }, string>({
+    getMediaById: builder.query<{ data: MediaTypeJsonDB }, string>({
       query: (id) => {
         if (!id) {
           throw new Error('Media id is required.');
@@ -31,13 +31,13 @@ export const mediaApi = createApi({
       query: () => `media`,
       providesTags: ['MediaList'],
     }),
-    markMediaFavourite: builder.mutation<APIStatusResponseType, string>({
+    markMediaFavorite: builder.mutation<APIStatusResponseType, string>({
       query: (id) => {
         if (!id) {
           throw new Error('Media id is required.');
         }
 
-        return { url: `media/${id}/favourite`, method: 'POST' };
+        return { url: `media/${id}/favorite`, method: 'POST' };
       },
       async onQueryStarted(_, { dispatch, queryFulfilled }) {
         await queryFulfilled;
@@ -174,7 +174,7 @@ export const {
   useGetMediaByIdQuery,
   useDeleteMediaByIdMutation,
   usePlayMediaByIdQuery,
-  useMarkMediaFavouriteMutation,
+  useMarkMediaFavoriteMutation,
   useMarkMediaWatchedMutation,
   useUpdateMediaStatusMutation,
   useSetMediaAudioMutation,

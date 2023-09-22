@@ -1,14 +1,14 @@
 import { getVideoDataDB, pushVideoDB } from '@database/json';
-import { handleJSONDBDataError } from '@utils/error';
+import { handleJsonDBDataError } from '@utils/error';
 import { AppError, HttpCode } from '@utils/exceptions';
 import { createVideoThumbnail, getVideoMetaData } from '@utils/ffmpeg';
 import logger from '@utils/logger';
 
 export const getOneVideoData = async (videoId: string) => {
-  const { data, error } = await getVideoDataDB<VideoTypeJSONDB>(`/${videoId}`);
+  const { data, error } = await getVideoDataDB<VideoTypeJsonDB>(`/${videoId}`);
 
   if (error) {
-    handleJSONDBDataError(error, videoId);
+    handleJsonDBDataError(error, videoId);
   }
 
   if (!data) {
@@ -19,16 +19,16 @@ export const getOneVideoData = async (videoId: string) => {
 };
 
 export const getAllVideoData = async () => {
-  const { data: result, error } = await getVideoDataDB<Record<string, VideoTypeJSONDB>>(`/`);
+  const { data: result, error } = await getVideoDataDB<Record<string, VideoTypeJsonDB>>(`/`);
   if (error) {
-    handleJSONDBDataError(error);
+    handleJsonDBDataError(error);
   }
 
   if (!result) {
     throw new AppError({ httpCode: HttpCode.BAD_REQUEST, description: 'Video not found' });
   }
 
-  const data: VideoTypeJSONDB[] = result
+  const data: VideoTypeJsonDB[] = result
     ? Object.keys(result || {}).map((id) => ({
         ...(result[id] || {}),
         id,
@@ -38,17 +38,17 @@ export const getAllVideoData = async () => {
   return { data };
 };
 
-export const extractThumbnailForVideo = async (videoId: string, data: VideoTypeJSONDB) => {
+export const extractThumbnailForVideo = async (videoId: string, data: VideoTypeJsonDB) => {
   try {
     if (data?.thumbnail?.path) {
       return data?.thumbnail;
     } else {
-      const metadata: MediaTypeJSONDB = await getVideoMetaData(data?.path);
+      const metadata: MediaTypeJsonDB = await getVideoMetaData(data?.path);
       const thumbnail = await createVideoThumbnail(videoId, data?.path, metadata);
       const { error: pushError } = await pushVideoDB(`/${videoId}/thumbnail`, thumbnail);
 
       if (pushError) {
-        handleJSONDBDataError(pushError, videoId);
+        handleJsonDBDataError(pushError, videoId);
       }
       return thumbnail;
     }

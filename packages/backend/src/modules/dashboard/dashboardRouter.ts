@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import {
-  getFavourites,
+  getFavorites,
   getRecentAdded,
   getRecentCompleted,
   getRecentWatched,
@@ -12,6 +12,6 @@ const router = Router();
 router.get('/recent', authenticate, getRecentAdded);
 router.get('/continue', authenticate, getRecentWatched);
 router.get('/completed', authenticate, getRecentCompleted);
-router.get('/favourite', authenticate, getFavourites);
+router.get('/favorite', authenticate, getFavorites);
 
 export default router;

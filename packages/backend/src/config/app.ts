@@ -7,9 +7,9 @@ export const appInit = () => {
   const tempDir = getResourcePath(SEGMENT_TEMP_FOLDER + '../');
   deleteDirectory(tempDir);
 
-  makeDirectory(getResourcePath('_appdata/_db'));
-  makeDirectory(getResourcePath('_appdata/_temp'));
-  makeDirectory(getResourcePath('_appdata/_subs'));
-  makeDirectory(getResourcePath('_appdata/_videos'));
-  makeDirectory(getResourcePath('_appdata/_images'));
+  makeDirectory(getResourcePath('_app_data/_db'));
+  makeDirectory(getResourcePath('_app_data/_temp'));
+  makeDirectory(getResourcePath('_app_data/_subs'));
+  makeDirectory(getResourcePath('_app_data/_videos'));
+  makeDirectory(getResourcePath('_app_data/_images'));
 };

@@ -8,13 +8,14 @@ import {
 } from '@constants/hls';
 import HLSManager from '@lib/hls-manager';
 import { processLogger } from './logger';
+import { sleep } from '@common/utils/func';
 
 export const generateManifest = (id: string, duration: number, token: string) =>
   new Promise((resolve, reject) => {
-    const manifestFile = `${id}.m3u8`;
+    const file = `${id}.m3u8`;
     const manifestDir = `${MANIFEST_TEMP_FOLDER}${id}/`;
     const pathToManifest = getResourcePath(manifestDir);
-    const outputFile = path.join(pathToManifest, manifestFile);
+    const outputFile = path.join(pathToManifest, file);
 
     deleteFile(outputFile);
     makeDirectory(pathToManifest);
@@ -25,8 +26,8 @@ export const generateManifest = (id: string, duration: number, token: string) =>
     const getSegment = (num: number, dur: number) =>
       `#EXTINF:${dur.toFixed(6)},\n${id}${SEGMENT_FILE_NO_SEPARATOR}${num}.ts?token=${token}`;
 
-    const normalizedDuration = (remainigDuration: number) =>
-      remainigDuration < targetDuration ? remainigDuration : targetDuration;
+    const normalizedDuration = (remainingDuration: number) =>
+      remainingDuration < targetDuration ? remainingDuration : targetDuration;
 
     let index = 0;
     do {
@@ -35,7 +36,7 @@ export const generateManifest = (id: string, duration: number, token: string) =>
       index++;
     } while (duration > 0);
 
-    const manifestfile = `#EXTM3U
+    const manifestFile = `#EXTM3U
 #EXT-X-VERSION:3
 #EXT-X-MEDIA-SEQUENCE:0
 #EXT-X-ALLOW-CACHE:YES
@@ -43,7 +44,7 @@ export const generateManifest = (id: string, duration: number, token: string) =>
 ${segments.join('\n')}
 #EXT-X-ENDLIST`;
 
-    fs.writeFile(outputFile, manifestfile, (err) => {
+    fs.writeFile(outputFile, manifestFile, (err) => {
       if (err) {
         reject(err);
       }
@@ -96,21 +97,32 @@ export const waitUntilFileExists = (
   group: string,
 ) => {
   return new Promise((resolve, reject) => {
-    const interval = setInterval(() => {
-      if (!hlsManager.isAnyVideoTranscoderActive(group)) {
-        processLogger.info('[HLS]Stop checking segemnts, transcoder stopped');
-        clearInterval(interval);
+    const waitForFile = async (count: number) => {
+      processLogger.info(`[HLS]Waiting for segment "${requestedSegment}"`);
+      await sleep(250);
+
+      if (count >= 20) {
+        processLogger.info('[HLS]Stop checking segments, retries exceeded');
         reject();
+        return;
+      }
+
+      if (!hlsManager.isAnyVideoTranscoderActive(group)) {
+        processLogger.info('[HLS]Stop checking segments, transcoder stopped');
+        reject();
+        return;
       }
       fs.access(filePath, fs.constants.F_OK, (err) => {
         if (!err && isSegmentFinished(requestedSegment, hlsManager, group)) {
-          clearInterval(interval);
           resolve(true);
-        } else if (err) {
-          processLogger.info(`[HLS]Couldn't find ${filePath}, waiting...`);
+          return;
+        } else {
+          waitForFile(++count);
         }
       });
-    }, 1000);
+    };
+
+    waitForFile(1);
   });
 };
 
@@ -121,6 +133,11 @@ const isSegmentFinished = (requested: number, hlsManager: HLSManager, group: str
 
   const start = hlsManager.getTranscoderStartSegment(group);
   const current = hlsManager.getVideoTranscoderSegment(group);
+
+  processLogger.info(
+    `[HLS]Transcoder not finished. requested:${requested} start:${start} current:${current}`,
+  );
+
   if (start == -1) {
     start;
     return false;
@@ -128,8 +145,5 @@ const isSegmentFinished = (requested: number, hlsManager: HLSManager, group: str
 
   const flag = requested >= start && requested < current + 2;
 
-  processLogger.info(
-    `[HLS] Transcoder not finished. requested:${requested} start:${start} current:${current}`,
-  );
   return flag;
 };

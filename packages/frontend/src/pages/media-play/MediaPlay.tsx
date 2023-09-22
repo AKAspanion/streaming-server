@@ -156,6 +156,12 @@ function MediaPlay() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading, subData]);
 
+  useEffect(() => {
+    if (mediaData?.data?.fileNotFound === true) {
+      toast.error('File not found at location');
+    }
+  }, [mediaData?.data?.fileNotFound]);
+
   return (
     <div className="fixed z-20 w-screen h-screen top-0 left-0">
       {loading && <Spinner full large />}

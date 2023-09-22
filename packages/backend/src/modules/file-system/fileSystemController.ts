@@ -7,6 +7,7 @@ import uniqBy from 'lodash.uniqby';
 import { getFileType, listDrives } from '@utils/file';
 import { ALLOWED_VIDEO_FILES } from '@common/constants/app';
 import logger from '@utils/logger';
+import { fileExists } from '@utils/helper';
 
 export const doesFileExists: RequestHandler = async (req, res) => {
   const { file } = req.body;
@@ -16,7 +17,7 @@ export const doesFileExists: RequestHandler = async (req, res) => {
   }
 
   try {
-    if (fs.existsSync(file)) {
+    if (fileExists(file)) {
       return res.status(HttpCode.OK).send({ data: { exits: true, message: 'File found' } });
     } else {
       return res.status(HttpCode.NOT_FOUND).send({ data: { message: 'File not found' } });

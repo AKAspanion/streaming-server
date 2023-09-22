@@ -2,17 +2,17 @@ import { IS_DEV } from '@config/app';
 import { getResourcePath } from '@utils/helper';
 import { JsonDB, Config } from 'node-json-db';
 
-const videoDBPath = getResourcePath('/_appdata/_db/StreamingServerVideoDB');
-const mediaDBPath = getResourcePath('/_appdata/_db/StreamingServerMediaDB');
-const folderDBPath = getResourcePath('/_appdata/_db/StreamingServerFolderDB');
+const videoDBPath = getResourcePath('/_app_data/_db/StreamingServerVideoDB');
+const mediaDBPath = getResourcePath('/_app_data/_db/StreamingServerMediaDB');
+const folderDBPath = getResourcePath('/_app_data/_db/StreamingServerFolderDB');
 
-export const vidoesDB = new JsonDB(new Config(videoDBPath, true, IS_DEV, '/'));
+export const videosDB = new JsonDB(new Config(videoDBPath, true, IS_DEV, '/'));
 export const mediaDB = new JsonDB(new Config(mediaDBPath, true, IS_DEV, '/'));
 export const folderDB = new JsonDB(new Config(folderDBPath, true, IS_DEV, '/'));
 
 export const getVideoDataDB = async <T>(path: string) => {
   try {
-    const data: T = await vidoesDB.getData(path);
+    const data: T = await videosDB.getData(path);
 
     return { error: undefined, data };
   } catch (error) {
@@ -22,7 +22,7 @@ export const getVideoDataDB = async <T>(path: string) => {
 
 export const pushVideoDB = async <T>(path: string, body: T) => {
   try {
-    await vidoesDB.push(path, body);
+    await videosDB.push(path, body);
 
     return { error: undefined };
   } catch (error) {
@@ -32,7 +32,7 @@ export const pushVideoDB = async <T>(path: string, body: T) => {
 
 export const deleteVideoDB = async (path: string) => {
   try {
-    await vidoesDB.delete(path);
+    await videosDB.delete(path);
 
     return { error: undefined };
   } catch (error) {

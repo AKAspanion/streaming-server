@@ -15,7 +15,7 @@
 /dist
 /build
 /storybook-static
-_appdata
+_app_data
 .bin
 
 # misc

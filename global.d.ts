@@ -52,7 +52,7 @@ declare type SubtitleType = {
   copied?: boolean;
 };
 
-declare type FolderTypeJSONDB = FolderBaseType;
+declare type FolderTypeJsonDB = FolderBaseType;
 
 declare type FolderBaseType = {
   id: string;
@@ -70,7 +70,7 @@ declare type FolderType = FolderJoinType & FolderBaseType;
 declare type AddFolderRequest = Omit<FolderType, 'id'>;
 declare type UpdateFolderRequest = FolderType;
 
-declare type VideoTypeJSONDB = VideoType & {
+declare type VideoTypeJsonDB = VideoType & {
   sub?: SubtitleType;
   thumbnail?: ThumbnailType;
 };
@@ -113,7 +113,7 @@ declare type MediaFormatType = {
   tags: Record<string, string>;
 };
 
-declare type MediaTypeJSONDB = MediaType & {
+declare type MediaTypeJsonDB = MediaType & {
   streams: MediaStreamType[];
   audioStreams: MediaStreamType[];
   subtitleStreams: MediaStreamType[];
@@ -121,7 +121,7 @@ declare type MediaTypeJSONDB = MediaType & {
   chapters: MediaChapterType[];
 };
 
-declare type MediaTypeFull = MediaTypeJSONDB & {
+declare type MediaTypeFull = MediaTypeJsonDB & {
   src: string;
 };
 
@@ -134,7 +134,8 @@ declare type MediaType = {
   path: string;
   addDate: number;
   lastPlayedDate?: number;
-  isFavourite?: boolean;
+  fileNotFound?: boolean;
+  isFavorite?: boolean;
   watched?: boolean;
   paused?: boolean;
   currentTime?: number;
