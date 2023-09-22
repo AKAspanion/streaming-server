@@ -12,6 +12,7 @@ import {
   FilmIcon,
   FolderIcon,
   HeartIcon,
+  LinkIcon,
   PlayIcon,
   TrashIcon,
   VideoCameraSlashIcon,
@@ -38,6 +39,9 @@ import { useGetFolderByIdQuery } from '@/services/folder';
 import { normalizeText } from '@common/utils/validate';
 import FullError from '@/components/FullError';
 import Image from '@/components/atoms/image/Image';
+import { getNetworkFEUrl } from '@/config/app';
+import { copyTextToClipboard } from '@/utils/dom';
+import toast from 'react-hot-toast/headless';
 
 interface MediaDetailsProps {}
 
@@ -65,6 +69,13 @@ const MediaDetails: FC<MediaDetailsProps> = () => {
 
   const folder = folderData?.data;
   const media = useMemo(() => mediaData?.data || ({} as MediaTypeFull), [mediaData?.data]);
+
+  const copyLink = async (txt: string) => {
+    const link = getNetworkFEUrl(txt);
+    const res = await copyTextToClipboard(link);
+    if (res) toast.success('Network link copied');
+    else toast.error('Failed to copy link');
+  };
 
   useToastStatus(status, {
     errorMessage: 'Failed to load media details',
@@ -198,6 +209,14 @@ const MediaDetails: FC<MediaDetailsProps> = () => {
                       <Button variant={'secondary'} onClick={() => markMediaWatched(media.id)}>
                         <div className={cs('w-5', { 'text-green-500': media?.watched })}>
                           <EyeIcon />
+                        </div>
+                      </Button>
+                      <Button
+                        variant={'secondary'}
+                        onClick={() => copyLink(`/media-play/${media.id}`)}
+                      >
+                        <div className={cs('w-5', { 'text-green-500': media?.watched })}>
+                          <LinkIcon />
                         </div>
                       </Button>
                       <MediaSubtitleDetails
