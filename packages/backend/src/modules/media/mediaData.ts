@@ -38,7 +38,9 @@ export const addOneMedia = async (filePath: string, folderId?: string) => {
 
       if (stream?.codec_type === 'video') {
         videoStreams.push(stream);
-        maxHeight = stream?.height || 720;
+        if (stream.index == 0) {
+          maxHeight = stream?.height || 720;
+        }
       }
     });
 
