@@ -23,6 +23,7 @@ export default class Transcoder {
   latestSegment: number;
   watchProgress: number;
   audioStreamIndex: number;
+  resolution: number;
   finished: boolean;
   ffmpegProc: FfmpegCommand;
 
@@ -52,6 +53,10 @@ export default class Transcoder {
     return this.audioStreamIndex;
   }
 
+  getResolution() {
+    return this.resolution;
+  }
+
   stop() {
     processLogger.info('[HLS] Stopping transcoder');
     try {
@@ -78,9 +83,10 @@ export default class Transcoder {
     return this.finished;
   }
 
-  async start(output: string, audioStreamIndex: number) {
+  async start(output: string, audioStreamIndex: number, resolution: number) {
     this.output = output;
     this.audioStreamIndex = audioStreamIndex;
+    this.resolution = resolution;
 
     const promises = [];
     promises.push(this.startProcessing());
@@ -139,7 +145,6 @@ export default class Transcoder {
             HLSManager.stopVideoTranscoder(this.group);
 
             ffmpegLogger.error(err.message);
-            // ffmpegLogger.error(stderr);
           })
           .output(path.resolve(`${this.output}/${this.group}${SEGMENT_FILE_NO_SEPARATOR}%01d.ts`));
       } catch (error) {
@@ -167,9 +172,14 @@ export default class Transcoder {
   }
 
   getOutputOptions() {
+    const videoFilters = [
+      `[0:0]scale=-2:${this.resolution}:flags=lanczos[scaled]`,
+      '[scaled]format@f1=pix_fmts=yuv420p[f1_out0]',
+    ];
+
     const options = [
       '-copyts',
-      '-filter_complex [0:0]format@f1=pix_fmts=yuv420p[f1_out0]',
+      `-filter_complex ${videoFilters.join(';')}`,
       '-map [f1_out0]',
       '-sn',
       '-c:v:0 libx264',

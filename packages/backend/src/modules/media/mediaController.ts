@@ -222,8 +222,9 @@ export const playMedia: RequestHandler = async (req, res) => {
   makeDirectory(hlsPath);
 
   const token = getTokenInRequest(req);
+  const resolution = (data?.resolutions || []).find((r) => r?.id === data?.selectedResolution);
 
-  generateManifest(id, Number(data?.format?.duration), token);
+  generateManifest(id, Number(data?.format?.duration), token, resolution?.value);
 
   return res
     .status(HttpCode.OK)
@@ -265,7 +266,8 @@ export const streamMedia: RequestHandler = async (req, res) => {
   }
 
   const { data } = await getOneMediaData(mediaId);
-  const audioStream = Number(data?.selectedAudio || '1');
+  const audio = Number(data?.selectedAudio || '1');
+  const resolution = Number(req?.query?.resolution || '720');
 
   if (!data?.format?.filename) {
     throw new AppError({ httpCode: HttpCode.BAD_REQUEST, description: 'Media not found' });
@@ -284,7 +286,8 @@ export const streamMedia: RequestHandler = async (req, res) => {
   // Should be lock per group somehow
   try {
     const filePath = await processHLSStream({
-      audioStream,
+      resolution,
+      audio,
       videoPath,
       hlsManager,
       group,

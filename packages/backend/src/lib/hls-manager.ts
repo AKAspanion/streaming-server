@@ -68,6 +68,13 @@ export default class HLSManager {
     return transcoder.getAudioStreamIndex() === audioIndex;
   }
 
+  isSameResolution(group: string, resolution: number) {
+    if (!global.transcoders || !global.transcoders.length) return;
+    const transcoder = global.transcoders.find((transcoder) => transcoder.group === group);
+    if (transcoder == undefined) return false;
+    return transcoder.getResolution() === resolution;
+  }
+
   getTranscoderStartSegment(group: string) {
     if (!global.transcoders || !global.transcoders.length) return -1;
     const transcoder = global.transcoders.find((transcoder) => transcoder.group === group);
@@ -149,6 +156,7 @@ export default class HLSManager {
     audioStreamIndex: number,
     groupHash: string,
     duration: number,
+    resolution: number,
   ) {
     const output = Transcoder.createTempDir(groupHash);
 
@@ -158,7 +166,7 @@ export default class HLSManager {
       global.transcoders = [];
     }
     global.transcoders.push(transcoder);
-    const promises = await transcoder.start(output, audioStreamIndex);
+    const promises = await transcoder.start(output, audioStreamIndex, resolution);
 
     await Promise.allSettled(promises);
 
