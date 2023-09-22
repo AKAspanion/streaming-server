@@ -126,7 +126,6 @@ export const markWatched: RequestHandler = async (req, res) => {
 
 export const setAudioStream: RequestHandler = async (req, res) => {
   const id = normalizeText(req.params.id);
-  HLSManager.stopVideoTranscoder(id);
 
   const { data } = await getOneMediaData(id);
 
@@ -138,9 +137,7 @@ export const setAudioStream: RequestHandler = async (req, res) => {
     res.status(HttpCode.OK).send({ data: { message: 'Audio index is already set' } });
   }
 
-  const body: MediaTypeJsonDB = { ...data, selectedAudio: req?.body?.index };
-
-  const { error: pushError } = await pushMediaDB(`/${id}`, body);
+  const { error: pushError } = await pushMediaDB(`/${id}/selectedAudio`, req?.body?.index);
 
   if (pushError) {
     throw new AppError({
@@ -149,12 +146,12 @@ export const setAudioStream: RequestHandler = async (req, res) => {
     });
   }
 
+  HLSManager.stopVideoTranscoder(id);
   return res.status(HttpCode.OK).send({ data: { message: 'Media audio index updated' } });
 };
 
 export const setSubtitleStream: RequestHandler = async (req, res) => {
   const id = normalizeText(req.params.id);
-  HLSManager.stopVideoTranscoder(id);
 
   const { data } = await getOneMediaData(id);
 
@@ -169,9 +166,7 @@ export const setSubtitleStream: RequestHandler = async (req, res) => {
     res.status(HttpCode.OK).send({ data: { message: 'Subtitle index is already set' } });
   }
 
-  const body: MediaTypeJsonDB = { ...data, selectedSubtitle: req?.body?.index };
-
-  const { error: pushError } = await pushMediaDB(`/${id}`, body);
+  const { error: pushError } = await pushMediaDB(`/${id}/selectedSubtitle`, req?.body?.index);
 
   if (pushError) {
     throw new AppError({
@@ -180,7 +175,40 @@ export const setSubtitleStream: RequestHandler = async (req, res) => {
     });
   }
 
+  HLSManager.stopVideoTranscoder(id);
   return res.status(HttpCode.OK).send({ data: { message: 'Media subtitle index updated' } });
+};
+
+export const setResolution: RequestHandler = async (req, res) => {
+  const id = normalizeText(req.params.id);
+
+  const { data } = await getOneMediaData(id);
+
+  if (req?.body?.resolution === undefined) {
+    throw new AppError({
+      httpCode: HttpCode.BAD_REQUEST,
+      description: 'Resolution id is required',
+    });
+  }
+
+  if (req?.body?.resolution === data?.selectedResolution) {
+    res.status(HttpCode.OK).send({ data: { message: 'Resolution is already set' } });
+  }
+
+  const { error: pushError } = await pushMediaDB(
+    `/${id}/selectedResolution`,
+    req?.body?.resolution,
+  );
+
+  if (pushError) {
+    throw new AppError({
+      httpCode: HttpCode.INTERNAL_SERVER_ERROR,
+      description: 'Problem updating Media',
+    });
+  }
+
+  HLSManager.stopVideoTranscoder(id);
+  return res.status(HttpCode.OK).send({ data: { message: 'Media resolution updated' } });
 };
 
 export const playMedia: RequestHandler = async (req, res) => {

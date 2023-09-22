@@ -49,11 +49,13 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
   const {
     subs,
     audios,
+    resolutions,
     name,
     nextLink,
     loading: propLoading,
     selectedAudio = '0',
     selectedSubtitle = 0,
+    selectedResolution = 'original',
     reload = false,
     backTo = '/',
     thumbnailSrc,
@@ -63,6 +65,7 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
     onReload,
     onAudioChange,
     onSubtitleChange,
+    onResolutionChange,
   } = props;
 
   const ref = useRef<HTMLVideoElement>(null);
@@ -396,6 +399,29 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
                       </SelectContent>
                     </Select>
                   </div>
+                  {resolutions && resolutions.length ? (
+                    <div className="flex items-center gap-3 pt-4">
+                      <div className="whitespace-nowrap">Quality</div>
+                      <Select
+                        value={selectedResolution}
+                        onValueChange={(v) => onResolutionChange && onResolutionChange(v)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectLabel>Select quality</SelectLabel>
+                            {resolutions.map(({ id, name }) => (
+                              <SelectItem key={id} value={id}>
+                                {name}
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  ) : null}
                 </PopoverContent>
               </Popover>
             ) : null}

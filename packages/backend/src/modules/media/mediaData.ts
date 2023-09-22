@@ -15,7 +15,7 @@ import { addOneMediaSubtitle } from '@modules/subtitle/subtitleData';
 import logger from '@utils/logger';
 import { deleteDirectory, deleteFilesSilently, fileExists, getResourcePath } from '@utils/helper';
 import { addOneFolder } from '@modules/folder/folderData';
-import { ALLOWED_VIDEO_FILES } from '@common/constants/app';
+import { ALLOWED_VIDEO_FILES, VIDEO_RESOLUTIONS } from '@common/constants/app';
 
 export const addOneMedia = async (filePath: string, folderId?: string) => {
   try {
@@ -23,7 +23,9 @@ export const addOneMedia = async (filePath: string, folderId?: string) => {
 
     const metadata: MediaTypeJsonDB = await getVideoMetaData(filePath);
 
+    let maxHeight = 720;
     const audioStreams: MediaStreamType[] = [];
+    const videoStreams: MediaStreamType[] = [];
     const subtitleStreams: MediaStreamType[] = [];
     (metadata?.streams || []).forEach((stream: MediaStreamType) => {
       if (stream?.codec_type === 'audio') {
@@ -32,6 +34,11 @@ export const addOneMedia = async (filePath: string, folderId?: string) => {
 
       if (stream?.codec_type === 'subtitle') {
         subtitleStreams.push(stream);
+      }
+
+      if (stream?.codec_type === 'video') {
+        videoStreams.push(stream);
+        maxHeight = stream?.height || 720;
       }
     });
 
@@ -42,10 +49,16 @@ export const addOneMedia = async (filePath: string, folderId?: string) => {
       id,
       folderId,
       audioStreams,
+      videoStreams,
       subtitleStreams,
       selectedAudio,
       path: filePath,
       addDate: new Date().getTime(),
+      selectedResolution: 'original',
+      resolutions: [
+        ...VIDEO_RESOLUTIONS,
+        { name: `Original(${maxHeight}p)`, id: 'original', value: maxHeight },
+      ],
     };
 
     const { error } = await pushMediaDB(`/${id}`, body);
