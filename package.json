@@ -1,6 +1,6 @@
 {
   "name": "streaming-server",
-  "version": "1.9.0",
+  "version": "1.10.0",
   "description": "A server to stream videos in local network",
   "private": true,
   "main": "electron/electron.js",
