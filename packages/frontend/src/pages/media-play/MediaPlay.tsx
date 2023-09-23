@@ -7,6 +7,7 @@ import {
   useGetMediaSubtitleByIdQuery,
   usePlayMediaByIdQuery,
   useSetMediaAudioMutation,
+  useSetMediaResolutionMutation,
   useSetMediaSubtitleMutation,
 } from '@services/media';
 import usePollingEffect from '@/hooks/usePolling';
@@ -32,6 +33,7 @@ function MediaPlay() {
   const { data: subData, isLoading: subLoading } = useGetMediaSubtitleByIdQuery(mediaId);
   const [updateAudio, { isLoading: isAudioUpdating }] = useSetMediaAudioMutation();
   const [updateSubtitle, { isLoading: isSubtitleUpdating }] = useSetMediaSubtitleMutation();
+  const [updateResolution, { isLoading: isResolutionUpdating }] = useSetMediaResolutionMutation();
 
   const getCurrentUrl = () => {
     return `/media-play/${mediaId || ''}?resume=${
@@ -63,7 +65,7 @@ function MediaPlay() {
         handleReload();
       }
     } catch (error) {
-      toast.error("Coudn't load audio");
+      toast.error("Couldn't load audio");
     }
   };
 
@@ -82,7 +84,18 @@ function MediaPlay() {
         handleReload();
       }
     } catch (error) {
-      toast.error("Coudn't load subtitle");
+      toast.error("Couldn't load subtitle");
+    }
+  };
+
+  const handleResolutionChange = async (resId: string) => {
+    try {
+      if (!isResolutionUpdating) {
+        await updateResolution({ id: mediaId, resolution: resId }).unwrap();
+        handleReload();
+      }
+    } catch (error) {
+      toast.error("Couldn't load resolution");
     }
   };
 
@@ -117,7 +130,7 @@ function MediaPlay() {
   }, [mediaData?.data?.id]);
 
   const loading = isFetching || subLoading;
-  const bgLoading = isAudioUpdating || isSubtitleUpdating;
+  const bgLoading = isAudioUpdating || isSubtitleUpdating || isResolutionUpdating;
 
   useToastStatus(status, {
     errorMessage: 'Failed to fetch video details',
@@ -178,8 +191,10 @@ function MediaPlay() {
             currentTime={currentTime}
             subs={mediaData?.data?.subs}
             audios={mediaData?.data?.audioStreams}
+            resolutions={mediaData?.data?.resolutions}
             selectedAudio={mediaData?.data?.selectedAudio}
             selectedSubtitle={mediaData?.data?.selectedSubtitle}
+            selectedResolution={mediaData?.data?.selectedResolution}
             name={normalizeText(mediaData?.data?.originalName)}
             thumbnailSrc={`/media/${mediaData?.data?.id}/thumbnail/seek`}
             onNext={() => stopVideo()}
@@ -187,6 +202,7 @@ function MediaPlay() {
             onReload={() => handleReload()}
             onAudioChange={(v) => handleAudioChange(v)}
             onSubtitleChange={(v) => handleSubtitleChange(v)}
+            onResolutionChange={(v) => handleResolutionChange(v)}
             onEnded={async () => {
               if (mediaData?.data?.id && ref.current) {
                 await updateMediaStatus({

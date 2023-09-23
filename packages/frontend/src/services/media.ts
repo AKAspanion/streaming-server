@@ -70,6 +70,16 @@ export const mediaApi = createApi({
       }),
       invalidatesTags: ['MediaDetails'],
     }),
+    setMediaResolution: builder.mutation<APIStatusResponseType, { id: string; resolution: string }>(
+      {
+        query: (body) => ({
+          url: `media/${body.id}/resolution`,
+          method: 'POST',
+          body,
+        }),
+        invalidatesTags: ['MediaDetails'],
+      },
+    ),
     updateMediaStatus: builder.mutation<
       APIStatusResponseType,
       { id: string; paused: boolean; currentTime: number; watched?: boolean }
@@ -183,4 +193,5 @@ export const {
   useGetMediaSubtitleByIdQuery,
   useAddMediaSubtitleMutation,
   useDeleteMediaSubtitleMutation,
+  useSetMediaResolutionMutation,
 } = mediaApi;

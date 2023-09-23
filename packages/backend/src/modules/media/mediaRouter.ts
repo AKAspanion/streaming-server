@@ -18,6 +18,7 @@ import {
   getSeekThumbnail,
   setSubtitleStream,
   getPoster,
+  setResolution,
 } from './mediaController';
 import { authenticate } from '@middleware/authenticate';
 
@@ -40,6 +41,7 @@ router.post('/:id/favorite', authenticate, markFavorite);
 router.post('/:id/watched', authenticate, markWatched);
 router.post('/:id/audio', authenticate, setAudioStream);
 router.post('/:id/subtitle', authenticate, setSubtitleStream);
+router.post('/:id/resolution', authenticate, setResolution);
 router.delete('/:id', authenticate, deleteMedia);
 
 router.get('/test/stuff', authenticate, testStuff);

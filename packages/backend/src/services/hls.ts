@@ -7,17 +7,18 @@ import fsLib from 'fs';
 
 type ProcessStreamOptions = {
   videoPath: string;
+  resolution: number;
   hlsManager: HLSManager;
   group: string;
   startSegment: number;
   segment: number;
   file: string;
-  audioStream: number;
+  audio: number;
   duration: number;
 };
 
 export const processHLSStream = (options: ProcessStreamOptions) => {
-  const { audioStream, videoPath, hlsManager, group, startSegment, segment, file, duration } =
+  const { audio, resolution, videoPath, hlsManager, group, startSegment, segment, file, duration } =
     options;
   return new Promise<string>((resolve, reject) => {
     (async () => {
@@ -29,9 +30,13 @@ export const processHLSStream = (options: ProcessStreamOptions) => {
       if (!hlsManager.isAnyVideoTranscoderActive(group)) {
         restartTranscoder = true;
       } else {
-        if (!hlsManager.isSameAudioStream(group, audioStream)) {
-          // Stop other transcoders (other qualities) if they are running
+        if (!hlsManager.isSameAudioStream(group, audio)) {
+          // Stop other transcoders (other audio) if they are running
           processLogger.info(`[HLS]Stop other transcoders if different audio`);
+          restartTranscoder = true;
+        } else if (!hlsManager.isSameResolution(group, resolution)) {
+          // Stop other transcoders (other qualities) if they are running
+          processLogger.info(`[HLS]Stop other transcoders if different resolution`);
           restartTranscoder = true;
         } else {
           const path = pathLib.join(hlsManager.getVideoTranscoderOutputPath(group), file);
@@ -66,7 +71,7 @@ export const processHLSStream = (options: ProcessStreamOptions) => {
 
       if (restartTranscoder) {
         promises.push(
-          hlsManager.startTranscoder(videoPath, startSegment, audioStream, group, duration),
+          hlsManager.startTranscoder(videoPath, startSegment, audio, group, duration, resolution),
         );
       }
 

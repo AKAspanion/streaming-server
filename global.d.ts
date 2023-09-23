@@ -116,6 +116,7 @@ declare type MediaFormatType = {
 declare type MediaTypeJsonDB = MediaType & {
   streams: MediaStreamType[];
   audioStreams: MediaStreamType[];
+  videoStreams: MediaStreamType[];
   subtitleStreams: MediaStreamType[];
   format: MediaFormatType;
   chapters: MediaChapterType[];
@@ -123,6 +124,12 @@ declare type MediaTypeJsonDB = MediaType & {
 
 declare type MediaTypeFull = MediaTypeJsonDB & {
   src: string;
+};
+
+declare type ResolutionType = {
+  id: string;
+  value: number;
+  name: string;
 };
 
 declare type MediaType = {
@@ -133,6 +140,8 @@ declare type MediaType = {
   mimeType: string;
   path: string;
   addDate: number;
+  resolutions: ResolutionType[];
+  selectedResolution: string;
   lastPlayedDate?: number;
   fileNotFound?: boolean;
   isFavorite?: boolean;

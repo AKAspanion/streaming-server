@@ -30,3 +30,11 @@ export const PLAYBACK_SPEEDS = [
   // { name: '1.75x', value: '1.75' },
   { name: '2x', value: '2' },
 ];
+
+export const VIDEO_RESOLUTIONS = [
+  { id: '1080', name: '1080p', value: 1080 },
+  { id: '720', name: '720p', value: 720 },
+  { id: '480', name: '480p', value: 480 },
+  { id: '240', name: '240p', value: 240 },
+  { id: '144', name: '144p', value: 144 },
+];
