@@ -12,7 +12,6 @@ import { Link } from 'react-router-dom';
 import { secToTime } from '@common/utils/date-time';
 import { Progress } from '../ui/progress';
 import {
-  ChevronsLeft,
   ChevronsRight,
   MaximizeIcon,
   MinimizeIcon,
@@ -197,13 +196,8 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
         </div>
         <div className="dark flex gap-3 justify-between items-center">
           <div className="pl-3.5 flex gap-4 items-center">
-            <div className="w-7 scale-[1.2] cursor-pointer" onClick={() => updateSeekTime(-1)}>
-              <div className={cs('', { 'opacity-50': loading })}>
-                <ChevronsLeft className="w-7" />
-              </div>
-            </div>
-            <div className="p-4 cursor-pointer" onClick={togglePlay}>
-              <div className="w-7 ml-0.5">
+            <div className="p-4 pl-0 cursor-pointer" onClick={togglePlay}>
+              <div className="w-7 -ml-1">
                 <div className={cs('', { 'opacity-50': loading })}>
                   {playing ? <PauseIcon /> : <PlayIcon />}
                 </div>

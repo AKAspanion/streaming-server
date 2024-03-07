@@ -113,9 +113,12 @@ const useHLSPlayer = (
   const lazyControlsHide = useCallback(() => {
     clearTimeout(lazyControlsTimeout);
     lazyControlsTimeout = setTimeout(() => {
-      handleControlsVisibility(false);
+      const video = ref.current;
+      if (!video?.paused) {
+        handleControlsVisibility(false);
+      }
     }, 5000);
-  }, [handleControlsVisibility]);
+  }, [handleControlsVisibility, ref]);
 
   const handleSubtitleLoad = useCallback(
     (trackText?: string) => {
@@ -513,13 +516,19 @@ const useHLSPlayer = (
         e.clientX >= window.innerWidth - 8 ||
         e.clientY >= window.innerHeight - 8
       ) {
-        handleControlsVisibility(false);
-        setHeaderVisible(false);
+        const video = ref.current;
+        if (!video?.paused) {
+          handleControlsVisibility(false);
+          setHeaderVisible(false);
+        }
       }
     };
     const onLeave = () => {
-      handleControlsVisibility(false);
-      setHeaderVisible(false);
+      const video = ref.current;
+      if (!video?.paused) {
+        handleControlsVisibility(false);
+        setHeaderVisible(false);
+      }
     };
     document.addEventListener('mousemove', onMove, false);
     document.addEventListener('mouseleave', onLeave, false);
