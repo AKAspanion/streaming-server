@@ -6,10 +6,10 @@ export declare type UseEventListenerEvent = any;
 const useEventListener = <T extends HTMLElement = HTMLDivElement>(
   eventName: keyof WindowEventMap,
   handler: (event: UseEventListenerEvent) => void,
-  element?: RefObject<T>,
+  element?: RefObject<T | null>,
   options?: boolean | EventListenerOptions,
 ) => {
-  const savedHandler = useRef<(event: UseEventListenerEvent) => void>();
+  const savedHandler = useRef<(event: UseEventListenerEvent) => void>(undefined);
 
   useEffect(() => {
     const targetElement: T | Window = element?.current || window;

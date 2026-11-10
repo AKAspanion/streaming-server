@@ -3,7 +3,6 @@ import { dotenvConfig } from '@config/dotenv';
 
 dotenv.config(dotenvConfig);
 
-import 'express-async-errors';
 import cors from 'cors';
 import express, { Express } from 'express';
 import { requestLogger, appErrorHandler, notFoundHandler } from '@middleware';
@@ -34,7 +33,13 @@ app.use(webFiles);
 app.use(notFoundHandler);
 app.use(appErrorHandler);
 
-app.listen(port, () => {
+app.listen(port, (error) => {
+  if (error) {
+    // Express 5 passes listen errors (e.g. EADDRINUSE) here instead of throwing
+    console.error(`❌ BE Server failed to start on port ${port}: ${error.message}`);
+    process.exit(1);
+  }
+
   console.log(
     ['A:', 'B:', 'C:', 'D:', 'E:', 'F:', 'G:', 'H:', 'I:', 'J:', 'K:', 'L:', 'M:'].slice(0, 0),
     ['N:', 'O:', 'P:', 'Q:', 'R:', 'S:', 'T:', 'U:', 'V:', 'W:', 'X:', 'W:', 'Z:'].slice(0, 0),

@@ -46,7 +46,7 @@ const Dashboard: FC<DashboardProps> = () => {
               '--dashboard-content-h-md': 'calc(100vh - var(--video-header-height-md) - 48px)',
             } as React.CSSProperties
           }
-          className="h-[var(--dashboard-content-h)] md:h-[var(--dashboard-content-h-md)] overflow-y-auto"
+          className="h-(--dashboard-content-h) md:h-(--dashboard-content-h-md) overflow-y-auto"
         >
           <NoData
             className="py-8 px-4"

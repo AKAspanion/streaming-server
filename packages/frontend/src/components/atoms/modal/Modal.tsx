@@ -21,9 +21,7 @@ const Modal: React.FC<ModalProps> = (props) => {
       isOpen={open}
       onAfterOpen={onAfterOpen}
       onRequestClose={onClose}
-      overlayClassName={
-        'z-50 fixed dark:bg-slate-800 bg-slate-400 bg-opacity-80 dark:bg-opacity-80 w-screen h-screen top-0'
-      }
+      overlayClassName={'z-50 fixed dark:bg-slate-800/80 bg-slate-400/80 w-screen h-screen top-0'}
       className="z-50 flex items-center justify-center h-screen w-screen"
       contentLabel="Example Modal"
     >

@@ -49,7 +49,7 @@ const ManageMedia = () => {
             '--managemediafolder-content-h-md': 'calc(100% - var(--media-header-height-md) - 32px)',
           } as React.CSSProperties
         }
-        className="h-[var(--managemediafolder-content-h)] md:h-[var(--managemediafolder-content-h-md)] overflow-y-auto"
+        className="h-(--managemediafolder-content-h) md:h-(--managemediafolder-content-h-md) overflow-y-auto"
       >
         {noData && (
           <NoData
@@ -70,7 +70,7 @@ const ManageMedia = () => {
                     </div>
                     <div
                       style={{ '--folder-text-w': 'calc(100% - 56px)' } as React.CSSProperties}
-                      className="flex flex-col w-[var(--folder-text-w)]"
+                      className="flex flex-col w-(--folder-text-w)"
                     >
                       <div className="text-sm font-semibold line-clamp-1">{f?.name}</div>
                       <div className="text-xs opacity-70">

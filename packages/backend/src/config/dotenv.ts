@@ -6,4 +6,5 @@ const prodEnvPath = path.join(__dirname, '../../.env.production');
 
 export const dotenvConfig = {
   path: IS_DEV ? devEnvPath : prodEnvPath,
+  quiet: true,
 };

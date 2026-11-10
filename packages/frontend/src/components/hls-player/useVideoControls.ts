@@ -7,7 +7,7 @@ type UseVideoControlsOptions = {
   togglePlay?: () => void;
 };
 type UseVideoControls = (
-  videoRef: React.RefObject<HTMLVideoElement>,
+  videoRef: React.RefObject<HTMLVideoElement | null>,
   options?: UseVideoControlsOptions,
 ) => void;
 

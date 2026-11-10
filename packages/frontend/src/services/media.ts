@@ -1,6 +1,6 @@
 import { dynamicBaseQuery } from '@/utils/query';
 import { createApi } from '@reduxjs/toolkit/query/react';
-import toWebVTT from 'srt-webvtt';
+import toWebVTT from '@utils/subtitle';
 import { dashboardApi } from './dashboard';
 import { folderApi } from './folder';
 

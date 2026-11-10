@@ -148,7 +148,6 @@ const isSegmentFinished = (requested: number, hlsManager: HLSManager, group: str
   );
 
   if (start == -1) {
-    start;
     return false;
   }
 

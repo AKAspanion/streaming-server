@@ -41,7 +41,7 @@ function Breadcrumbs() {
     <div
       className={cs(
         'flex items-center gap-4 px-4 border-b dark:border-slate-800 border-slate-300',
-        'h-[var(--breadcrumbs-height)]',
+        'h-(--breadcrumbs-height)',
       )}
     >
       <IconButton kind="secondary" onClick={goBack}>

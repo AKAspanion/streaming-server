@@ -8,7 +8,7 @@ type SizeState = {
 
 const useResize = <T extends HTMLElement = HTMLDivElement>(
   callback?: (entries: ResizeObserverEntry[], size: SizeState) => void,
-  elementRef?: RefObject<T>,
+  elementRef?: RefObject<T | null>,
 ): SizeState => {
   const [size, setSize] = useState<SizeState>({
     width: document?.body?.clientWidth,
@@ -36,7 +36,7 @@ const useResize = <T extends HTMLElement = HTMLDivElement>(
 
     return () => {
       if (node) {
-        currentObserver && currentObserver?.unobserve(node as Element);
+        currentObserver && currentObserver?.unobserve(node);
       } else {
         currentObserver && currentObserver?.unobserve(document.body);
       }

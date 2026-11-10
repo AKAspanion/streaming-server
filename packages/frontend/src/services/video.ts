@@ -2,7 +2,7 @@ import axios from 'axios';
 import { createApi } from '@reduxjs/toolkit/query/react';
 import { getNetworkAPIUrlWithAuth } from '@config/api';
 import { setVideoUploadProgress } from '@store/globalSlice';
-import toWebVTT from 'srt-webvtt';
+import toWebVTT from '@utils/subtitle';
 import { dynamicBaseQuery } from '@/utils/query';
 
 export const videoApi = createApi({

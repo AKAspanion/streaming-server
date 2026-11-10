@@ -109,7 +109,7 @@ const VideoListItem: FC<VideoListItemProps> = ({
               })}
             >
               <div
-                className="cursor-pointer select-none w-[var(--max-list-item)] overflow-hidden overflow-ellipsis whitespace-nowrap"
+                className="cursor-pointer select-none w-(--max-list-item) overflow-hidden text-ellipsis whitespace-nowrap"
                 title={video.originalname}
                 onClick={handleDetails}
               >

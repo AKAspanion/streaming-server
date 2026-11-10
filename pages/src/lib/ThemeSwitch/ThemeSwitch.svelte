@@ -1,17 +1,20 @@
 <script lang="ts">
-	export let onThemeChange: (flag: boolean) => void;
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 
-	let darkMode: boolean = browser && localStorage.theme === 'dark';
+	let { onThemeChange }: { onThemeChange?: (flag: boolean) => void } = $props();
+
+	let darkMode: boolean = $state(browser && localStorage.theme === 'dark');
 
 	function handleSwitchDarkMode() {
 		darkMode = !darkMode;
 
-		darkMode
-			? document.documentElement.classList.add('dark')
-			: document.documentElement.classList.remove('dark');
+		if (darkMode) {
+			document.documentElement.classList.add('dark');
+		} else {
+			document.documentElement.classList.remove('dark');
+		}
 
-		onThemeChange && onThemeChange(darkMode);
+		onThemeChange?.(darkMode);
 		if (browser) {
 			localStorage.setItem('theme', darkMode ? 'dark' : 'light');
 		}
@@ -19,11 +22,13 @@
 </script>
 
 <div>
-	<input checked={darkMode} on:click={handleSwitchDarkMode} type="checkbox" id="theme-toggle" />
-	<label for="theme-toggle" />
+	<input checked={darkMode} onclick={handleSwitchDarkMode} type="checkbox" id="theme-toggle" />
+	<label for="theme-toggle" aria-label="Toggle dark mode"></label>
 </div>
 
 <style lang="postcss">
+	@reference '../../app.css';
+
 	#theme-toggle {
 		@apply invisible;
 	}

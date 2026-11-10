@@ -1,12 +1,11 @@
 <script lang="ts">
-	import { beforeUpdate } from 'svelte';
-	import { browser } from '$app/environment';
-	import ThemeSwitch from '$lib/ThemeSwitch/ThemeSwitch.svelte';
+	import { browser } from '$app/env';
+	import ThemeSwitch from '#lib/ThemeSwitch/ThemeSwitch.svelte';
 
-	import ssDark from '$lib/assets/images/dashboard-dark.png';
-	import ssLight from '$lib/assets/images/dashboard-light.png';
+	import ssDark from '#lib/assets/images/dashboard-dark.png';
+	import ssLight from '#lib/assets/images/dashboard-light.png';
 
-	let darkMode: boolean = browser && localStorage.theme === 'dark';
+	let darkMode: boolean = $state(browser && localStorage.theme === 'dark');
 
 	const handleSwitchDarkMode = (v: boolean) => {
 		darkMode = v;
@@ -54,7 +53,7 @@
 						d="M13 10V3L4 14h7v7l9-11h-7z"
 					/>
 				</svg>
-				<span class="text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-600 to-blue-600">
+				<span class="text-transparent bg-clip-text bg-linear-to-r from-fuchsia-600 to-blue-600">
 					Download
 				</span>
 			</a>
@@ -71,7 +70,7 @@
 		>
 			<div class="flex items-center flex-1">
 				<svg
-					class="flex-shrink-0 text-black/50 dark:text-white/50 w-14 h-14"
+					class="shrink-0 text-black/50 dark:text-white/50 w-14 h-14"
 					xmlns="http://www.w3.org/2000/svg"
 					fill="none"
 					viewBox="0 0 24 24"
@@ -91,7 +90,7 @@
 
 			<div class="flex items-center flex-1">
 				<svg
-					class="flex-shrink-0 text-black/50 dark:text-white/50 w-14 h-14"
+					class="shrink-0 text-black/50 dark:text-white/50 w-14 h-14"
 					xmlns="http://www.w3.org/2000/svg"
 					fill="none"
 					viewBox="0 0 24 24"
@@ -116,8 +115,8 @@
 	<title>Video Streaming Server</title>
 </svelte:head>
 
-<style lang="postcss">
+<style>
 	:global(html) {
-		background-color: theme(colors.gray.100);
+		background-color: var(--color-gray-100);
 	}
 </style>

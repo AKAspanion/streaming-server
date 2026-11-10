@@ -38,7 +38,7 @@ const ManageMediaHeader: FC<ManageMediaHeaderProps> = ({
       <div
         className={cs(
           'flex flex-col md:flex-row gap-4 justify-between flex-end',
-          'h-[var(--media-header-height)] md:h-[var(--media-header-height-md)]',
+          'h-(--media-header-height) md:h-(--media-header-height-md)',
         )}
       >
         <div className="flex gap-3 items-center">

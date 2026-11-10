@@ -1,3 +1,4 @@
+import { skipToken } from '@reduxjs/toolkit/query';
 import Spinner from '@components/atoms/spinner/Spinner';
 import { getNetworkAPIUrlWithAuth } from '@config/api';
 import useToastStatus from '@hooks/useToastStatus';
@@ -61,7 +62,7 @@ const MediaDetails: FC<MediaDetailsProps> = () => {
     onDelete: () => navigate(folderId ? `/manage-media/${folderId}/folder` : '/manage-media'),
   });
 
-  const { data: folderData, isFetching } = useGetFolderByIdQuery(folderId);
+  const { data: folderData, isFetching } = useGetFolderByIdQuery(folderId || skipToken);
   const { data: mediaData, isLoading, status } = useGetMediaByIdQuery(mediaId);
 
   const loading = isLoading || isFetching || isDeleteLoading;
@@ -143,7 +144,7 @@ const MediaDetails: FC<MediaDetailsProps> = () => {
             </CoverButton>
             <Card
               style={{ '--mediadetails-action-w': 'calc(100% - 352px)' } as React.CSSProperties}
-              className="w-full md:w-[var(--mediadetails-action-w)]"
+              className="w-full md:w-(--mediadetails-action-w)"
             >
               <CardHeader>
                 <CardTitle>

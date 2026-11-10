@@ -131,7 +131,7 @@ function VideoUpload() {
             <div
               className={cs(
                 'flex gap-4 justify-between items-center',
-                'h-[var(--video-header-height)] md:h-[var(--video-header-height-md)]',
+                'h-(--video-header-height) md:h-(--video-header-height-md)',
               )}
             >
               <input
@@ -194,7 +194,7 @@ function VideoUpload() {
                   'calc(100% - var(--video-header-height-md) - 32px)',
               } as React.CSSProperties
             }
-            className="h-[var(--managevideofolder-content-h)] md:h-[var(--managevideofolder-content-h-md)] overflow-y-auto"
+            className="h-(--managevideofolder-content-h) md:h-(--managevideofolder-content-h-md) overflow-y-auto"
           >
             {parsedVideos.length === 0 ? (
               <NoData

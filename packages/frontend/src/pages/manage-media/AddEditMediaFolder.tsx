@@ -1,3 +1,4 @@
+import { skipToken } from '@reduxjs/toolkit/query';
 import Modal from '@/components/atoms/modal/Modal';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -24,7 +25,7 @@ interface AddEditMediaFolderProps {
 
 const AddEditMediaFolder: FC<AddEditMediaFolderProps> = ({ edit, folderId = '' }) => {
   const navigate = useNavigate();
-  const { data: folderData } = useGetFolderByIdQuery(folderId);
+  const { data: folderData } = useGetFolderByIdQuery(folderId || skipToken);
 
   const [open, setOpen] = useState(false);
   const [name, setName] = useState(normalizeText(folderData?.data?.name));

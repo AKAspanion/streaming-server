@@ -8,7 +8,7 @@ const Notifications = () => {
 
   return (
     <div
-      className="absolute z-[80] bottom-16 left-4 overflow-visible"
+      className="absolute z-80 bottom-16 left-4 overflow-visible"
       onMouseEnter={startPause}
       onMouseLeave={endPause}
     >
@@ -49,7 +49,7 @@ const Notifications = () => {
                     <CheckCircleIcon />
                   </div>
                 )}
-                <div className="text-sm w-[210px] whitespace-nowrap overflow-ellipsis overflow-hidden">
+                <div className="text-sm w-[210px] whitespace-nowrap text-ellipsis overflow-hidden">
                   {toast.message as string}
                 </div>
               </div>

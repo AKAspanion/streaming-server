@@ -9,8 +9,7 @@ export const setup = (loadApp: () => void) => {
   let hostReceived = false;
   try {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const ipcRenderer = require('electron').ipcRenderer;
+      const ipcRenderer = window.require('electron').ipcRenderer;
       if (ipcRenderer) {
         ipcRenderer.send('app_version');
         ipcRenderer.on('app_version', (_: any, arg: any) => {
@@ -44,7 +43,7 @@ export const setup = (loadApp: () => void) => {
         loadApp();
       } else {
         await sleep(500);
-        waitForBE(++count);
+        waitForBE(count + 1);
       }
     };
 

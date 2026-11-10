@@ -1,4 +1,4 @@
-import { QueryStatus } from '@reduxjs/toolkit/dist/query';
+import { QueryStatus } from '@reduxjs/toolkit/query';
 import { useEffect } from 'react';
 import toast from 'react-hot-toast/headless';
 

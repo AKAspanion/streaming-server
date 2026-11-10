@@ -39,7 +39,7 @@ const Sidebar: FC<SidebarProps> = () => {
             {({ isActive }) => (
               <div
                 className={classNames('flex items-center cursor-pointer rounded-lg p-3', {
-                  'dark:bg-slate-700 bg-slate-800 bg-opacity-10': isActive,
+                  'dark:bg-slate-700 bg-slate-800/10': isActive,
                   'dark:hover:bg-slate-600 hover:bg-slate-100': !isActive,
                 })}
               >

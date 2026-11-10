@@ -1,6 +1,7 @@
 /// <reference types="vite/client" />
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react-swc';
+import tailwindcss from '@tailwindcss/vite';
 import path from 'path';
 import fs from 'fs';
 import os from 'os';
@@ -21,21 +22,21 @@ export default defineConfig(({ mode }) => {
     base: './',
     resolve: {
       alias: {
-        '@': path.resolve(__dirname, './src'),
-        '@assets': path.resolve(__dirname, './src/assets'),
-        '@layout': path.resolve(__dirname, './src/layout'),
-        '@config': path.resolve(__dirname, './src/config'),
-        '@hooks': path.resolve(__dirname, './src/hooks'),
-        '@pages': path.resolve(__dirname, './src/pages'),
-        '@router': path.resolve(__dirname, './src/router'),
-        '@services': path.resolve(__dirname, './src/services'),
-        '@store': path.resolve(__dirname, './src/store'),
-        '@utils': path.resolve(__dirname, './src/utils'),
-        '@components': path.resolve(__dirname, './src/components'),
-        '@common': path.resolve(__dirname, '../common'),
+        '@': path.resolve(import.meta.dirname, './src'),
+        '@assets': path.resolve(import.meta.dirname, './src/assets'),
+        '@layout': path.resolve(import.meta.dirname, './src/layout'),
+        '@config': path.resolve(import.meta.dirname, './src/config'),
+        '@hooks': path.resolve(import.meta.dirname, './src/hooks'),
+        '@pages': path.resolve(import.meta.dirname, './src/pages'),
+        '@router': path.resolve(import.meta.dirname, './src/router'),
+        '@services': path.resolve(import.meta.dirname, './src/services'),
+        '@store': path.resolve(import.meta.dirname, './src/store'),
+        '@utils': path.resolve(import.meta.dirname, './src/utils'),
+        '@components': path.resolve(import.meta.dirname, './src/components'),
+        '@common': path.resolve(import.meta.dirname, '../common'),
       },
     },
-    plugins: [react()],
+    plugins: [react(), tailwindcss()],
     server: {
       host: true,
       open: true,
@@ -64,7 +65,7 @@ export const getIPv4Address = () => {
   return 'localhost';
 };
 
-const getEnvPath = (mode: string) => path.resolve(__dirname, `.env.${mode}`);
+const getEnvPath = (mode: string) => path.resolve(import.meta.dirname, `.env.${mode}`);
 
 const readEnvVars = (p: string) => fs.readFileSync(p, 'utf-8').split(os.EOL);
 

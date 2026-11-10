@@ -20,5 +20,5 @@ export const folderLoader = async ({ params }: LoaderFunctionArgs) => {
     // e
   }
 
-  return { label, params } as LoaderResult;
+  return { label, params };
 };

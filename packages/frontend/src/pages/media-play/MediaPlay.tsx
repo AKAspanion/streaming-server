@@ -1,3 +1,4 @@
+import { skipToken } from '@reduxjs/toolkit/query';
 import { getNetworkAPIUrlWithAuth } from '@config/api';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useEffect, useMemo, useRef } from 'react';
@@ -28,7 +29,7 @@ function MediaPlay() {
   const back = searchParams.get('back') || '/';
 
   const { updateMediaStatus, stopMedia } = useMediaMutation();
-  const { data: mediaList } = useGetMediaInFolderQuery(folderId || '');
+  const { data: mediaList } = useGetMediaInFolderQuery(folderId || skipToken);
   const { data: mediaData, isFetching, status } = usePlayMediaByIdQuery(mediaId);
   const { data: subData, isLoading: subLoading } = useGetMediaSubtitleByIdQuery(mediaId);
   const [updateAudio, { isLoading: isAudioUpdating }] = useSetMediaAudioMutation();
