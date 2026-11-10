@@ -3,6 +3,14 @@ name: Release Windows App
 on:
   # create:
   workflow_dispatch:
+    inputs:
+      publish:
+        description: 'always = upload to the GitHub release draft; never = build only and keep the files as run artifacts'
+        type: choice
+        options:
+          - always
+          - never
+        default: always
 
 permissions:
   contents: write
@@ -26,10 +34,48 @@ jobs:
           yarn unzip:ffmpeg
         shell: bash
 
+      # electron-builder creates the release lazily while uploading artifacts in parallel, which
+      # can create duplicate drafts. Creating it up front makes every upload find the same one.
+      - name: Create draft release if missing 📝
+        if: inputs.publish == 'always'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          if gh api "repos/${{ github.repository }}/releases" --paginate --jq ".[] | select(.tag_name == \"v$VERSION\") | .id" | grep -q .; then
+            echo "Release for v$VERSION already exists"
+          else
+            gh release create "v$VERSION" --draft --title "$VERSION" --verify-tag
+          fi
+        shell: bash
+
       - name: Install & Build for Windows 🔧
+        if: inputs.publish == 'always'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           yarn
           yarn build:electron:win
         shell: bash
+
+      - name: Install & Build for Windows (no publish) 🔧
+        if: inputs.publish == 'never'
+        run: |
+          yarn
+          yarn prebuild:electron:win
+          npx cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder build --win --publish never
+        shell: bash
+
+      - name: Check bundled backend 🔍
+        run: |
+          ls -la dist/win-unpacked/resources/backend dist/win-unpacked/resources/backend/.bin/win
+          test -s dist/win-unpacked/resources/backend/backend.exe
+        shell: bash
+
+      - name: Upload build artifacts 📦
+        if: inputs.publish == 'never'
+        uses: actions/upload-artifact@v7
+        with:
+          name: windows-build
+          path: dist/*.exe
+          retention-days: 3

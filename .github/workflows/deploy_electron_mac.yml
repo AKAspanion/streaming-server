@@ -3,6 +3,14 @@ name: Release Mac App
 on:
   # create:
   workflow_dispatch:
+    inputs:
+      publish:
+        description: 'always = upload to the GitHub release draft; never = build only and keep the files as run artifacts'
+        type: choice
+        options:
+          - always
+          - never
+        default: always
 
 permissions:
   contents: write
@@ -26,10 +34,53 @@ jobs:
           yarn unzip:ffmpeg
         shell: bash
 
+      # electron-builder creates the release lazily while uploading artifacts in parallel, which
+      # can create duplicate drafts. Creating it up front makes every upload find the same one.
+      - name: Create draft release if missing 📝
+        if: inputs.publish == 'always'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          if gh api "repos/${{ github.repository }}/releases" --paginate --jq ".[] | select(.tag_name == \"v$VERSION\") | .id" | grep -q .; then
+            echo "Release for v$VERSION already exists"
+          else
+            gh release create "v$VERSION" --draft --title "$VERSION" --verify-tag
+          fi
+        shell: bash
+
       - name: Install & Build for Mac 🔧
+        if: inputs.publish == 'always'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           yarn
           yarn build:electron:mac
         shell: bash
+
+      - name: Install & Build for Mac (no publish) 🔧
+        if: inputs.publish == 'never'
+        run: |
+          yarn
+          yarn prebuild:electron:mac
+          npx cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder build --mac --publish never
+        shell: bash
+
+      - name: Check bundled backend architectures 🔍
+        run: |
+          x64="dist/mac/Video Streaming Server.app/Contents/Resources/backend/backend"
+          arm64="dist/mac-arm64/Video Streaming Server.app/Contents/Resources/backend/backend"
+          file "$x64" "$arm64"
+          file -b "$x64" | grep -q x86_64
+          file -b "$arm64" | grep -q arm64
+        shell: bash
+
+      - name: Upload build artifacts 📦
+        if: inputs.publish == 'never'
+        uses: actions/upload-artifact@v7
+        with:
+          name: mac-build
+          path: |
+            dist/*.dmg
+            dist/*.zip
+          retention-days: 3

@@ -47,6 +47,14 @@
     "extraResources": [
       {
         "from": "packages/backend/dist",
+        "to": "backend",
+        "filter": [
+          "**/*",
+          "!bin/**"
+        ]
+      },
+      {
+        "from": "packages/backend/dist/bin/${arch}",
         "to": "backend"
       },
       {
@@ -73,7 +81,24 @@
         "github"
       ],
       "type": "development",
-      "icon": "packages/frontend/dist/logo.png"
+      "icon": "packages/frontend/dist/logo.png",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
+      "artifactName": "${productName}-${version}-${arch}.${ext}"
     }
   },
   "devDependencies": {
