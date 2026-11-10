@@ -35,9 +35,9 @@ let lazyHeaderTimeout: NodeJS.Timeout;
 let lazyControlsTimeout: NodeJS.Timeout;
 const useHLSPlayer = (
   props: HLSPlayerProps,
-  ref: React.RefObject<HTMLVideoElement>,
-  containerRef: React.RefObject<HTMLDivElement>,
-  progressRef: React.RefObject<HTMLInputElement>,
+  ref: React.RefObject<HTMLVideoElement | null>,
+  containerRef: React.RefObject<HTMLDivElement | null>,
+  progressRef: React.RefObject<HTMLInputElement | null>,
 ) => {
   const {
     src,
@@ -66,7 +66,7 @@ const useHLSPlayer = (
   const [controlsVisible, setControlsVisible] = useState(true);
   const [subtitlesVisible, setSubtitlesVisible] = useState(true);
 
-  const hlsObj = useRef<Hls>();
+  const hlsObj = useRef<Hls>(undefined);
 
   const updateSubtitlePosition = useCallback(
     (position?: number) =>

@@ -25,7 +25,7 @@ if (IS_DEV) {
 const logFormat = format.combine(
   format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss.SSS' }),
   format.printf((info) => {
-    const serverLogEntry = (info?.message || '').replace(
+    const serverLogEntry = String(info?.message ?? '').replace(
       // eslint-disable-next-line no-control-regex
       /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
       '',

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import mime from 'mime';
@@ -12,10 +11,10 @@ import fs from 'fs';
 import os from 'os';
 
 export const getffmpeg = () => {
-  let ffmpegLocal = '';
-  let ffmpegProbeLocal = '';
+  let ffmpegLocal: string;
+  let ffmpegProbeLocal: string;
 
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const ffmpeg = require('fluent-ffmpeg');
 
   if (os.platform() === 'win32') {

@@ -127,14 +127,14 @@ const FilePicker: React.FC<FilePickerProps> = (props) => {
                 >
                   <div
                     className={cs(
-                      'flex items-center flex-1 gap-2 w-[var(--file-title-width)] cursor-pointer',
+                      'flex items-center flex-1 gap-2 w-(--file-title-width) cursor-pointer',
                     )}
                     onClick={() => handleFileChange(l)}
                   >
                     <div className="w-4">{l.isFile ? <DocumentIcon /> : <FolderIcon />}</div>
                     <div
                       title={fileName}
-                      className="text-sm overflow-hidden text-ellipsis whitespace-nowrap w-[var(--file-title-width)]"
+                      className="text-sm overflow-hidden text-ellipsis whitespace-nowrap w-(--file-title-width)"
                     >
                       {fileName}
                     </div>

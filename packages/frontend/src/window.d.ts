@@ -3,6 +3,7 @@ declare global {
     appVersion?: string;
     networkHost?: string;
     token?: string;
+    require?: NodeJS.Require;
   }
 }
 

@@ -11,6 +11,11 @@ You can download the latest release of the application [here](https://github.com
 
 ## Locally
 
+### Prerequisites
+
+- Node.js 24 LTS (>= 22.22.1)
+- Yarn 1.x
+
 ### Clone the repo
 
 Create `.env.development` in both **frontend** and **backend** packages.  

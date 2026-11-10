@@ -7,11 +7,13 @@ const Progress = React.forwardRef<
   React.ElementRef<typeof ProgressPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof ProgressPrimitive.Root>
 >(({ className, value = 0, max = 100, ...props }, ref) => {
-  const percentage = value ? (value / max) * 100 : 0;
+  // Radix requires max > 0; media duration is 0 until metadata loads
+  const safeMax = max && max > 0 ? max : 100;
+  const percentage = value ? (value / safeMax) * 100 : 0;
   return (
     <ProgressPrimitive.Root
       ref={ref}
-      max={max}
+      max={safeMax}
       className={cn('relative h-2 w-full overflow-hidden rounded-full bg-secondary', className)}
       {...props}
     >

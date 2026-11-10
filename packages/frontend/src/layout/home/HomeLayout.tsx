@@ -36,16 +36,16 @@ function HomeLayout() {
           <div className="flex relative">
             <div
               className={cs(
-                { '-left-0': sidebarOpen },
+                { 'left-0': sidebarOpen },
                 { '-left-20': !sidebarOpen },
-                'z-30 w-[var(--sidebar-width)] h-[var(--sidebar-height)] absolute  sm:static overflow-auto',
+                'z-30 w-(--sidebar-width) h-(--sidebar-height) absolute  sm:static overflow-auto',
               )}
             >
               <Sidebar />
             </div>
             <div className="">
               <Breadcrumbs />
-              <div className="w-screen sm:w-[var(--content-width)]  h-[var(--content-height)] relative overflow-y-auto">
+              <div className="w-screen sm:w-(--content-width)  h-(--content-height) relative overflow-y-auto">
                 <Outlet />
               </div>
             </div>

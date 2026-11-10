@@ -10,7 +10,7 @@ import logger from '@utils/logger';
 import { fileExists } from '@utils/helper';
 
 export const doesFileExists: RequestHandler = async (req, res) => {
-  const { file } = req.body;
+  const { file } = req.body ?? {};
 
   if (!file) {
     throw new AppError({ description: 'File path is required', httpCode: HttpCode.BAD_REQUEST });
@@ -30,13 +30,13 @@ export const doesFileExists: RequestHandler = async (req, res) => {
 };
 
 export const getFilesInPath: RequestHandler = async (req, res) => {
-  const { dir: dirInReq } = req.body;
+  const { dir: dirInReq } = req.body ?? {};
   const dir = String(dirInReq || '');
   // if (dir && dir.endsWith(`\\`)) {
   //   dir = dir.slice(0, dir.length - 1);
   // }
 
-  let drives: FileLocationType[] = [];
+  let drives: FileLocationType[];
 
   try {
     drives = await listDrives();

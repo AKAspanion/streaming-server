@@ -72,15 +72,15 @@ const MediaCard: FC<MediaCardProps> = ({ media, backTo, folderId }) => {
         >
           {isFavorite && (
             <div className="text-white absolute right-3 top-3 shadow-lg">
-              <div className="w-5 drop-shadow">
-                <HeartIcon className="drop-shadow " />
+              <div className="w-5 drop-shadow-sm">
+                <HeartIcon className="drop-shadow-sm " />
               </div>
             </div>
           )}
           {hasSub && (
             <div className="text-white absolute left-3 top-3 shadow-lg">
-              <div className="w-6 drop-shadow">
-                <ClosedCaptionIcon className="drop-shadow " />
+              <div className="w-6 drop-shadow-sm">
+                <ClosedCaptionIcon className="drop-shadow-sm " />
               </div>
             </div>
           )}
@@ -95,7 +95,7 @@ const MediaCard: FC<MediaCardProps> = ({ media, backTo, folderId }) => {
           className={cs(
             'shadow-md text-white',
             'group-hover:to-transparent  overflow-hidden',
-            'bg-gradient-to-b from-transparent to-slate-900 group-hover:to-transparent',
+            'bg-linear-to-b from-transparent to-slate-900 group-hover:to-transparent',
             'absolute bottom-0 flex gap-4 justify-between items-center rounded-b-lg w-full h-[52px] z-20',
           )}
         >
@@ -117,7 +117,7 @@ const MediaCard: FC<MediaCardProps> = ({ media, backTo, folderId }) => {
             </div>
 
             {currentDuration ? (
-              <div className="absolute w-full bottom-0 z-[21]">
+              <div className="absolute w-full bottom-0 z-21">
                 <Progress value={progressValue} />
               </div>
             ) : null}
@@ -153,7 +153,7 @@ const MediaCard: FC<MediaCardProps> = ({ media, backTo, folderId }) => {
             </PopoverContent>
           </Popover>
         </div>
-        <div className={cs('h-[0px] -bottom-[52px] absolute w-full group-hover:h-[52px]')}></div>
+        <div className={cs('h-0 bottom-[-52px] absolute w-full group-hover:h-[52px]')}></div>
       </div>
     </Card>
   );

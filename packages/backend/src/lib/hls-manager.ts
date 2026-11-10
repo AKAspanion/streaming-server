@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable no-var */
-
 import { ffmpegLogger } from '@utils/logger';
 import Transcoder from './transcoder';
 import { SEGMENT_TEMP_FOLDER } from '@constants/hls';

@@ -1,3 +1,5 @@
+import { basename } from 'path';
+import { DOWNLOAD_OPTIONS } from '@constants/app';
 import { MANIFEST_TEMP_FOLDER } from '@constants/hls';
 import { pushMediaDB } from '@database/json';
 import { processHLSStream } from '@services/hls';
@@ -42,7 +44,7 @@ export const getAllMedia: RequestHandler = async (req, res) => {
 };
 
 export const addMedia: RequestHandler = async (req, res) => {
-  const { file, folderId } = req.body;
+  const { file, folderId } = req.body ?? {};
 
   if (!file?.path) {
     throw new AppError({ description: 'File path is required', httpCode: HttpCode.BAD_REQUEST });
@@ -71,7 +73,7 @@ export const deleteMedia: RequestHandler = async (req, res) => {
 
 export const updatePlayStatus: RequestHandler = async (req, res) => {
   const id = normalizeText(req.params.id);
-  const b = req.body;
+  const b = req.body ?? {};
   const { data } = await getOneMediaData(id);
 
   const body = { ...data, ...b, lastPlayedDate: new Date().getTime() };
@@ -262,7 +264,7 @@ export const streamMedia: RequestHandler = async (req, res) => {
   const manifestFilePath = `${manifestPath}/${file}`;
 
   if (ism3u8) {
-    return res.download(manifestFilePath);
+    return res.download(manifestFilePath, basename(manifestFilePath), DOWNLOAD_OPTIONS);
   }
 
   const { data } = await getOneMediaData(mediaId);
@@ -298,7 +300,7 @@ export const streamMedia: RequestHandler = async (req, res) => {
     });
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Headers', '*');
-    res.status(HttpCode.OK).download(filePath);
+    res.status(HttpCode.OK).download(filePath, basename(filePath), DOWNLOAD_OPTIONS);
   } catch (error) {
     logger.error(error);
     throw new AppError({ httpCode: HttpCode.NOT_FOUND, description: 'File not found' });
@@ -312,7 +314,7 @@ export const getThumbnail: RequestHandler = async (req, res) => {
   const thumbnail = await extractThumbnailForMedia(data?.id, data);
 
   if (thumbnail?.path) {
-    res.download(thumbnail?.path, thumbnail.name || 'thumbnail.png');
+    res.download(thumbnail?.path, thumbnail.name || 'thumbnail.png', DOWNLOAD_OPTIONS);
   } else {
     throw new AppError({ httpCode: HttpCode.NOT_FOUND, description: 'Thumbnail not found' });
   }
@@ -328,7 +330,7 @@ export const getPoster: RequestHandler = async (req, res) => {
   const posterPath = poster?.path || thumbnail?.path;
 
   if (posterPath) {
-    res.download(posterPath, 'poster.jpg');
+    res.download(posterPath, 'poster.jpg', DOWNLOAD_OPTIONS);
   } else {
     throw new AppError({ httpCode: HttpCode.NOT_FOUND, description: 'Poster not found' });
   }
@@ -342,7 +344,7 @@ export const getSeekThumbnail: RequestHandler = async (req, res) => {
 
   if (fileExists(data?.path)) {
     const thumbnail = await createSeekThumbnail(id, data?.path, time);
-    res.download(thumbnail?.path, thumbnail.name || 'thumb_seek.png');
+    res.download(thumbnail?.path, thumbnail.name || 'thumb_seek.png', DOWNLOAD_OPTIONS);
   } else {
     throw new AppError({ httpCode: HttpCode.NOT_FOUND, description: 'Thumbnail not found' });
   }
@@ -358,7 +360,7 @@ export const generateStream: RequestHandler = async (req, res) => {
 };
 
 export const probeFile: RequestHandler = async (req, res) => {
-  const { file } = req.body;
+  const { file } = req.body ?? {};
 
   const data = await getVideoMetaData(file);
 
@@ -366,7 +368,7 @@ export const probeFile: RequestHandler = async (req, res) => {
 };
 
 export const testStuff: RequestHandler = async (req, res) => {
-  const { file } = req.body;
+  const { file } = req.body ?? {};
 
   const { posterPath } = await createPoster('lol', file);
 

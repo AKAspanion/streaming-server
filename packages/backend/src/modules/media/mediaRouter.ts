@@ -28,7 +28,7 @@ router.get('/:id/poster', authenticate, getPoster);
 router.get('/:id/thumbnail', authenticate, getThumbnail);
 router.get('/:id/thumbnail/seek', authenticate, getSeekThumbnail);
 router.post('/stream/:id/generate', authenticate, generateStream);
-router.get('/stream/hls/*', authenticate, streamMedia);
+router.get('/stream/hls/*file', authenticate, streamMedia);
 
 router.post('/', authenticate, addMedia);
 router.get('/probe', authenticate, probeFile);

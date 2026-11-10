@@ -1,3 +1,4 @@
+import { DOWNLOAD_OPTIONS } from '@constants/app';
 import { normalizeText } from '@common/utils/validate';
 import { deleteMediaDB, geMediaDBIndex, pushMediaDB, pushVideoDB } from '@database/json';
 import { getOneMediaData } from '@modules/media/mediaData';
@@ -15,7 +16,7 @@ export const getVideoSubtitle: RequestHandler = async (req, res) => {
   if (data?.sub) {
     const fileName = `/${data?.sub.id}.wtt`;
 
-    res.download(data?.sub.path, fileName);
+    res.download(data?.sub.path, fileName, DOWNLOAD_OPTIONS);
   } else {
     throw new AppError({ httpCode: HttpCode.NOT_FOUND, description: 'Subtitle not found' });
   }
@@ -32,7 +33,7 @@ export const getMediaSubtitle: RequestHandler = async (req, res) => {
   if (foundSub) {
     const fileName = `/${foundSub.id}.srt`;
 
-    res.download(foundSub.path, fileName);
+    res.download(foundSub.path, fileName, DOWNLOAD_OPTIONS);
   } else {
     throw new AppError({ httpCode: HttpCode.NOT_FOUND, description: 'Subtitle not found' });
   }

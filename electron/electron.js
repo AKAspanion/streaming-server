@@ -1,8 +1,6 @@
 /* eslint-disable no-control-regex */
-/* eslint-disable @typescript-eslint/no-var-requires */
 const { app, ipcMain, BrowserWindow, nativeImage, Menu, Tray } = require('electron');
-const isDev = require('electron-is-dev');
-const log = require('electron-log');
+const log = require('electron-log/main');
 const cp = require('child_process');
 const path = require('path');
 const os = require('os');
@@ -11,6 +9,11 @@ let mainWindow;
 let tray = null;
 const processes = [];
 const { name } = require('../package.json');
+
+const isDev =
+  'ELECTRON_IS_DEV' in process.env
+    ? Number.parseInt(process.env.ELECTRON_IS_DEV, 10) === 1
+    : !app.isPackaged;
 
 const getIPv4Address = () => {
   const interfaces = os.networkInterfaces();
@@ -59,7 +62,6 @@ function createWindow() {
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
-      enableRemoteModule: true,
       webSecurity: false,
       webgl: true,
     },
@@ -119,10 +121,10 @@ app.whenReady().then(() => {
       REACT_DEVELOPER_TOOLS,
     } = require('electron-devtools-installer');
     installExtension(REDUX_DEVTOOLS)
-      .then((name) => log.info(`Added Extension:  ${name}`))
+      .then((ext) => log.info(`Added Extension:  ${ext.name}`))
       .catch((err) => log.info('An error occurred: ', err));
     installExtension(REACT_DEVELOPER_TOOLS)
-      .then((name) => log.info(`Added Extension:  ${name}`))
+      .then((ext) => log.info(`Added Extension:  ${ext.name}`))
       .catch((err) => log.info('An error occurred: ', err));
   }
 });

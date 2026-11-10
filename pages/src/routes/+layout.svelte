@@ -1,5 +1,8 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import type { Snippet } from 'svelte';
+	import { browser } from '$app/env';
+
+	let { children }: { children: Snippet } = $props();
 
 	if (browser) {
 		if (
@@ -13,4 +16,4 @@
 	}
 </script>
 
-<slot />
+{@render children()}

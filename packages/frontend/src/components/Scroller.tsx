@@ -105,7 +105,7 @@ const Scroller: React.FC<ScrollerProps> = ({
               'z-20 right-0 absolute inline-flex cursor-pointer items-center justify-center',
               {
                 'h-14 w-14 shadow-lg  bg-slate-50 dark:bg-slate-950 rounded-full': top,
-                'h-full bg-gradient-to-r from-transparent to-slate-400 dark:to-slate-950': !top,
+                'h-full bg-linear-to-r from-transparent to-slate-400 dark:to-slate-950': !top,
               },
             )}
             onClick={handleScroll(1)}
@@ -121,7 +121,7 @@ const Scroller: React.FC<ScrollerProps> = ({
               'z-20 left-0 absolute inline-flex cursor-pointer items-center justify-center',
               {
                 'h-14 w-14 shadow-lg bg-slate-50 dark:bg-slate-950 rounded-full': top,
-                'h-full bg-gradient-to-l from-transparent to-slate-400 dark:to-slate-950': !top,
+                'h-full bg-linear-to-l from-transparent to-slate-400 dark:to-slate-950': !top,
               },
             )}
             onClick={handleScroll(-1)}

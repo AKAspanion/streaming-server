@@ -1,3 +1,4 @@
+import { DOWNLOAD_OPTIONS } from '@constants/app';
 import { deleteVideoDB, pushVideoDB } from '@database/json';
 import { handleJsonDBDataError } from '@utils/error';
 import { AppError, HttpCode } from '@utils/exceptions';
@@ -77,7 +78,7 @@ export const getThumbnail: RequestHandler = async (req, res) => {
   const thumbnail = await extractThumbnailForVideo(data?.id, data);
 
   if (thumbnail?.path) {
-    res.download(thumbnail?.path, thumbnail.name || 'thumbnail.png');
+    res.download(thumbnail?.path, thumbnail.name || 'thumbnail.png', DOWNLOAD_OPTIONS);
   } else {
     throw new AppError({ httpCode: HttpCode.NOT_FOUND, description: 'Thumbnail not found' });
   }
@@ -91,7 +92,7 @@ export const getSeekThumbnail: RequestHandler = async (req, res) => {
 
   if (fileExists(data?.path)) {
     const thumbnail = await createSeekThumbnail(id, data?.path, time);
-    res.download(thumbnail?.path, thumbnail.name || 'thumbnail.png');
+    res.download(thumbnail?.path, thumbnail.name || 'thumbnail.png', DOWNLOAD_OPTIONS);
   } else {
     throw new AppError({ httpCode: HttpCode.NOT_FOUND, description: 'Thumbnail not found' });
   }

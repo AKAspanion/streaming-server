@@ -1,3 +1,4 @@
+import { skipToken } from '@reduxjs/toolkit/query';
 import React, { FC, useState } from 'react';
 import ManageMediaHeader from './ManageMediaHeader';
 import { useGetFolderByIdQuery, useGetMediaInFolderQuery } from '@/services/folder';
@@ -19,8 +20,10 @@ const ManageMediaFolder: FC<ManageMediaFolderProps> = () => {
   const [addLoading, setAddLoading] = useState(false);
 
   const [addMedia, { isLoading }] = useAddMediaMutation();
-  const { data: folderData, isFetching } = useGetFolderByIdQuery(folderId);
-  const { data: mediaData, isFetching: isMediaFetching } = useGetMediaInFolderQuery(folderId);
+  const { data: folderData, isFetching } = useGetFolderByIdQuery(folderId || skipToken);
+  const { data: mediaData, isFetching: isMediaFetching } = useGetMediaInFolderQuery(
+    folderId || skipToken,
+  );
 
   const handleFileSubmit = async (files: FileLocationType[]) => {
     setAddLoading(true);
@@ -75,7 +78,7 @@ const ManageMediaFolder: FC<ManageMediaFolderProps> = () => {
             '--managemediafolder-content-h-md': 'calc(100% - var(--media-header-height-md) - 32px)',
           } as React.CSSProperties
         }
-        className="h-[var(--managemediafolder-content-h)] md:h-[var(--managemediafolder-content-h-md)] overflow-y-auto"
+        className="h-(--managemediafolder-content-h) md:h-(--managemediafolder-content-h-md) overflow-y-auto"
       >
         {hasMedia ? (
           <div className="px-4 pb-4">

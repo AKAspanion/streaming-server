@@ -131,7 +131,7 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
         onTimeUpdate={() => updateElapsedDuration()}
       />
       {waiting || loading ? (
-        <div className="text-white drop-shadow absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+        <div className="text-white drop-shadow-sm absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
           <Spinner large />
         </div>
       ) : null}
@@ -139,11 +139,11 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
         style={{ opacity: `${controlsVisible ? 1 : 0}` }}
         className={cs(
           'transition-all duration-500 dark',
-          'absolute bottom-0 left-0 p-4 bg-gradient-to-b from-transparent to-black w-full',
+          'absolute bottom-0 left-0 p-4 bg-linear-to-b from-transparent to-black w-full',
         )}
       >
         <div className="flex items-center gap-4 justify-between dark">
-          <div className="line-clamp-1 text-2xl overflow-hidden overflow-ellipsis whitespace-nowrap p-4 drop-shadow">
+          <div className="line-clamp-1 text-2xl overflow-hidden text-ellipsis whitespace-nowrap p-4 drop-shadow-sm">
             {name}
           </div>
           {nextLink && (
@@ -156,11 +156,11 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
         </div>
         <div
           style={{ '--hls-player-slider-w': 'calc(100%)' } as React.CSSProperties}
-          className="dark w-[var(--hls-player-slider-w)] px-4 left-5"
+          className="dark w-(--hls-player-slider-w) px-4 left-5"
         >
           <div className="w-full h-2 group cursor-pointer" onMouseMove={updateSeekTooltip}>
             <Progress
-              className="w-full drop-shadow"
+              className="w-full drop-shadow-sm"
               max={duration}
               value={progress}
               ref={progressRef}
@@ -178,16 +178,16 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
               {thumbnailSrc && (
                 <LazyImage
                   src={getThumbnailSrc()}
-                  className="w-full max-h-[100px] object-cover drop-shadow"
+                  className="w-full max-h-[100px] object-cover drop-shadow-sm"
                 />
               )}
-              <div className="text-center pt-2 drop-shadow">{secToTime(seekValue, true)}</div>
+              <div className="text-center pt-2 drop-shadow-sm">{secToTime(seekValue, true)}</div>
             </div>
           </div>
         </div>
         <div className="dark flex justify-between gap-4">
-          <div className="text-xs drop-shadow pt-2 px-4">{secToTime(elapsedDuration, true)}</div>
-          <div className="text-xs drop-shadow pt-2 px-4 ">
+          <div className="text-xs drop-shadow-sm pt-2 px-4">{secToTime(elapsedDuration, true)}</div>
+          <div className="text-xs drop-shadow-sm pt-2 px-4 ">
             {[duration]
               .filter(Boolean)
               .map((d) => secToTime(Math.round(d), true))
@@ -437,14 +437,14 @@ export const HLSPlayer = forwardRef<HTMLVideoElement, HLSPlayerProps>((props, ou
         style={{ opacity: `${headerVisible ? 1 : 0}` }}
         className={cs(
           'dark',
-          'absolute top-0 left-0 bg-gradient-to-b from-black to-transparent z-40 transition-all duration-500',
+          'absolute top-0 left-0 bg-linear-to-b from-black to-transparent z-40 transition-all duration-500',
         )}
       >
         <div
           className="w-screen flex gap-4 justify-between"
           style={{ '--max-hls-head-width': '100vw' } as React.CSSProperties}
         >
-          <div className="dark flex items-center gap-2 w-[var(--max-hls-head-width)]">
+          <div className="dark flex items-center gap-2 w-(--max-hls-head-width)">
             <div className="p-6 px-8">
               <Link to={backTo} className="w-6 scale-[1]">
                 <ArrowLeftIcon className="w-6" />

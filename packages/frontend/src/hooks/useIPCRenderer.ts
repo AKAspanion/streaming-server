@@ -7,8 +7,7 @@ const useIPCRenderer = () => {
 
   useEffect(() => {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const ipcRenderer = require('electron').ipcRenderer;
+      const ipcRenderer = window.require('electron').ipcRenderer;
       renderRef.current = ipcRenderer;
       setTick((i) => i + 1);
     } catch (error) {
