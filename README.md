@@ -3,7 +3,7 @@
 This app let's you manage your video files and stream it over your local network.  
 Built using React + NodeJS + FFMPEG + Electron.
 
-![page](https://akaspanion.github.io/streaming-server/_app/immutable/assets/dashboard-dark.d2619712.png)
+![page](https://github.com/AKAspanion/streaming-server/blob/main/pages/src/lib/assets/images/dashboard-dark.png)
 
 ## [Download](https://github.com/AKAspanion/streaming-server/releases/latest)
 
